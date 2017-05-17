@@ -1,0 +1,20 @@
+{
+  "name": "chat",
+  "description": "real time chat app",
+  "main": "index.js",
+  "authors": [
+    "William Xiong <wwx@duke.edu>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
+}

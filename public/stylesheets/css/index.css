@@ -1,0 +1,109 @@
+.navbar-static-top{
+	background-color: transparent !important;
+}
+body{
+	background-color: transparent;
+	/*overflow-y: hidden;*/
+}
+.navbar-brand{
+	background-color: transparent !important;
+	color: black !important;
+	font-weight: 100;
+}
+/* flippy effect*/
+#w { width: 100%; margin: 0 auto; padding-top: 25px; }
+
+#page { 
+  display: block;
+  position: relative;
+  overflow: hidden;
+  height: auto;
+}
+.content {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto;
+}
+#content-login { display: block; position: relative; width: 100%; }
+
+#content-register { display: none; width: 100%; position: absolute; top: 0; left: 880px; height: 800px;}
+#content-register2 { display: none; width: 100%; position: absolute; top: 0; left: 880px; }
+
+.leftsidelink { font-size: 1.25em; font-weight: bold; display: inline-block; }
+/*end of flippy effect*/
+
+.loginColumns{
+	margin-top: -75px !important;
+}
+.slogan{
+	margin: 0 auto;
+    margin-top: -10px;
+	text-align: center;
+	font-size: 18px;
+	font-family: Raleway;
+	letter-spacing: 1px;
+	font-weight: 100;
+}
+.title,
+.title span{
+	letter-spacing: 2px;
+	margin-top: 0px;
+	font-size: 110px;
+	font-weight: 100;
+	text-align: center;
+}
+.buttons{
+	margin: 0 auto;
+	text-align: center;
+	margin-top: 30px;
+}
+.btn-primary{
+	background-color: transparent;
+	color: #464646;
+	border: solid #464646 1px;
+	border-radius: 5px;
+	width: 100px;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.open .dropdown-toggle.btn-primary,
+.btn-primary:active:focus,
+.btn-primary:active:hover,
+.btn-primary.active:hover,
+.btn-primary.active:focus {
+  background-color: #424242;
+  border-color: #424242;
+  color: #FFFFFF;
+}
+.logo{
+	margin: 0 auto;
+	text-align: center;
+}
+#i{
+	margin-left: 20px;
+	width: 180px;
+	height: 25px;
+}
+#o{
+	margin-left: 10px;
+	width: 30px;
+	height: 30px;
+	border-radius: 100px;
+}
+.filler{
+	background-color: #424242;
+}
+.register{
+	margin-left: 15px;
+}
+.login{
+	margin-left: 20px;
+}
+
+.loginflip{
+}
+.form-control:focus{
+	border-color: #424242 !important;
+}

@@ -1,0 +1,8 @@
+node_modules/
+npm-debug.log
+package.json
+bin/
+bower_components/
+home.html
+
+
