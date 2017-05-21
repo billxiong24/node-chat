@@ -5,7 +5,10 @@
  */
 //const var passport = require('passport');
 
+const connection = require('../database/config.js');
 const LocalStrategy = require('passport-local').Strategy;
+const crypto = require('crypto');
+
 const params = {
     usernameField : 'username', 
     passwordField : 'password'
@@ -21,7 +24,6 @@ function checkLoggedOut(req, res, next) {
     return next()
 }
 function checkLoggedIn(req, res, next) {
-    console.log("SESSION" + req.session)
     if(req.session && req.session.user) {
         res.redirect('/home')
     }
@@ -30,20 +32,90 @@ function checkLoggedIn(req, res, next) {
 }
 
 function authenticate(req, res, next) {
-    //database goes here
-    if(req.body.username === "billxiong24" && req.body.password === "password") {
-        //create session variable
-        req.session.user = {name : "bill xiong", email : "wwx@duke.edu"}
-        res.redirect('/home')
+
+    connection.establishConnection(function(err){
+
+    });
+
+    //TODO does this prevent sql injection??
+    connection.execute('SELECT id, username, first, last FROM User WHERE User.username = ? and User.password = ?', [req.body.username, req.body.password], function(err, rows) {
+        if(err) {
+            throw err;
+        }
+        
+        if(rows.length > 0) {
+            req.session.user = rows[0];
+            //TODO FILL rooms in
+            req.session.rooms = new Array();
+            
+            //contains all created chats in this session
+            req.session.members = {};
+
+            res.redirect('/home');
+        }
+        else {
+            res.redirect('/')
+        }
+    });
+}
+
+function checkExistingUser(req, res, next) {
+
+    connection.establishConnection(function(err){
+
+    });
+
+    if(req.body.username.length < 4) {
+        res.send("Username must be at least 4 characters long.");
+        return;
     }
-    else {
-        res.redirect('/')
-    }
-    //return next()
+
+    connection.execute('SELECT COUNT(User.username) AS count FROM User WHERE User.username = ? ', [req.body.username], function(err, rows) {
+        if(err) {
+            //TODO duplicate usernames, handle error use socketio for this
+            console.log(err);
+            return;
+        }
+
+        if(rows[0].count > 0) {
+            res.send("Username exists.");
+        }
+        else {
+            res.send("");
+        }
+    });
 }
 
 function signUp(req, res, next) {
     //sign up logic here
+    connection.establishConnection(function(err){
+
+    });
+
+    //TODO encrypt password
+    var info = {
+        id: crypto.randomBytes(10).toString('hex'),
+        username: req.body.username,
+        password: req.body.password_signup,
+        first: req.body.firstname_signup,
+        last: req.body.lastname_signup
+    }
+    connection.execute('INSERT INTO User SET ? ', info, function(err, rows) {
+        if(err) {
+            //TODO duplicate usernames, handle error use socketio for this
+            res.redirect('/');
+            //need to return, otherwise try to send headers twice, expection thrown
+            return;
+        }
+
+        req.session.user = {
+            username: info.username,
+            first: info.first,
+            last: info.last
+        }
+        
+        res.redirect('/home');
+    });
 }
 
 function passportAuth(passport) {
@@ -74,4 +146,4 @@ function passportAuth(passport) {
     ))
 }
 
-module.exports = {checkLoggedOut, checkLoggedIn, authenticate, signUp}
+module.exports = {checkLoggedOut, checkLoggedIn, authenticate, signUp, checkExistingUser}

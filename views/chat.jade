@@ -1,0 +1,186 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Home - ChatIO
+    // <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    link(href='/stylesheets/css/bootstrap.min.css', rel='stylesheet')
+    link(href='/stylesheets/font-awesome/css/font-awesome.css', rel='stylesheet')
+    link(rel='stylesheet', type='text/css', href='//fonts.googleapis.com/css?family=Raleway')
+    link(href='/stylesheets/css/animate.css', rel='stylesheet')
+    link(href='/stylesheets/css/style.css', rel='stylesheet')
+    link(href='/stylesheets/css/home.css', rel='stylesheet')
+    link(href='/stylesheets/css/index.css', rel='stylesheet')
+  body.top-navigation
+    // Toggle this class for side panel
+    #wrapper
+      #page-wrapper.gray-bg
+        .row.border-bottom
+          .row.border-bottom.white-bg
+            nav.navbar.navbar-static-top(role='navigation')
+              .navbar-header
+                button.navbar-toggle.collapsed(aria-controls='navbar', aria-expanded='false', data-target='#navbar', data-toggle='collapse', type='button')
+                  i.fa.fa-reorder
+                a.navbar-brand(href='home.php') ChatIO
+              //
+                <div class="navbar-header">
+                <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                <form role="search" class="navbar-form-custom" action="search_results.html">
+                <div class="form-group">
+                <input type="text" placeholder="Search for something..." class="form-control" name="top-search" id="top-search">
+                </div>
+                </form>
+                </div>
+              ul.nav.navbar-top-links.navbar-right
+                li
+                  button.btn.small-buttons(style='')
+                    | Bill
+                li.dropdown(style='')
+                  a.dropdown-toggle.count-info(data-toggle='dropdown', href='#')
+                    i.fa.fa-bell
+                    span.label.label-primary 8
+                  ul.dropdown-menu.dropdown-alerts
+                    li
+                      a(href='mailbox.html')
+                        div
+                          i.fa.fa-envelope.fa-fw
+                          |  You have 16 messages
+                          span.pull-right.text-muted.small 4 minutes ago
+                    li.divider
+                    li
+                      a(href='profile.html')
+                        div
+                          i.fa.fa-twitter.fa-fw
+                          |  3 New Followers
+                          span.pull-right.text-muted.small 12 minutes ago
+                    li.divider
+                    li
+                      a(href='grid_options.html')
+                        div
+                          i.fa.fa-upload.fa-fw
+                          |  Server Rebooted
+                          span.pull-right.text-muted.small 4 minutes ago
+                    li.divider
+                    li
+                      .text-center.link-block
+                        a(href='notifications.html')
+                          strong See All Alerts
+                          i.fa.fa-angle-right
+                li
+                  form(method='post', action='logout.php')
+                    button.btn.small-buttons(name='logout', type='submit')
+                      i.fa.fa-sign-out
+        //
+          <div class="row wrapper border-bottom white-bg page-heading">
+          <div class="col-lg-10">
+          <h2>Chat view</h2>
+          <ol class="breadcrumb">
+          <li>
+          <a href="index.html">Home</a>
+          </li>
+          <li>
+          <a>Miscellaneous</a>
+          </li>
+          <li class="active">
+          <strong>Chat view</strong>
+          </li>
+          </ol>
+          </div>
+          <div class="col-lg-2">
+          </div>
+          </div>
+        .wrapper.wrapper-content.animated.fadeInRight
+          //
+            <div class="row">
+            <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+            <div class="ibox-content">
+            <strong>Chat room </strong> can be used to create chat room in your app.
+            You can also use a small chat in the right corner to provide live discussion.
+            </div>
+            </div>
+            </div>
+            </div>
+          .container1
+            .row
+              .ibox.chat-view
+                .ibox-title
+                  | Title
+                .ibox-content.fullscreen
+                  .col-xs-3.cell1(style='margin-left: 20px')
+                    .chat-users
+                      .actions-list
+                        div(style='margin-top: 20px')
+                          form.add-user(method='post', action='adduser.php')
+                            input.add-user-info(type='text', placeholder='Add user', style='display: inline')
+                        .chat-actions
+                          form(method='post', action='addchat.php')
+                            button.btn.btn-primary(type='submit', name='add') Create new chat
+                        .chat-actions
+                          form.leave-chat(method='post', action='leavechat.php')
+                            button.btn.btn-primary Add people
+                        .chat-actions
+                          form.leave-chat(method='post', action='leavechat.php')
+                            button.btn.btn-primary Delete chat
+                        .chat-actions
+                          form.leave-chat(method='post', action='leavechat.php')
+                            button.btn.btn-primary Leave chat
+                  .row
+                    .col-xs-6.cell2
+                      .chat-discussion.content
+                        | some lines
+                        .left
+                          #mess.author-name
+                            .date-chat time
+                            a.author-name(href='#') user
+                          .chat-message A message
+                        #end-chat
+                    .col-xs-2.cell3
+                      .chat-users
+                        .users-list
+                          | some list
+                  .row
+                    .col-lg-3
+                    form.submit-message(action='')
+                      .col-lg-6(style='margin-left: 27px')
+                        .chat-message-form
+                          .form-group
+                            input.form-control.message-input(name='message', placeholder='Enter message', autocomplete='off')
+      //
+        <div class="small-chat-box fadeInRight animated">
+        <div class="heading" draggable="true">
+        <small class="chat-date pull-right">
+        02.19.2015
+        </small>
+        Small chat
+        </div>
+        <div class="content">
+        </div>
+        <div class="input-group input-group-sm"><input type="text" class="form-control"> <span class="input-group-btn"> <button
+        class="btn btn-primary" type="button">Send
+        </button> </span></div>
+        </div>
+        </div>
+        <div id="small-chat">
+        <span class="badge badge-warning pull-right">5</span>
+        <a class="open-small-chat">
+        <i class="fa fa-comments"></i>
+        </a>
+        </div>
+        </div> --!>
+        <script type="text/javascript" charset="utf-8">
+        </script>
+        <!-- Mainly scripts
+      /*script(src='javascripts/js/chat.js')*/
+      script(src='/javascripts/js/jquery-2.1.1.js')
+      script(src='/javascripts/js/bootstrap.min.js')
+      script(src='/javascripts/js/plugins/metisMenu/jquery.metisMenu.js')
+      script(src='/javascripts/js/plugins/slimscroll/jquery.slimscroll.min.js')
+      // Custom and plugin javascript
+      script(src='/javascripts/js/inspinia.js')
+      script(src='/javascripts/js/plugins/pace/pace.min.js')
+      script(src='/javascripts/js/plugins/slimscroll/jquery.slimscroll.min.js')
+      script(src='/javascripts/js.cookie.js')
+      script(src='/javascripts/socket.io-client/dist/socket.io.js')
+      script(src='/javascripts/client-socket.js')

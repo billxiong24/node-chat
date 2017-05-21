@@ -1,0 +1,12 @@
+DROP PROCEDURE IF EXISTS CreateNewChat;
+
+DELIMITER $$
+CREATE PROCEDURE CreateNewChat(IN id VARCHAR(256), IN chat_name VARCHAR(256), IN username VARCHAR(256))
+BEGIN
+    START TRANSACTION;
+    INSERT INTO Chat VALUES (id, chat_name);
+    INSERT INTO MemberOf VALUES (id, username);
+    COMMIT;
+END;
+$$
+DELIMITER ;

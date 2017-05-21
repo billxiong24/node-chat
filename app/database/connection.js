@@ -2,13 +2,14 @@
  * Establishes connection to database using node-mysql
  */
 const mysql = require('mysql')
-var connection = undefined;
+var connection = null;
 
 function getConnection(host, user, pass) {
     connection = mysql.createConnection({
         host: host,
         user: user,
-        password: pass
+        password: pass,
+        database: "chatdb"
     });
     return connection;
 }
@@ -31,7 +32,7 @@ function endConnection(callback) {
     connection.end(callback);
 }
 
-function execute(query, info=undefined, callback) {
+function execute(query, info=null, callback) {
     if(!connection) {
         return;
     }
@@ -45,4 +46,15 @@ function execute(query, info=undefined, callback) {
     }
 }
 
-modules.export = {getConnection, establishConnection, endConnection, execute}
+//temp function
+function getConn() {
+    return connection;
+}
+
+function executeTransaction(transaction) {
+    connection.beginTransaction(function(err) {
+        transaction(connection, err);
+    });
+}
+
+module.exports = {getConnection, establishConnection, endConnection, execute, getConn, executeTransaction};

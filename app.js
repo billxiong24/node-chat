@@ -10,6 +10,7 @@ const users = require('./routes/users');
 const app = express();
 const passport = require('passport');
 const session = require('express-session');
+const connection = require('./app/database/config.js');
 
 // view engine setup
 app.set('views', path.join(__dirname, '/views'));
@@ -23,22 +24,28 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//handles back button problem of caching- reloads page every time to persist session
-app.use(function(req, res, next) {
-    res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-    next()
-})
-
-app.use(session({
+var sessionMiddleWare = session({
     secret: 'asdfog7bsfdogbsfdg',
     resave: true,
     saveUninitialized: true
- } )); // session secret
+ }); 
+app.use(sessionMiddleWare); // session secret
+
+/* No idea why this code has to be in this specific order */
+var http = require('http').Server(app);
+/* Set up server side socket*/
+var io = require(__dirname + '/app/chat_functions/socketServer.js')(app, http, sessionMiddleWare);
+
+//handles back button problem of caching- reloads page every time to persist session
+app.use(function(req, res, next) {
+    res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+    next();
+})
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.use('/', index);
-app.use('/users', users);
 //require('./app/authentication/user-pass.js')(passport)
 
 // catch 404 and forward to error handler
@@ -69,4 +76,7 @@ app.use(function(err, req, res, next) {
         //failureFlash : false
     //}
 //));
+
+http.listen(3000);
+
 module.exports = app;

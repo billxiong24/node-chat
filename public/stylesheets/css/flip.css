@@ -1,0 +1,19 @@
+#w { width: 100%; margin: 0 auto; padding-top: 25px; }
+
+#page { 
+  display: block;
+  position: relative;
+  overflow: hidden;
+  height: auto;
+}
+.content {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto;
+}
+#content-login { display: block; position: relative; width: 100%; }
+
+#content-register { display: none; width: 100%; position: absolute; top: 0; left: 880px; height: 800px;}
+#content-register2 { display: none; width: 100%; position: absolute; top: 0; left: 880px; }
+
+.leftsidelink { font-size: 1.25em; font-weight: bold; display: inline-block; }

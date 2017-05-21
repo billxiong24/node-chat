@@ -28,27 +28,38 @@ CREATE TABLE Chat (
 );
 
 
-CREATE TABLE ChatLines (
-    chat_id VARCHAR(256) NOT NULL REFERENCES Chat(id) ON DELETE CASCADE,
-    username VARCHAR(256) NOT NULL REFERENCES User(username) ON DELETE CASCADE,
-    text VARCHAR(8192) NOT NULL,
-    stamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    line_id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY
-);
+CREATE TABLE `ChatLines` (
+    `chat_id` varchar(256) NOT NULL,
+    `username` varchar(256) NOT NULL,
+    `text` varchar(8192) NOT NULL,
+    `stamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `line_id` bigint(20) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`line_id`),
+    KEY `line_username` (`username`),
+    KEY `line_chat_id` (`chat_id`),
+    CONSTRAINT `line_chat_id` FOREIGN KEY (`chat_id`) REFERENCES `Chat` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `line_username` FOREIGN KEY (`username`) REFERENCES `User` (`username`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
 
+CREATE TABLE `MemberOf` (
+    `chat_id` varchar(256) NOT NULL,
+    `username` varchar(256) NOT NULL,
+    PRIMARY KEY (`chat_id`,`username`),
+    KEY `username` (`username`),
+    CONSTRAINT `chat_id` FOREIGN KEY (`chat_id`) REFERENCES `Chat` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `username` FOREIGN KEY (`username`) REFERENCES `User` (`username`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
 
-CREATE TABLE Notifications (
-    chat_id VARCHAR(256) NOT NULL REFERENCES Chat(id) ON DELETE CASCADE,
-    username VARCHAR(256) NOT NULL REFERENCES User(id) ON DELETE CASCADE,
-    num_notifications INTEGER NOT NULL,
-    PRIMARY KEY(chat_id, username)
-);
+CREATE TABLE `Notifications` (
+    `chat_id` varchar(256) NOT NULL,
+    `username` varchar(256) NOT NULL,
+    `num_notifications` int(11) NOT NULL,
+    PRIMARY KEY (`chat_id`,`username`),
+    KEY `notif_username` (`username`),
+    CONSTRAINT `notif_chat_id` FOREIGN KEY (`chat_id`) REFERENCES `Chat` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `notif_username` FOREIGN KEY (`username`) REFERENCES `User` (`username`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
 
-CREATE TABLE MemberOf (
-    chat_id VARCHAR(256) NOT NULL REFERENCES Chat(id) ON DELETE CASCADE,
-    username VARCHAR(256) NOT NULL REFERENCES User(username) ON DELETE CASCADE,
-    PRIMARY KEY(chat_id, username)
-);
 
 DELIMITER $$ 
 /* Check if client is part of chat before sending message */
