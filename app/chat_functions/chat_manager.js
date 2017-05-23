@@ -6,9 +6,52 @@ function loadChatLists(req, res, next) {
     connection.establishConnection(function(err){})
 }
 
-function loadChat(username, chatID, res) {
+function joinChat(members, username, chatCode, res) {
     connection.establishConnection(function(err) {});
-    var query = 'SELECT Chat.code, Chat.chat_name FROM Chat, MemberOf WHERE MemberOf.username = ? AND MemberOf.chat_id = ?';
+    connection.executeTransaction(function(conn, err) {
+        if(err) {
+            throw err;
+        }
+        conn.query('SELECT * FROM Chat WHERE Chat.code = ?', [chatCode], function(err, rows) {
+            if(err) {
+                conn.rollback(function() {
+                    throw err;
+                });
+            }
+            if(rows.length == 0) {
+                //TODO send error message
+                res.redirect('/home');
+                return;
+            }
+            var store = rows[0];
+            
+            //If key exists, ignore insert
+            conn.query('INSERT IGNORE INTO MemberOf SET ?', {chat_id: rows[0].id, username}, function(err, rows) {
+                if(err) {
+                    conn.rollback(function() {throw err;});
+                }
+
+                //On commit, everything is saved to disk, success
+                conn.commit(function(err) {
+                    if(err) {
+                        conn.rollback(function() {throw err;});
+                    }
+                    members[store.id] = {
+                        id: store.id,
+                        name: store.chat_name,
+                        code: store.code
+                    };
+                    res.redirect('/chats/' + store.id);
+                });
+            });
+        });
+
+    });
+}
+
+function loadChat(members, username, chatID, res) {
+    connection.establishConnection(function(err) {});
+     var query = 'SELECT Chat.code, Chat.chat_name FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?';
     connection.execute(query, [username, chatID], function(err, rows) {
         if(err) {
             throw err;
@@ -18,11 +61,13 @@ function loadChat(username, chatID, res) {
             res.render('home');
         }
         else {
+            //TODO cache into req.session.members
             var info = {
                 id: chatID,
                 name: rows[0].chat_name,
                 code: rows[0].code
             };
+            members[info.id] = info;
             res.render('chat', info);
         }
     });
@@ -40,14 +85,14 @@ function createChat(res, chatName, username) {
             if(err) {
                 throw err;
             }
-            conn.query('INSERT INTO Chat SET ?', chatInfo, function(err, res) {
+            conn.query('INSERT INTO Chat SET ?', chatInfo, function(err, rows) {
                 if(err) {
                     conn.rollback(function() {
                         throw err;
                     });
                 }
 
-                conn.query('INSERT INTO MemberOf SET ?', {chat_id: chatInfo.id, username}, function(err, res) {
+                conn.query('INSERT INTO MemberOf SET ?', {chat_id: chatInfo.id, username}, function(err, rows) {
                     if(err) {
                         conn.rollback(function() {throw err;});
                     }
@@ -66,4 +111,4 @@ function createChat(res, chatName, username) {
 }
 
 
-module.exports = {loadChatLists, createChat, loadChat};
+module.exports = {loadChatLists, createChat, loadChat, joinChat};

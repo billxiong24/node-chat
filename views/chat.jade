@@ -129,7 +129,6 @@ html
                   .row
                     .col-xs-6.cell2
                       .chat-discussion.content
-                        | some lines
                         .left
                           #mess.author-name
                             .date-chat time
@@ -183,4 +182,6 @@ html
       script(src='/javascripts/js/plugins/slimscroll/jquery.slimscroll.min.js')
       script(src='/javascripts/js.cookie.js')
       script(src='/javascripts/socket.io-client/dist/socket.io.js')
+      script.
+        var roomID = "#{id}"
       script(src='/javascripts/client-socket.js')

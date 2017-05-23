@@ -1,5 +1,6 @@
+var urlParser = require('url');
 
-function init(app, http, sessionMiddleWare) {
+function init(http, sessionMiddleWare) {
     var io = require('socket.io')(http);
     /* Set up session variables for socket io */
     io.use(function(socket, next) {
@@ -22,23 +23,39 @@ function init(app, http, sessionMiddleWare) {
 
         /* Use socket.request.session to access session variables */
         socket.on('message', function(message) {
-            console.log(socket.id);
+            //console.log(socket.handshake.headers);
+            url = urlParser.parse(socket.handshake.headers.referer);
+
             var message_info = {
                 message : message, 
                 username: socket.request.session.user.username,
                 /* cookie set should be same as userid */
                 cookie: socket.request.session.user.id
             }
-            io.to("room1").emit('message', message_info);
+
+            io.to(parseID(url.pathname)).emit('message', message_info);
         });
 
         socket.on('disconnect', function(data) {
             console.log("Disconnecting");
         });
-
     });
 
     return io;
+}
+
+
+/* This is super ratchet */
+function parseID(pathname) {
+    var str;
+    if(pathname.charAt(pathname.length - 1) === '/') {
+        pathname = pathname.substring(0, pathname.length - 1);
+        str = pathname.substring(pathname.lastIndexOf("/") + 1);
+    }
+    else {
+        str = pathname.substring(pathname.lastIndexOf("/") + 1);
+    }
+    return str;
 }
 /* No idea why this code has to be in this specific order */
 

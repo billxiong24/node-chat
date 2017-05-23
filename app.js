@@ -13,6 +13,7 @@ const session = require('express-session');
 const connection = require('./app/database/config.js');
 
 // view engine setup
+
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'jade');
 
@@ -33,8 +34,10 @@ app.use(sessionMiddleWare); // session secret
 
 /* No idea why this code has to be in this specific order */
 var http = require('http').Server(app);
+app.locals.http = http;
+app.locals.sessionMiddleWare = sessionMiddleWare;
 /* Set up server side socket*/
-var io = require(__dirname + '/app/chat_functions/socketServer.js')(app, http, sessionMiddleWare);
+var io = require(__dirname + '/app/chat_functions/socketServer.js')(http, sessionMiddleWare);
 
 //handles back button problem of caching- reloads page every time to persist session
 app.use(function(req, res, next) {

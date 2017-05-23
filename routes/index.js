@@ -6,7 +6,8 @@ var chats = require('./chats/chats.js');
 
 
 router.get('/', authenticator.checkLoggedIn, function(req, res, next) {
-  res.render('index');
+    //console.log(req.app.locals.test + " heyyyy");
+    res.render('index');
 });
 
 router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
