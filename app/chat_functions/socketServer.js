@@ -9,10 +9,21 @@ function init(http, sessionMiddleWare) {
 
     io.on('connection', function(socket) {
         console.log("client connected");
+
+        var url = urlParser.parse(socket.handshake.headers.referer);
+        var id = parseID(url.pathname);
+        var room = io.sockets.adapter.rooms[id];
         /* On connection, send to client list of chat ids, 
          * client will join those ids, send back to server, server will join too in order
          * to create a chat room */
 
+        socket.on('connected', function(data) {
+            var url = urlParser.parse(socket.handshake.headers.referer);
+            var id = parseID(url.pathname);
+            var room = io.sockets.adapter.rooms[id];
+            io.to(id).emit('connected', {user: socket.request.session.user, room: room});
+            
+        });
         socket.on('join', function(data) {
             socket.join(data.room);
         });
@@ -24,7 +35,7 @@ function init(http, sessionMiddleWare) {
         /* Use socket.request.session to access session variables */
         socket.on('message', function(message) {
             //console.log(socket.handshake.headers);
-            url = urlParser.parse(socket.handshake.headers.referer);
+            var url = urlParser.parse(socket.handshake.headers.referer);
 
             var message_info = {
                 message : message, 
@@ -33,11 +44,18 @@ function init(http, sessionMiddleWare) {
                 cookie: socket.request.session.user.id
             }
 
-            io.to(parseID(url.pathname)).emit('message', message_info);
+            var id = parseID(url.pathname);
+            //console.log(io.sockets.clients(id));
+
+            io.to(id).emit('message', message_info);
         });
 
         socket.on('disconnect', function(data) {
             console.log("Disconnecting");
+            var url = urlParser.parse(socket.handshake.headers.referer);
+            var id = parseID(url.pathname);
+            var room = io.sockets.adapter.rooms[id];
+            io.to(id).emit('disconnected', {user: socket.request.session.user, room: room});
         });
     });
 

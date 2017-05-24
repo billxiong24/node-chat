@@ -33,8 +33,15 @@
     text-align: center;
     display: inline-block;
     width: 20px;
+    background-color: #6CC417 !important;
+    height: 15px;
+    width: 15px;
+    color: #6CC417; 
+    border-radius: 100px;
+        
     /*background-color: darkred;*/
 }
+
 .date{
     position: absolute;
     top: 12px;
@@ -97,7 +104,8 @@
 .small-chat-box .content .chat-message, .chat-message {
     padding: 5px 10px;
     border-radius: 13px;
-    font-size: 17px;
+    font-size: 12px;
+    font-weight: 600;
     line-height: 20px;
     max-width: 60%;
     background: #f3f3f4;
@@ -126,6 +134,7 @@
 }
 .chat-discussion{
     border-left: solid #E5E5E5 1px;
+    border-right: solid #E5E5E5 1px;
     background-color: white;
     height: 400px;
 }
@@ -142,7 +151,7 @@
     text-align: left;
     color: #565656;
     margin-top: 17px; */
-    margin-right: 15px;
+    margin-right: 7px;
     padding: 5px;
     padding-left: 8px;
     padding-right: 8px;
@@ -176,6 +185,7 @@
 }
 html,.top-navigation,.container1, .row{
     min-height: 100% !important;
+    /*background-color: #ffffff;*/
 }
 .container-non-responsive {
     /* Margin/padding copied from Bootstrap */
@@ -193,7 +203,7 @@ html,.top-navigation,.container1, .row{
 
 }
 .user-title{
-    margin-left: 5px;
+    margin-left: 2px;
     padding: 4px;
     padding-left: 7px;
     padding-right: 7px;
@@ -201,4 +211,30 @@ html,.top-navigation,.container1, .row{
     background-color: #89C4F4;
     color: white;
 
+}
+
+.online-list {
+    background-color: transparent;
+    color: #464646;
+    border: none;
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+    text-align: center;
+    margin-top: -5px;
+}
+
+.message-input {
+
+}
+
+.date-title {
+    margin-left: 2px;
+    padding: 4px;
+    padding-left: 7px;
+    padding-right: 7px;
+    border-radius: 5px;
+    background-color: #2088B2;
+    color: white;
 }

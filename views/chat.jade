@@ -2,7 +2,7 @@ doctype html
 html
   head
     meta(charset='utf-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(name='viewport', content='width=1024')
     title Home - ChatIO
     // <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     link(href='/stylesheets/css/bootstrap.min.css', rel='stylesheet')
@@ -13,7 +13,7 @@ html
     link(href='/stylesheets/css/home.css', rel='stylesheet')
     link(href='/stylesheets/css/index.css', rel='stylesheet')
   body.top-navigation
-    // Toggle this class for side panel
+    // Toggle this class for side panelz
     #wrapper
       #page-wrapper.gray-bg
         .row.border-bottom
@@ -106,14 +106,17 @@ html
             .row
               .ibox.chat-view
                 .ibox-title
-                  | Title
+                  span.chat-name #{name}
+                  span.success.user-title Code: #{code}
+                  span.online-now.pull-right.user-title(style='background-color: #6CC417;') Online now:
+                  span.pull-right.date-title
+                    | Last message:  Mon Jan 26 2015 - 18:39:23
+                   
                 .ibox-content.fullscreen
                   .col-xs-3.cell1(style='margin-left: 20px')
                     .chat-users
                       .actions-list
                         div(style='margin-top: 20px')
-                          form.add-user(method='post', action='adduser.php')
-                            input.add-user-info(type='text', placeholder='Add user', style='display: inline')
                         .chat-actions
                           form(method='post', action='addchat.php')
                             button.btn.btn-primary(type='submit', name='add') Create new chat
@@ -138,7 +141,24 @@ html
                     .col-xs-2.cell3
                       .chat-users
                         .users-list
-                          | some list
+                          div.list-online(style='width: 100%')
+                            form.change-chat(method='post', action='change.php')
+                              .chat-user-name
+                                input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
+                                .label-warning.pull-right.notif(style='') 5
+                            form.change-chat(method='post', action='change.php')
+                              .chat-user-name
+                                input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
+                                .label-warning.pull-right.notif(style='') 5
+                            form.change-chat(method='post', action='change.php')
+                              .chat-user-name
+                                input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
+                                .label-warning.pull-right.notif(style='') 5
+                            form.change-chat(method='post', action='change.php')
+                              .chat-user-name
+                                input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
+                                .label-warning.pull-right.notif(style='') 5
+
                   .row
                     .col-lg-3
                     form.submit-message(action='')
