@@ -1,10 +1,13 @@
 $(document).ready(function() {
 
-    (function() {
+    var socketClient = (function() {
         var client = io();
         var lastMessage = null;
+        
+        //TODO abstract to object
+        var userSockets = {};
         client.emit('join', {room: roomID});
-        client.emit('connected', "test");
+        client.emit('connected');
         
         //this is ratchet af holy
         function resetCookie(callback, info) {
@@ -22,23 +25,18 @@ $(document).ready(function() {
         }
 
         client.on('connected', function(data) {
-            console.log(data.room.sockets);
-            console.log(data.user.username);
-            console.log(data.room.length);
+            var userid = Cookies.get('userid');
             updateOnlineUsers(data);
-            updateNumOnlineUsers(data.room.length);
         });
 
         client.on('disconnected', function(data) {
+            //delete userSockets[data.room.sockets[data.user.username]];
             updateOnlineUsers(data);
-            updateNumOnlineUsers(data.room.length);
         });
 
         client.on('connect', function(data) {
             //TODO NOTIFY client socket connected on frontend
             console.log("clientside connect");
-            //var online = $('<form class="change-chat" method = "post" action="change.php"> <div class="chat-user-name"> <input class = "btn online-list" style="" type="submit" name = "chatname" value="Username"> <div class="label-warning notif" style="">5</div> </div> </form>');
-            //$('.list-online').append(online);
         });
 
         $('.submit-message').submit(function() {
@@ -64,14 +62,23 @@ $(document).ready(function() {
         function updateOnlineUsers(data) {
             var onlineList = $('.list-online');
             onlineList.empty();
-            var online = displayOnlineUsers(data.room.sockets, data.user.username);
-            onlineList.append($(online));
+            userSockets = {};
+            onlineList.append($(displayOnlineUsers(data.room.sockets, data.user.username)));
         }
         function displayOnlineUsers(room, username) {
             var online = "";
-            for(var obj in room) {
-                online += '<form class="change-chat" method = "post" action="change.php"> <div class="chat-user-name"> <input class = "btn online-list" style="" type="submit" name = "chatname" value="useruser"> <div class="label-warning notif pull-right" style="">5</div> </div> </form>';
+            var size = 0;
+            for(var key in room) {
+                if(room[key] in userSockets) {
+                    continue;
+                }
+                online += '<form class="change-chat" method = "post" action="change.php"> <div class="chat-user-name"> <input class = "btn online-list" style="" type="submit" name = "chatname" value="'+room[key]+'"> <div class="label-warning notif pull-right" style="">5</div> </div> </form>';
+                //doesn't matter what value is
+                userSockets[room[key]] = null;
+                size++;
+
             }
+            updateNumOnlineUsers(size);
             return online;
         }
 
@@ -97,5 +104,39 @@ $(document).ready(function() {
             $('.chat-discussion').append($(message));
             $('.chat-discussion').scrollTop(200000);
         }
+
+        //function add(userid, clientID) {
+            //if(userid in userSockets) {
+                ////dont care what value it is, just that its there
+                //userSockets[userid][clientID] = null;
+                //return true;
+            //}
+
+            //userSockets[userid] = {};
+            //userSockets[userid][clientID] = null;
+            //return false;
+        //}
+
+        //function contains(userid, clientID) {
+            //if(!(userid in userSockets)) {
+                //return false;
+            //}
+            //if(!(clientID in userSockets[userid])) {
+                //return false;
+            //}
+
+            //return true;
+        //}
+
+        //function remove(userid, clientID) {
+            //if(userid in userSockets) {
+                //delete userSockets[userid][clientID];
+                //return true;
+            //}
+
+            //return false;
+        //}
+
+        return client;
     })();
 });

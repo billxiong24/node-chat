@@ -8,19 +8,16 @@ function init(http, sessionMiddleWare) {
     });
 
     io.on('connection', function(socket) {
-        console.log("client connected");
-
         var url = urlParser.parse(socket.handshake.headers.referer);
         var id = parseID(url.pathname);
         var room = io.sockets.adapter.rooms[id];
-        /* On connection, send to client list of chat ids, 
-         * client will join those ids, send back to server, server will join too in order
-         * to create a chat room */
 
         socket.on('connected', function(data) {
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);
             var room = io.sockets.adapter.rooms[id];
+            room.sockets[socket.id] = socket.request.session.user.username;
+            console.log(room);
             io.to(id).emit('connected', {user: socket.request.session.user, room: room});
             
         });
