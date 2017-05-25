@@ -11,12 +11,9 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     }
     else {
         //io = require(__dirname + '/../../app/chat_functions/socketServer.js')(req.app.locals.http, req.app.locals.sessionMiddleWare);
+        console.log(JSON.stringify(req.session.members[req.params.chatID]) + " TEST ME");
         res.render('chat', req.session.members[req.params.chatID]);
     }
-});
-
-router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.joinChat(req.session.members, req.session.user.username, req.body.joinChat, res);
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
@@ -27,7 +24,6 @@ router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, nex
     var info = manager.createChat(res, req.body.createChat, req.session.user.username);
     req.session.members[info.id] = info; 
     //this is bad because query could finish after the page has loaded, but its ok for now
-    res.redirect('/chats/' + info.id);
 });
 
 

@@ -46,13 +46,19 @@ html
 								.form-group.center-block
 									input.form-control.custom-tool(name='joinChat', placeholder='Enter Chat Code', autocomplete='off', required='')
 									button.btn.btn-primary.custom-tool-buttom(type='submit', name='join_chat') Join
-
 							form.m-t(role='form', method='post', action='/chats/create_chat')
 								.form-group.center-block
 									input.form-control.custom-tool(name='createChat', placeholder='Create Chat Code', autocomplete='off', required='')
 									button.btn.btn-primary.custom-tool-buttom(type='submit', name='create_chat') Create
-						.subtitle
-							span Your Recent Chats
+						.subtitle.center-block
+							div(style='margin-bottom: 14px') Recent Chats
+							- for(var i = 0; i < list.length; i++) {
+								.chat-link.center-block
+									a(href='/chats/' + list[i].id)= list[i].chat_name
+									span.label.label-primary= list[i].num_notifications
+							- }
+							#see-all.chat-link.center-block
+								a(href='#') See all
 					//
 						<div class="container animated fadeInDown">
 						<div class="slogan">

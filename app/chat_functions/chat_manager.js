@@ -1,9 +1,20 @@
 var connection = require('../database/config.js');
 const crypto = require('crypto');
 
-function loadChatLists(req, res, next) {
+function loadChatLists(userObj, res) {
     //TODO error checking
     connection.establishConnection(function(err){})
+    var query = 'SELECT Chat.chat_name, Chat.id, Notifications.num_notifications, MemberOf.username FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
+
+    connection.execute(query, [userObj.username, userObj.username], function(err, rows) {
+        var info = {
+            username: userObj.username,
+            first: userObj.first,
+            last: userObj.last,
+            list: rows
+        };
+        res.render('home', info);
+    });
 }
 
 function joinChat(members, username, chatCode, res) {
@@ -105,6 +116,9 @@ function createChat(res, chatName, username) {
                         if(err) {
                             conn.rollback(function() {throw err;});
                         }
+
+                        chatInfo.name = chatInfo.chat_name;
+                        res.redirect('/chats/' + chatInfo.id);
                     });
                 });
             });

@@ -41,6 +41,12 @@ body{
 }
 
 .subtitle {
+    width: 600px; 
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: solid #D4D4D4 1px;
+    border-radius: 5px;
+    position: relative;
 	letter-spacing: 0px;
 	margin-top: 25px;
 	font-size: 25px;
@@ -115,4 +121,29 @@ body{
     margin-top: 30px;
 	letter-spacing: 0px;
 	text-align: center;
+}
+
+.chat-link, .chat-link a {
+    position: relative;
+    font-size: 18px;
+    font-weight: 100;
+    color: #464646;
+    margin-top: 5px;
+}
+
+
+.chat-link a:hover {
+    border-bottom: solid #777777 1px;
+}
+
+#see-all {
+    margin-top: 15px;
+}
+
+.label-primary {
+    position: relative;
+    left: 5px;
+    top: -5px;
+    background-color: #fa3e3e;
+    border-radius: 100px;
 }

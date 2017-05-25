@@ -14,7 +14,7 @@ $(document).ready(function() {
             $.ajax({
                 type: 'POST',
                 contentType: 'application/json',
-                url: 'http://localhost:3000/home/fetch_home',
+                url: '/home/fetch_home',
                 success: function(data) {
                     /* reset cookie, bad idea */
                     Cookies.set('userid', data.cookie);
