@@ -20,22 +20,11 @@ html
           .row.border-bottom.white-bg
             nav.navbar.navbar-static-top(role='navigation')
               .navbar-header
-                button.navbar-toggle.collapsed(aria-controls='navbar', aria-expanded='false', data-target='#navbar', data-toggle='collapse', type='button')
-                  i.fa.fa-reorder
                 a.navbar-brand(href='home.php') ChatIO
-              //
-                <div class="navbar-header">
-                <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
-                <form role="search" class="navbar-form-custom" action="search_results.html">
-                <div class="form-group">
-                <input type="text" placeholder="Search for something..." class="form-control" name="top-search" id="top-search">
-                </div>
-                </form>
-                </div>
               ul.nav.navbar-top-links.navbar-right
                 li
-                  button.btn.small-buttons(style='')
-                    | Bill
+                  a(href='login.php', style='font-family: Raleway; font-weight: 200;')
+                    | #{username}
                 li.dropdown(style='')
                   a.dropdown-toggle.count-info(data-toggle='dropdown', href='#')
                     i.fa.fa-bell
@@ -109,9 +98,7 @@ html
                   span.chat-name #{name}
                   span.success.user-title Code: #{code}
                   span.online-now.pull-right.user-title(style='background-color: #6CC417;') Online now:
-                  span.pull-right.date-title
-                    | Last message:  Mon Jan 26 2015 - 18:39:23
-                   
+                  span.pull-right.date-title Last message:  Mon Jan 26 2015 - 18:39:23
                 .ibox-content.fullscreen
                   .col-xs-3.cell1(style='margin-left: 20px')
                     .chat-users
@@ -141,7 +128,7 @@ html
                     .col-xs-2.cell3
                       .chat-users
                         .users-list
-                          div.list-online(style='width: 100%')
+                          .list-online(style='width: 100%')
                             form.change-chat(method='post', action='change.php')
                               .chat-user-name
                                 input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
@@ -158,7 +145,6 @@ html
                               .chat-user-name
                                 input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
                                 .label-warning.pull-right.notif(style='') 5
-
                   .row
                     .col-lg-3
                     form.submit-message(action='')
@@ -191,7 +177,7 @@ html
         <script type="text/javascript" charset="utf-8">
         </script>
         <!-- Mainly scripts
-      /*script(src='javascripts/js/chat.js')*/
+      | /*script(src='javascripts/js/chat.js')*/
       script(src='/javascripts/js/jquery-2.1.1.js')
       script(src='/javascripts/js/bootstrap.min.js')
       script(src='/javascripts/js/plugins/metisMenu/jquery.metisMenu.js')

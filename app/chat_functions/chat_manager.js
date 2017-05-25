@@ -36,10 +36,12 @@ function joinChat(members, username, chatCode, res) {
                     if(err) {
                         conn.rollback(function() {throw err;});
                     }
+                    //TODO abstract into object
                     members[store.id] = {
                         id: store.id,
                         name: store.chat_name,
-                        code: store.code
+                        code: store.code,
+                        username: username
                     };
                     res.redirect('/chats/' + store.id);
                 });
@@ -61,11 +63,12 @@ function loadChat(members, username, chatID, res) {
             res.render('home');
         }
         else {
-            //TODO cache into req.session.members
+            //TODO cache into req.session.members, abstract into object
             var info = {
                 id: chatID,
                 name: rows[0].chat_name,
-                code: rows[0].code
+                code: rows[0].code,
+                username: username
             };
             members[info.id] = info;
             res.render('chat', info);

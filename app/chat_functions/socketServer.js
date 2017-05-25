@@ -17,7 +17,6 @@ function init(http, sessionMiddleWare) {
             var id = parseID(url.pathname);
             var room = io.sockets.adapter.rooms[id];
             room.sockets[socket.id] = socket.request.session.user.username;
-            console.log(room);
             io.to(id).emit('connected', {user: socket.request.session.user, room: room});
             
         });
@@ -48,7 +47,6 @@ function init(http, sessionMiddleWare) {
         });
 
         socket.on('disconnect', function(data) {
-            console.log("Disconnecting");
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);
             var room = io.sockets.adapter.rooms[id];
@@ -72,6 +70,5 @@ function parseID(pathname) {
     }
     return str;
 }
-/* No idea why this code has to be in this specific order */
 
 module.exports = init

@@ -36,7 +36,6 @@ $(document).ready(function() {
 
         client.on('connect', function(data) {
             //TODO NOTIFY client socket connected on frontend
-            console.log("clientside connect");
         });
 
         $('.submit-message').submit(function() {
