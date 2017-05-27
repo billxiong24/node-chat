@@ -98,7 +98,9 @@ html
                   span.chat-name #{name}
                   span.success.user-title Code: #{code}
                   span.online-now.pull-right.user-title(style='background-color: #6CC417;') Online now:
-                  span.pull-right.date-title Last message:  Mon Jan 26 2015 - 18:39:23
+                  span.pull-right.date-title  
+                    span.numMessages 0
+                    |  New Messages
                 .ibox-content.fullscreen
                   .col-xs-3.cell1(style='margin-left: 20px')
                     .chat-users
@@ -119,39 +121,14 @@ html
                   .row
                     .col-xs-6.cell2
                       .chat-discussion.content
-                        .left
-                          #mess.author-name
-                            .date-chat time
-                            a.author-name(href='#') user
-                          .chat-message A message
                         #end-chat
+                      .form-group
+                        form.submit-message(action='')
+                            input.form-control.message-input(name='message', placeholder='Enter message', autocomplete='off')
                     .col-xs-2.cell3
                       .chat-users
                         .users-list
                           .list-online(style='width: 100%')
-                            form.change-chat(method='post', action='change.php')
-                              .chat-user-name
-                                input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
-                                .label-warning.pull-right.notif(style='') 5
-                            form.change-chat(method='post', action='change.php')
-                              .chat-user-name
-                                input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
-                                .label-warning.pull-right.notif(style='') 5
-                            form.change-chat(method='post', action='change.php')
-                              .chat-user-name
-                                input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
-                                .label-warning.pull-right.notif(style='') 5
-                            form.change-chat(method='post', action='change.php')
-                              .chat-user-name
-                                input.btn.online-list(style='', type='submit', name='chatname', value='Some value')
-                                .label-warning.pull-right.notif(style='') 5
-                  .row
-                    .col-lg-3
-                    form.submit-message(action='')
-                      .col-lg-6(style='margin-left: 27px')
-                        .chat-message-form
-                          .form-group
-                            input.form-control.message-input(name='message', placeholder='Enter message', autocomplete='off')
       //
         <div class="small-chat-box fadeInRight animated">
         <div class="heading" draggable="true">

@@ -19,6 +19,8 @@ $(document).ready(function() {
                     /* reset cookie, bad idea */
                     Cookies.set('userid', data.cookie);
                     //TODO set up other important information, such as chat lists
+                    //use promises here 
+
                     callback(info);
                 }
             });
@@ -71,7 +73,7 @@ $(document).ready(function() {
                 if(room[key] in userSockets) {
                     continue;
                 }
-                online += '<form class="change-chat" method = "post" action="change.php"> <div class="chat-user-name"> <input class = "btn online-list" style="" type="submit" name = "chatname" value="'+room[key]+'"> <div class="label-warning notif pull-right" style="">5</div> </div> </form>';
+                online += '<form class="change-chat" method = "post" action="change.php"> <div class="chat-user-name"> <input class = "btn online-list" style="" type="submit" name = "chatname" value="'+room[key]+'"> <div class="label-warning notif pull-right" style="">  </div> </div> </form>';
                 //doesn't matter what value is
                 userSockets[room[key]] = null;
                 size++;
@@ -82,9 +84,25 @@ $(document).ready(function() {
         }
 
         function displayMessage(msg) {
+            if(msg.message.length == 0) {
+                return;
+            }
+
             var time = "test time";
-            var dir = (msg.cookie === Cookies.get('userid')) ? "right" : "left";
-            var active = (msg.cookie === Cookies.get('userid')) ? "active" : "";
+            var dir;
+            var active;
+            var numMessages = $('.numMessages');
+
+            if(msg.cookie === Cookies.get('userid')) {
+                dir = "right";
+                active = "active";
+                numMessages.text(0);
+            }
+            else {
+                dir = "left";
+                active = "";
+                numMessages.text(parseInt(numMessages.text()) + 1);
+            }
 
             var message;
             if(!lastMessage || lastMessage !== msg.cookie) {
@@ -103,38 +121,6 @@ $(document).ready(function() {
             $('.chat-discussion').append($(message));
             $('.chat-discussion').scrollTop(200000);
         }
-
-        //function add(userid, clientID) {
-            //if(userid in userSockets) {
-                ////dont care what value it is, just that its there
-                //userSockets[userid][clientID] = null;
-                //return true;
-            //}
-
-            //userSockets[userid] = {};
-            //userSockets[userid][clientID] = null;
-            //return false;
-        //}
-
-        //function contains(userid, clientID) {
-            //if(!(userid in userSockets)) {
-                //return false;
-            //}
-            //if(!(clientID in userSockets[userid])) {
-                //return false;
-            //}
-
-            //return true;
-        //}
-
-        //function remove(userid, clientID) {
-            //if(userid in userSockets) {
-                //delete userSockets[userid][clientID];
-                //return true;
-            //}
-
-            //return false;
-        //}
 
         return client;
     })();

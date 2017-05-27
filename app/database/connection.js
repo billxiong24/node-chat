@@ -46,15 +46,10 @@ function execute(query, info=null, callback) {
     }
 }
 
-//temp function
-function getConn() {
-    return connection;
-}
-
 function executeTransaction(transaction) {
     connection.beginTransaction(function(err) {
         transaction(connection, err);
     });
 }
 
-module.exports = {getConnection, establishConnection, endConnection, execute, getConn, executeTransaction};
+module.exports = {getConnection, establishConnection, endConnection, execute, executeTransaction};

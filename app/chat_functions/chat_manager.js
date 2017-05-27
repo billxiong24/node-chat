@@ -1,6 +1,8 @@
 var connection = require('../database/config.js');
 const crypto = require('crypto');
 
+//TODO use async library to make things more asynchronous
+
 function loadChatLists(userObj, res) {
     //TODO error checking
     connection.establishConnection(function(err){})
