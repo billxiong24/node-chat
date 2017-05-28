@@ -9,6 +9,7 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     if(!req.session.members[req.params.chatID]) {
         manager.loadChat(req.session.members, req.session.user.username, req.params.chatID, res);
     }
+
     else {
         res.render('chat', req.session.members[req.params.chatID]);
     }
@@ -19,8 +20,8 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    var info = manager.createChat(res, req.body.createChat, req.session.user.username);
-    req.session.members[info.id] = info; 
+    var info = manager.createChat(res, req.session.members, req.body.createChat, req.session.user.username);
+    //req.session.members[info.id] = info; 
 });
 
 

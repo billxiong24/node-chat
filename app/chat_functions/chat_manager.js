@@ -20,48 +20,58 @@ function loadChatLists(userObj, res) {
 }
 
 function joinChat(members, username, chatCode, res) {
-    connection.establishConnection(function(err) {});
-    connection.executeTransaction(function(conn, err) {
-        if(err) {
-            throw err;
+
+    var connect;
+    var startTrans = function(poolConnection) {
+        connect = poolConnection;
+        poolConnection.query('START TRANSACTION');
+        return poolConnection;
+    };
+
+    var retrieveChat = function(poolConnection) {
+        return poolConnection.query('SELECT * FROM Chat WHERE Chat.code = ?', [chatCode]);
+    };
+
+    var validateChat = function(result) {
+        if(result.length == 0) {
+            res.redirect('/home');
+            return null;
         }
-        conn.query('SELECT * FROM Chat WHERE Chat.code = ?', [chatCode], function(err, rows) {
-            if(err) {
-                conn.rollback(function() {
-                    throw err;
-                });
-            }
-            if(rows.length == 0) {
-                //TODO send error message
-                res.redirect('/home');
-                return;
-            }
-            var store = rows[0];
-            
-            //If key exists, ignore insert
-            conn.query('INSERT IGNORE INTO MemberOf SET ?', {chat_id: rows[0].id, username}, function(err, rows) {
-                if(err) {
-                    conn.rollback(function() {throw err;});
-                }
+        return result[0];
+    };
 
-                //On commit, everything is saved to disk, success
-                conn.commit(function(err) {
-                    if(err) {
-                        conn.rollback(function() {throw err;});
-                    }
-                    //TODO abstract into object
-                    members[store.id] = {
-                        id: store.id,
-                        name: store.chat_name,
-                        code: store.code,
-                        username: username
-                    };
-                    res.redirect('/chats/' + store.id);
-                });
-            });
-        });
+    var insertMembers = function(result) {
+        if(result == null) {
+            return null;
+        }
 
-    });
+        connect.query('INSERT IGNORE INTO MemberOf SET ?', {chat_id: result.id, username});
+        return result;
+    };
+
+    var sessionStore = function(result) {
+        if(result == null) {
+            return null;
+        }
+        connect.query('COMMIT');
+        connection.release(connect);
+
+        members[result.id] = {
+            id: result.id,
+            name: result.chat_name,
+            code: result.code,
+            username: username
+        };
+        res.redirect('/chats/' + result.id);
+    };
+
+    var err = function(err) {
+        connect.query('ROLLBACK');
+        console.log(err);
+    };
+
+    connection.executePoolTransaction([startTrans, retrieveChat, validateChat, insertMembers, sessionStore], err);
+
 }
 
 function loadChat(members, username, chatID, res) {
@@ -86,43 +96,45 @@ function loadChat(members, username, chatID, res) {
     });
 }
 
-function createChat(res, chatName, username) {
-    connection.establishConnection(function(err){});
+function createChat(res, members, chatName, username) {
     var chatInfo = {
         id: crypto.randomBytes(8).toString('hex'),
         chat_name: chatName,
         code: crypto.randomBytes(3).toString('hex')
     };
 
-    connection.executeTransaction(function(conn, err) {
-            if(err) {
-                throw err;
-            }
-            conn.query('INSERT INTO Chat SET ?', chatInfo, function(err, rows) {
-                if(err) {
-                    conn.rollback(function() {
-                        throw err;
-                    });
-                }
+    var conn;
+    var startTrans = function(poolConnection) {
+        conn = poolConnection;
+        poolConnection.query('START TRANSACTION');
+        return poolConnection;
+    };
+    var insertChat = function(poolConnection) {
+        poolConnection.query('INSERT INTO Chat SET ?', chatInfo);
+        return poolConnection;
+    };
 
-                conn.query('INSERT INTO MemberOf SET ?', {chat_id: chatInfo.id, username}, function(err, rows) {
-                    if(err) {
-                        conn.rollback(function() {throw err;});
-                    }
+    var insertMember = function(poolConnection) {
+        poolConnection.query('INSERT INTO MemberOf SET ?', {chat_id: chatInfo.id, username});
+        return poolConnection;
+    };
 
-                    /* On commit, everything is saved to disk, success*/
-                    conn.commit(function(err) {
-                        if(err) {
-                            conn.rollback(function() {throw err;});
-                        }
+    var commit = function(poolConnection) {
+        poolConnection.query('COMMIT');
+        connection.release(poolConnection);
+        chatInfo.name = chatInfo.chat_name;
+        //add to chat members
+        members[chatInfo.id] = chatInfo;
 
-                        chatInfo.name = chatInfo.chat_name;
-                        res.redirect('/chats/' + chatInfo.id);
-                    });
-                });
-            });
-        });
+        res.redirect('/chats/' + chatInfo.id);
+    };
 
+    var err = function(err) {
+        conn.query('ROLLBACK');
+        console.log(err);
+    };
+
+    connection.executePoolTransaction([startTrans, insertChat, insertMember, commit], err);
     return chatInfo;
 }
 
