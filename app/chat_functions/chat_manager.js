@@ -1,14 +1,14 @@
 var connection = require('../database/config.js');
 const crypto = require('crypto');
+var sql = require('promise-mysql');
 
 //TODO use async library to make things more asynchronous
 
 function loadChatLists(userObj, res) {
     //TODO error checking
-    connection.establishConnection(function(err){})
     var query = 'SELECT Chat.chat_name, Chat.id, Notifications.num_notifications, MemberOf.username FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
 
-    connection.execute(query, [userObj.username, userObj.username], function(err, rows) {
+    connection.execute(query, [userObj.username, userObj.username], function(rows) {
         var info = {
             username: userObj.username,
             first: userObj.first,
@@ -65,12 +65,9 @@ function joinChat(members, username, chatCode, res) {
 }
 
 function loadChat(members, username, chatID, res) {
-    connection.establishConnection(function(err) {});
+    //connection.establishConnection(function(err) {});
      var query = 'SELECT Chat.code, Chat.chat_name FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?';
-    connection.execute(query, [username, chatID], function(err, rows) {
-        if(err) {
-            throw err;
-        }
+    connection.execute(query, [username, chatID], function(rows) {
         //user did not enter the code, can't access the room
         if(rows.length == 0) {
             res.render('home');

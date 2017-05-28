@@ -147,3 +147,9 @@ body{
     background-color: #fa3e3e;
     border-radius: 100px;
 }
+.small-buttons{
+    margin-right: 20px;
+    width: 30px;
+    background-color: transparent;
+    border: none;
+}

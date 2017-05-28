@@ -93,3 +93,12 @@ FOR EACH ROW
     END;
 $$
 DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER IncrementNotification AFTER INSERT ON ChatLines
+FOR EACH ROW
+    BEGIN
+        UPDATE Notifications SET num_notifications = num_notifications + 1 WHERE Notifications.chat_id = NEW.chat_id AND Notifications.username <> NEW.username;
+    END;
+$$
+DELIMITER ;

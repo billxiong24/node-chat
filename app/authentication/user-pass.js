@@ -14,6 +14,7 @@ const params = {
     passwordField : 'password'
 };
 
+//middleware need to return next function
 function checkLoggedOut(req, res, next) {
     if(!req.session) {
         res.redirect('/')
@@ -21,28 +22,19 @@ function checkLoggedOut(req, res, next) {
     else if(!req.session.user) {
         res.redirect('/')
     }
-    return next()
+    return next();
 }
 function checkLoggedIn(req, res, next) {
     if(req.session && req.session.user) {
         res.redirect('/home')
     }
 
-    return next()
+    return next();
 }
 
-function authenticate(req, res, next) {
-
-    connection.establishConnection(function(err){
-
-    });
-
+function authenticate(req, res) {
     //TODO does this prevent sql injection??
-    connection.execute('SELECT id, username, first, last FROM User WHERE User.username = ? and User.password = ?', [req.body.username, req.body.password], function(err, rows) {
-        if(err) {
-            throw err;
-        }
-        
+    connection.execute('SELECT id, username, first, last FROM User WHERE User.username = ? and User.password = ?', [req.body.username, req.body.password], function(rows) {
         if(rows.length > 0) {
             req.session.user = rows[0];
             //TODO FILL rooms in
@@ -50,33 +42,27 @@ function authenticate(req, res, next) {
             
             //contains all created chats in this session
             req.session.members = {};
-
             res.redirect('/home');
         }
         else {
-            res.redirect('/')
+            res.redirect('/');
         }
     });
 }
 
-function checkExistingUser(req, res, next) {
+function logOut(req, res) {
+    req.session.destroy();
+    res.redirect('/');
+}
 
-    connection.establishConnection(function(err){
-
-    });
+function checkExistingUser(req, res) {
 
     if(req.body.username.length < 4) {
         res.send("Username must be at least 4 characters long.");
         return;
     }
 
-    connection.execute('SELECT COUNT(User.username) AS count FROM User WHERE User.username = ? ', [req.body.username], function(err, rows) {
-        if(err) {
-            //TODO duplicate usernames, handle error use socketio for this
-            console.log(err);
-            return;
-        }
-
+    connection.execute('SELECT COUNT(User.username) AS count FROM User WHERE User.username = ? ', [req.body.username], function(rows) {
         if(rows[0].count > 0) {
             res.send("Username exists.");
         }
@@ -86,11 +72,8 @@ function checkExistingUser(req, res, next) {
     });
 }
 
-function signUp(req, res, next) {
+function signUp(req, res) {
     //sign up logic here
-    connection.establishConnection(function(err){
-
-    });
 
     //TODO encrypt password
     var info = {
@@ -100,14 +83,7 @@ function signUp(req, res, next) {
         first: req.body.firstname_signup,
         last: req.body.lastname_signup
     }
-    connection.execute('INSERT INTO User SET ? ', info, function(err, rows) {
-        if(err) {
-            //TODO duplicate usernames, handle error use socketio for this
-            res.redirect('/');
-            //need to return, otherwise try to send headers twice, expection thrown
-            return;
-        }
-
+    connection.execute('INSERT INTO User SET ? ', info, function(rows) {
         req.session.user = {
             username: info.username,
             first: info.first,
@@ -115,6 +91,9 @@ function signUp(req, res, next) {
         }
         
         res.redirect('/home');
+    },
+    function(err) {
+        res.redirect('/');
     });
 }
 
@@ -146,4 +125,4 @@ function passportAuth(passport) {
     ))
 }
 
-module.exports = {checkLoggedOut, checkLoggedIn, authenticate, signUp, checkExistingUser}
+module.exports = {logOut, checkLoggedOut, checkLoggedIn, authenticate, signUp, checkExistingUser}

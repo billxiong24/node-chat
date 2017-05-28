@@ -2,7 +2,22 @@
  * Establishes connection to database using node-mysql
  */
 const mysql = require('mysql')
+var promise_sql = require('promise-mysql');
+
 var connection = null;
+var pool = null;
+
+function getPool(host, user, password, connectionLim) {
+    pool = promise_sql.createPool({
+        host: host,
+        user: user,
+        password: password,
+        database: "chatdb",
+        connectionLimit: connectionLim
+    });
+    return pool;
+}
+
 
 function getConnection(host, user, pass) {
     connection = mysql.createConnection({
@@ -32,18 +47,28 @@ function endConnection(callback) {
     connection.end(callback);
 }
 
-function execute(query, info=null, callback) {
-    if(!connection) {
-        return;
-    }
+function execute(query, info=null, callback=function(result) {}, error=function(err) {}) {
+    pool.getConnection().then(function(connection) {
+        var result = connection.query(query, info);
+        pool.releaseConnection(connection);
+        return result;
+    }).then(callback).catch(error);
 
-    //select query
-    if(!info) {
-        connection.query(query, callback);
-    }
-    else {
-        connection.query(query, info, callback);
-    }
+    //if(!connection) {
+        //return;
+    //}
+
+    //if(!callback) {
+        //return (!info) ? connection.query(query) : connection.query(query, info);
+    //}
+
+    ////select query
+    //if(!info) {
+        //connection.query(query, callback);
+    //}
+    //else {
+        //connection.query(query, info, callback);
+    //}
 }
 
 function executeTransaction(transaction) {
@@ -52,4 +77,4 @@ function executeTransaction(transaction) {
     });
 }
 
-module.exports = {getConnection, establishConnection, endConnection, execute, executeTransaction};
+module.exports = {getPool, getConnection, establishConnection, endConnection, execute, executeTransaction};

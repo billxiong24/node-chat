@@ -14,24 +14,24 @@ html
 		link(href='/stylesheets/css/index.css', rel='stylesheet')
 	body.top-navigation
 		#wrapper
-			#page-wrapper
-				.row.border-bottom.white-bg
-					nav.navbar.navbar-static-top(role='navigation')
-						.navbar-header
-							//
-								<button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
-								<i class="fa fa-reorder"></i>
-								</button>
-							a.navbar-brand(href='#') ChatIO
-						#navbar.navbar-collapse.collapse
+			#page-wrapper.gray-bg
+				.row.border-bottom
+					.row.border-bottom.white-bg
+						nav.navbar.navbar-static-top(role='navigation')
+							.navbar-header
+								a.navbar-brand(href='home.php') ChatIO
 							ul.nav.navbar-top-links.navbar-right
 								li
-									a.navbar-brand(href='login.php', style='font-family: Raleway; font-weight: 200;')
+									a(href='login.php', style='font-family: Raleway; font-weight: 200;')
 										| #{username}
+								li.dropdown(style='')
+									a.dropdown-toggle.count-info(data-toggle='dropdown', href='#')
+										i.fa.fa-bell
+										span.label.label-primary 8
 								li
-									a.navbar-brand(href='login.php', style='font-family: Raleway; font-weight: 200;')
-										i.fa.fa-sign-in
-										| Log out
+									form(method='post', action='/logout')
+										button.btn.small-buttons(name='logout', type='submit')
+											i.fa.fa-sign-out
 				.wrapper.wrapper-content
 					.container.animated.fadeInDown
 						.slogan

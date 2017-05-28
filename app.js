@@ -34,6 +34,7 @@ app.use(sessionMiddleWare); // session secret
 
 /* No idea why this code has to be in this specific order */
 var http = require('http').Server(app);
+//http.globalAgent.maxSockets = Infinity;
 app.locals.http = http;
 app.locals.sessionMiddleWare = sessionMiddleWare;
 /* Set up server side socket*/
