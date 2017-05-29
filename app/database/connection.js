@@ -1,8 +1,9 @@
 /**
  * Establishes connection to database using node-mysql
+ * and node-promise-mysql for promises and connection pooling
  */
 const mysql = require('mysql')
-var promise_sql = require('promise-mysql');
+const promise_sql = require('promise-mysql');
 
 var pool = null;
 

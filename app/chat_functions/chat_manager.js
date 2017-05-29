@@ -60,7 +60,8 @@ function joinChat(members, username, chatCode, res) {
             id: result.id,
             name: result.chat_name,
             code: result.code,
-            username: username
+            username: username,
+            notifs: 0
         };
         res.redirect('/chats/' + result.id);
     };
@@ -75,9 +76,8 @@ function joinChat(members, username, chatCode, res) {
 }
 
 function loadChat(members, username, chatID, res) {
-    //connection.establishConnection(function(err) {});
-     var query = 'SELECT Chat.code, Chat.chat_name FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?';
-    connection.execute(query, [username, chatID], function(rows) {
+    var query = 'SELECT Chat.code, Chat.chat_name, Notifications.num_notifications FROM Chat JOIN MemberOf JOIN Notifications ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ? AND Notifications.chat_id = ? AND Notifications.username = ?'
+    connection.execute(query, [username, chatID, chatID, username], function(rows) {
         //user did not enter the code, can't access the room
         if(rows.length == 0) {
             res.render('home');
@@ -88,7 +88,8 @@ function loadChat(members, username, chatID, res) {
                 id: chatID,
                 name: rows[0].chat_name,
                 code: rows[0].code,
-                username: username
+                username: username,
+                notifs: rows[0].num_notifications
             };
             members[info.id] = info;
             res.render('chat', info);
@@ -122,7 +123,9 @@ function createChat(res, members, chatName, username) {
     var commit = function(poolConnection) {
         poolConnection.query('COMMIT');
         connection.release(poolConnection);
+
         chatInfo.name = chatInfo.chat_name;
+        chatInfo.notifs = 0;
         //add to chat members
         members[chatInfo.id] = chatInfo;
 

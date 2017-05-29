@@ -49,6 +49,7 @@ $(document).ready(function() {
 
         client.on('message', function(msg) {
             //holy shit this is bad- reset cookie if user deletes it lmao
+            
             if(!Cookies.get('userid')) {
                 resetCookie(displayMessage, msg);
             }

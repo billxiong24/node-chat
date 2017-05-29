@@ -1,4 +1,5 @@
 var urlParser = require('url');
+var lines = require('./chat_line.js');
 
 function init(http, sessionMiddleWare) {
     var io = require('socket.io')(http);
@@ -44,6 +45,9 @@ function init(http, sessionMiddleWare) {
             //console.log(io.sockets.clients(id));
 
             io.to(id).emit('message', message_info);
+            lines.addLine(id, socket.request.session.user.username, message);
+            //add to database after emitting for that instant response
+
         });
 
         socket.on('disconnect', function(data) {

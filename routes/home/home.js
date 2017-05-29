@@ -6,9 +6,7 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
     /* set all cookies here */
     res.cookie('userid', req.session.user.id, {httpOnly: false}); 
     req.session.set_cookie = true;
-
-    /* TODO send all chat lists to jade */
-   manager.loadChatLists(req.session.user, res);
+    manager.loadChatLists(req.session.user, res);
 });
 
 /* POST request for fetching all data needed for home page */
