@@ -9,10 +9,14 @@ function init(http, sessionMiddleWare) {
     });
 
     io.on('connection', function(socket) {
+        console.log("CONNECTION");
         var url = urlParser.parse(socket.handshake.headers.referer);
         var id = parseID(url.pathname);
         var room = io.sockets.adapter.rooms[id];
 
+        socket.on('login', function(data) {
+        
+        });
         socket.on('connected', function(data) {
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);

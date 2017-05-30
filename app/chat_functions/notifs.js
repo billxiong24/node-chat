@@ -1,9 +1,9 @@
 var connection = require('../database/config.js');
 
 function retrieveNotifications(username, chatID) {
-    connection.execute('SELECT num_notifications FROM Notifications WHERE username = ? AND chat_id = ?', [username, chatID], function(rows) {
-            
-    });
+    return function(poolConnection) {
+        return poolConnection.query('SELECT num_notifications FROM Notifications WHERE username = ? AND chat_id = ?', [username, chatID]);
+    }
 }
 
 //actually this is handled by a trigger, keep this here for flexiblity 
@@ -13,10 +13,7 @@ function writeNotification(username, chatID, num_notifs) {
         username: username,
         num_notifications: num_notifs
     };
-
-    connection.execute('INSERT INTO Notifications SET ? ', info, function(rows) {
-
-    });
+    connection.execute('INSERT INTO Notifications SET ?', info);
 }
 
 function resetNotifications(username, chatID) {

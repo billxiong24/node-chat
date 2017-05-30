@@ -20,11 +20,10 @@ function addLine(chatID, username, line) {
 
 //TODO get n most recent, order by oldest to newest.
 function readLines(chatID) {
-    connection.establishConnection(function(err) {});
-    var query =  'SELECT username, message, stamp FROM ChatLines WHERE chat_id = ? ORDER BY stamp ASC';
-    connection.execute(query, [chatID], function(rows) {
-        //do stuff with rows
-    });
+    return function(poolConnection) {
+        var query =  'SELECT username, message, stamp FROM ChatLines WHERE chat_id = ? ORDER BY stamp ASC';
+        return poolConnection.query(query, [chatID]);
+    }
 }
 
 module.exports = {addLine, readLines}

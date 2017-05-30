@@ -153,3 +153,8 @@ body{
     background-color: transparent;
     border: none;
 }
+
+.login-error {
+    margin-top: 20px;
+    color: darkred;
+}

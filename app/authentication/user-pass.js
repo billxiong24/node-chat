@@ -42,10 +42,12 @@ function authenticate(req, res) {
             
             //contains all created chats in this session
             req.session.members = {};
-            res.redirect('/home');
+            res.send({login_error: false});
         }
         else {
-            res.redirect('/');
+            //TODO error checking
+            res.send({login_error: true});
+            //res.redirect('/');
         }
     });
 }

@@ -82,6 +82,7 @@ html
                         i.fa.fa-user(style='font-size: 130px;')
                       // Continually expanded and constantly improved Inspinia Admin Them (IN+)
                       p
+                      div.login-error
                       form.user-login.m-t(role='form', action='/login', method='post')
                         .form-group
                           input.form-control(name='username', placeholder='Username', required='', autocomplete='off')
@@ -89,7 +90,8 @@ html
                           input.form-control(type='password', name='password', placeholder='Password', required='')
                         button.btn.btn-primary.block.full-width.m-b(type='submit', name='loginbutton') Login
                         a#showlogin.btn.btn-sm.btn-white.btn-block Back
-                        a(href='#') small Forgot password?
+                        a(href='#') 
+                            small Forgot password?
           //
             <div class="container animated fadeInDown">
             <div class="slogan">

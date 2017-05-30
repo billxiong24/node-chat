@@ -1,6 +1,8 @@
-var connection = require('../database/config.js');
+const connection = require('../database/config.js');
 const crypto = require('crypto');
-var sql = require('promise-mysql');
+const sql = require('promise-mysql');
+const lines = require('./chat_line.js');
+const notifs = require('./notifs.js');
 
 //TODO use async library to make things more asynchronous
 
@@ -76,24 +78,52 @@ function joinChat(members, username, chatCode, res) {
 }
 
 function loadChat(members, username, chatID, res) {
-    var query = 'SELECT Chat.code, Chat.chat_name, Notifications.num_notifications FROM Chat JOIN MemberOf JOIN Notifications ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ? AND Notifications.chat_id = ? AND Notifications.username = ?'
-    connection.execute(query, [username, chatID, chatID, username], function(rows) {
-        //user did not enter the code, can't access the room
-        if(rows.length == 0) {
-            res.render('home');
+    var obj = {
+        chatResults : null,
+        notifResults : null
+    };
+    var conn = null;
+
+    var getChat = function(poolConnection) {
+        conn = poolConnection;
+        return poolConnection.query('SELECT Chat.code, Chat.chat_name FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?', [username, chatID]);
+    };
+
+    var transferChat = function(result) {
+        obj['chatResults'] = (result.length == 0) ? null : result[0];
+        return conn;
+    };
+
+    var getNotifs = notifs.retrieveNotifications(username, chatID);
+
+    var transferNotifs = function(result) {
+        obj['notifResults'] = (result.length == 0) ? null : result[0];
+        return conn;
+    };
+
+    var getLines = lines.readLines(chatID);
+
+    var transport = function(lineResults) {
+        if(obj.chatResults == null) {
+           //TODO add error message here
+           res.redirect('/home');
         }
         else {
-            //TODO cache into req.session.members, abstract into object
             var info = {
                 id: chatID,
-                name: rows[0].chat_name,
-                code: rows[0].code,
+                name: obj.chatResults.chat_name,
+                code: obj.chatResults.code,
                 username: username,
-                notifs: rows[0].num_notifications
+                notifs: obj.notifResults.num_notifications,
+                lines: lineResults
             };
             members[info.id] = info;
             res.render('chat', info);
         }
+    };
+
+    connection.executePoolTransaction([getChat, transferChat, getNotifs, transferNotifs, getLines, transport], function(err) { 
+        throw err; 
     });
 }
 
@@ -104,7 +134,7 @@ function createChat(res, members, chatName, username) {
         code: crypto.randomBytes(3).toString('hex')
     };
 
-    var conn;
+    var conn = null;
     var startTrans = function(poolConnection) {
         conn = poolConnection;
         poolConnection.query('START TRANSACTION');
@@ -140,6 +170,5 @@ function createChat(res, members, chatName, username) {
     connection.executePoolTransaction([startTrans, insertChat, insertMember, commit], err);
     return chatInfo;
 }
-
 
 module.exports = {loadChatLists, createChat, loadChat, joinChat};
