@@ -1,5 +1,7 @@
 var urlParser = require('url');
-var lines = require('./chat_line.js');
+//var lines = require('./chat_line.js');
+var crypto = require('crypto');
+var Line = require('../models/line.js');
 
 function init(http, sessionMiddleWare) {
     var io = require('socket.io')(http);
@@ -9,7 +11,7 @@ function init(http, sessionMiddleWare) {
     });
 
     io.on('connection', function(socket) {
-        console.log("CONNECTION");
+
         var url = urlParser.parse(socket.handshake.headers.referer);
         var id = parseID(url.pathname);
         var room = io.sockets.adapter.rooms[id];
@@ -49,7 +51,9 @@ function init(http, sessionMiddleWare) {
             //console.log(io.sockets.clients(id));
 
             io.to(id).emit('message', message_info);
-            lines.addLine(id, socket.request.session.user.username, message);
+
+            var line = new Line(id, socket.request.session.user.username, message, crypto.randomBytes(24).toString('hex'));
+            line.insert();
             //add to database after emitting for that instant response
 
         });
