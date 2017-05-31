@@ -212,6 +212,13 @@ var Chat = (function() {
         connection.executePoolTransaction([startTrans, retrieveChat, validateChat, insertMembers, getLines, commit, callback(that)], err);
     }
 
+    Chat.prototype.loadLists = function(user, callback=function(rows) {}) {
+        var query = 'SELECT Chat.chat_name, Chat.id, Notifications.num_notifications, MemberOf.username FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
+
+        connection.execute(query, [user.getUsername(), user.getUsername()], callback);
+        
+    }
+
     return Chat;
 })();
 

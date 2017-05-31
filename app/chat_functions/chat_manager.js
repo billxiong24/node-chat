@@ -11,9 +11,8 @@ var User =  require('../models/user.js');
 
 function loadChatLists(userObj, res) {
     //TODO error checking
-    var query = 'SELECT Chat.chat_name, Chat.id, Notifications.num_notifications, MemberOf.username FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
-
-    connection.execute(query, [userObj.username, userObj.username], function(rows) {
+    var chatobj = new Chat();
+    chatobj.loadLists(new User(userObj.username), function(rows) {
         var info = {
             username: userObj.username,
             first: userObj.first,
