@@ -35,7 +35,7 @@ var Chat = (function() {
     /*
      *Setter
      */
-    Chat.prototype.setName= function(name) {
+    Chat.prototype.setName = function(name) {
        this._name= name; 
     }
     Chat.prototype.setID = function(id) {

@@ -8,6 +8,8 @@
 const connection = require('../database/config.js');
 const LocalStrategy = require('passport-local').Strategy;
 const crypto = require('crypto');
+const Manager = require('../chat_functions/chat_manager.js');
+const Chat = require('../models/chat.js');
 
 const params = {
     usernameField : 'username', 
@@ -39,7 +41,6 @@ function authenticate(req, res) {
             req.session.user = rows[0];
             //TODO FILL rooms in
             req.session.rooms = new Array();
-            
             //contains all created chats in this session
             req.session.members = {};
             res.send({login_error: false});
@@ -47,7 +48,6 @@ function authenticate(req, res) {
         else {
             //TODO error checking
             res.send({login_error: true});
-            //res.redirect('/');
         }
     });
 }

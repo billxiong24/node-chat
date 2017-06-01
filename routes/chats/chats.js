@@ -1,18 +1,24 @@
 var express = require('express');
 var router = express.Router();
 var authenticator = require('../../app/authentication/user-pass.js')
-var manager = require('../../app/chat_functions/chat_manager.js');
+const Manager = require('../../app/chat_functions/chat_manager.js');
+const Chat =  require('../../app/models/chat.js');
+
+var manager;
+if(!manager) {
+    manager = new Manager(new Chat());
+}
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    /* TODO Load specific chat */
-    //if someone just accessed the url directly
-    if(!req.session.members[req.params.chatID]) {
-        manager.loadChat(req.session.members, req.session.user.username, req.params.chatID, res);
-    }
+    /* TODO CACHE THIS SHIT*/
+    manager.loadChat(req.session.members, req.session.user.username, req.params.chatID, res);
+    //if(!req.session.members[req.params.chatID]) {
+        //manager.loadChat(req.session.members, req.session.user.username, req.params.chatID, res);
+    //}
 
-    else {
-        res.render('chat', req.session.members[req.params.chatID]);
-    }
+    //else {
+        //res.render('chat', req.session.members[req.params.chatID]);
+    //}
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {

@@ -121,6 +121,43 @@ html
                   .row
                     .col-xs-6.cell2
                       .chat-discussion.content
+                        - var prevUser = null;
+                        - for(var i = 0; i < lines.length; i++) {
+                            - var transDate = new Date(lines[i].stamp);
+                            - if(!prevUser || lines[i].username !== prevUser) {
+                              - if(username === lines[i].username) {
+                                  .right
+                                    #mess.author-name
+                                      .date-chat= transDate
+                                      a.author-name(href='#')= lines[i].username
+                                    .chat-message.active(style='text-align: left')= lines[i].message
+  
+                              - }
+                              - else {
+                                  .left
+                                    #mess.author-name
+                                      .date-chat= transDate
+                                      a.author-name(href='#')= lines[i].username
+                                    .chat-message(style='text-align: left')= lines[i].message
+                              - }
+                            - }
+                            - else {
+                              - if(username === lines[i].username) {
+                                .right
+                                  .chat-message.active(style='text-align: left')= lines[i].message
+  
+                              - }
+                              - else {
+                                .left
+                                  .chat-message(style='text-align: left')= lines[i].message
+                              - }
+
+                            - }
+                            
+
+                            - prevUser = lines[i].username
+
+                        - }
                         #end-chat
                       .form-group
                         form.submit-message(action='')

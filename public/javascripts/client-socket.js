@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    $('.chat-discussion').scrollTop(200000);
 
     var socketClient = (function() {
         var client = io();
@@ -89,7 +90,7 @@ $(document).ready(function() {
                 return;
             }
 
-            var time = "test time";
+            var time = "";
             var dir;
             var active;
             var numMessages = $('.numMessages');
