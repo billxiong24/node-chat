@@ -1,8 +1,11 @@
 $(document).ready(function() {
+    //TODO fix this
     $('.chat-discussion').scrollTop(200000);
 
     var socketClient = (function() {
         var client = io();
+        var notifClient = io('/notifications');
+
         var lastMessage = null;
         
         //TODO abstract to object
@@ -44,6 +47,7 @@ $(document).ready(function() {
         $('.submit-message').submit(function() {
             var msg_input = $('.message-input');
             client.emit('message', msg_input.val());
+            notifClient.emit('notify', "test data");
             msg_input.val("");
             return false;
         });

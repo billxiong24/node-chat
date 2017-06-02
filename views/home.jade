@@ -54,8 +54,9 @@ html
 							div(style='margin-bottom: 14px') Recent Chats
 							- for(var i = 0; i < list.length; i++) {
 								.chat-link.center-block
-									a(href='/chats/' + list[i].id)= list[i].chat_name
-									span.label.label-primary= list[i].num_notifications
+									.div(id=list[i].id)
+										a(href='/chats/' + list[i].id)= list[i].chat_name
+										span.label.label-primary= list[i].num_notifications
 							- }
 							#see-all.chat-link.center-block
 								a(href='#') See all
@@ -100,4 +101,5 @@ html
 		script(src='/javascripts/js/demo/peity-demo.js')
 		script(src='/javascripts/js/formslider.js')
 		script(src='/javascripts/js.cookie.js')
+		script(src='javascripts/socket.io-client/dist/socket.io.js')
 		script(src='/javascripts/js/home-setup.js')

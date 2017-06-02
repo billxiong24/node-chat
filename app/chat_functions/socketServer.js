@@ -10,11 +10,18 @@ function init(http, sessionMiddleWare) {
         sessionMiddleWare(socket.request, socket.request.res, next);
     });
 
+    var notifs = io.of('/notifications');
+    notifs.on('connection', function(socket) {
+        console.log("connectedd");
+        socket.on('notify', function(data) {
+            notifs.emit('notify', data);
+        });
+    });
+
     io.on('connection', function(socket) {
 
         var url = urlParser.parse(socket.handshake.headers.referer);
         var id = parseID(url.pathname);
-        var room = io.sockets.adapter.rooms[id];
 
         socket.on('login', function(data) {
         

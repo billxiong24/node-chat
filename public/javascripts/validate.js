@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    var client = io();
     $('input[name=user_signup').on('keyup', function(e) {
         var validate = {};
         var param = $('input[name=user_signup').val();

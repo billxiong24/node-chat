@@ -1,4 +1,9 @@
 $(document).ready(function() {
+    var client = io('/notifications');
+    client.on('notify', function(msg) {
+        console.log("notified client" + msg);
+    });
+    
     $.ajax({
         type: 'POST',
         data: "", 
