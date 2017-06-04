@@ -1,5 +1,4 @@
 var urlParser = require('url');
-//var lines = require('./chat_line.js');
 var crypto = require('crypto');
 var Line = require('../models/line.js');
 
@@ -12,9 +11,15 @@ function init(http, sessionMiddleWare) {
 
     var notifs = io.of('/notifications');
     notifs.on('connection', function(socket) {
-        console.log("connectedd");
         socket.on('notify', function(data) {
-            notifs.emit('notify', data);
+            socket.broadcast.to(data.roomID).emit('notify', data);
+        });
+        socket.on('join', function(data) {
+            socket.join(data.room);
+        });
+
+        socket.on('leave', function(data) {
+            socket.leave(data.room);
         });
     });
 
@@ -23,15 +28,16 @@ function init(http, sessionMiddleWare) {
         var url = urlParser.parse(socket.handshake.headers.referer);
         var id = parseID(url.pathname);
 
-        socket.on('login', function(data) {
-        
-        });
         socket.on('connected', function(data) {
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);
             var room = io.sockets.adapter.rooms[id];
             room.sockets[socket.id] = socket.request.session.user.username;
-            io.to(id).emit('connected', {user: socket.request.session.user, room: room});
+            io.to(id).emit('connected', {
+                notifs: socket.request.session.members[id].notifs,
+                user: socket.request.session.user, 
+                room: room
+            });
             
         });
         socket.on('join', function(data) {

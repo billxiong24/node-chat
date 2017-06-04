@@ -2,11 +2,14 @@ $(document).ready(function() {
     //TODO fix this
     $('.chat-discussion').scrollTop(200000);
 
+    //TODO oop this
+
     var socketClient = (function() {
         var client = io();
         var notifClient = io('/notifications');
 
         var lastMessage = null;
+        var notifications = null;
         
         //TODO abstract to object
         var userSockets = {};
@@ -14,7 +17,7 @@ $(document).ready(function() {
         client.emit('connected');
         
         //this is ratchet af holy
-        function resetCookie(callback, info) {
+        function resetCookie(callback, info, info2) {
             $.ajax({
                 type: 'POST',
                 contentType: 'application/json',
@@ -25,13 +28,18 @@ $(document).ready(function() {
                     //TODO set up other important information, such as chat lists
                     //use promises here 
 
-                    callback(info);
+                    callback(info, info2);
+                    sendNotification(info, info2);
                 }
             });
         }
 
         client.on('connected', function(data) {
             var userid = Cookies.get('userid');
+            //if the socket response is you and not some other guy
+            if(userid === data.user.id) {
+                notifications = data.notifs;
+            }
             updateOnlineUsers(data);
         });
 
@@ -46,22 +54,33 @@ $(document).ready(function() {
 
         $('.submit-message').submit(function() {
             var msg_input = $('.message-input');
-            client.emit('message', msg_input.val());
-            notifClient.emit('notify', "test data");
-            msg_input.val("");
+            if(msg_input.val().length > 0) {
+                client.emit('message', msg_input.val());
+                sendNotification(Cookies.get('userid'));
+                msg_input.val("");
+            }
             return false;
         });
 
         client.on('message', function(msg) {
             //holy shit this is bad- reset cookie if user deletes it lmao
-            
-            if(!Cookies.get('userid')) {
-                resetCookie(displayMessage, msg);
+            var userid = Cookies.get('userid');
+            if(!userid) {
+                resetCookie(displayMessage, msg, userid);
             }
             else {
-                displayMessage(msg);
+                displayMessage(msg, userid);
             }
         });
+
+        function sendNotification(userid) {
+
+            notifClient.emit('notify', {
+                userid: userid,
+                notif: notifications,
+                roomID: roomID
+            });
+        }
         
         function updateNumOnlineUsers(num) {
             $('.online-now').text("Online now: " + num);
@@ -89,7 +108,7 @@ $(document).ready(function() {
             return online;
         }
 
-        function displayMessage(msg) {
+        function displayMessage(msg, userid) {
             if(msg.message.length == 0) {
                 return;
             }
@@ -99,7 +118,7 @@ $(document).ready(function() {
             var active;
             var numMessages = $('.numMessages');
 
-            if(msg.cookie === Cookies.get('userid')) {
+            if(msg.cookie === userid){
                 dir = "right";
                 active = "active";
                 numMessages.text(0);
