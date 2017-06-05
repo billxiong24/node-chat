@@ -67,7 +67,6 @@ function init(http, sessionMiddleWare) {
 
             var line = new Line(id, socket.request.session.user.username, message, crypto.randomBytes(24).toString('hex'));
             line.insert();
-
         });
 
         socket.on('disconnect', function(data) {

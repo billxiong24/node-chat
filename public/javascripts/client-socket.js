@@ -4,6 +4,7 @@ $(document).ready(function() {
 
     //TODO oop this
 
+    
     var socketClient = (function() {
         var client = io();
         var notifClient = io('/notifications');
@@ -48,10 +49,6 @@ $(document).ready(function() {
             updateOnlineUsers(data);
         });
 
-        client.on('connect', function(data) {
-            //TODO NOTIFY client socket connected on frontend
-        });
-
         $('.submit-message').submit(function() {
             var msg_input = $('.message-input');
             if(msg_input.val().length > 0) {
@@ -75,6 +72,7 @@ $(document).ready(function() {
 
         function sendNotification(userid) {
 
+            notifications = 0;
             notifClient.emit('notify', {
                 userid: userid,
                 notif: notifications,
@@ -113,21 +111,23 @@ $(document).ready(function() {
                 return;
             }
 
+            var numMessages = $('.numMessages');
+
             var time = "";
             var dir;
             var active;
-            var numMessages = $('.numMessages');
 
             if(msg.cookie === userid){
                 dir = "right";
                 active = "active";
-                numMessages.text(0);
             }
             else {
                 dir = "left";
                 active = "";
-                numMessages.text(parseInt(numMessages.text()) + 1);
+                notifications++;
             }
+
+            numMessages.text(notifications);
 
             var message;
             if(!lastMessage || lastMessage !== msg.cookie) {

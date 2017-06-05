@@ -1,5 +1,6 @@
 $(document).ready(function() {
     
+    var notifObj = {};
     $.ajax({
         type: 'POST',
         data: "", 
@@ -19,13 +20,18 @@ $(document).ready(function() {
         var ids = roomIDs;
 
         for (var i = 0; i < ids.length; i++) {
+            notifObj[ids[i].id] = ids[i].num_notifications
             client.emit('join', {room: ids[i].id});
         }
 
         client.on('notify', function(msg) {
             //someone else sent a notification
             if(msg.userid !== Cookies.get('userid')) {
-                //TODO do stuff with msg.notif and msg.roomID
+                $('#'+msg.roomID + ' span').text(++notifObj[msg.roomID]);
+            }
+            else {
+                notifObj[msg.roomID] = 0;
+                $('#'+msg.roomID + ' span').text("");
             }
         });
     }

@@ -50,13 +50,15 @@ html
 								.form-group.center-block
 									input.form-control.custom-tool(name='createChat', placeholder='Create Chat Code', autocomplete='off', required='')
 									button.btn.btn-primary.custom-tool-buttom(type='submit', name='create_chat') Create
-						.subtitle.center-block
+						.subtitle.pre-scrollable.center-block
 							div(style='margin-bottom: 14px') Recent Chats
 							- for(var i = 0; i < list.length; i++) {
 								.chat-link.center-block
 									.div(id=list[i].id)
 										a(href='/chats/' + list[i].id)= list[i].chat_name
-										span.label.label-primary= list[i].num_notifications
+										- if(list[i].num_notifications != 0) {
+											span.label.label-primary= list[i].num_notifications
+										- }
 							- }
 							#see-all.chat-link.center-block
 								a(href='#') See all
