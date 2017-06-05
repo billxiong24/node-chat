@@ -4,12 +4,27 @@ var Line = require('../models/line.js');
 
 function init(http, sessionMiddleWare) {
     var io = require('socket.io')(http);
+    var notifs = io.of('/notifications');
+    var typing = io.of('/typing');
     /* Set up session variables for socket io */
     io.use(function(socket, next) {
         sessionMiddleWare(socket.request, socket.request.res, next);
     });
 
-    var notifs = io.of('/notifications');
+    typing.on('connection', function(socket) {
+        socket.on('typing', function(data) {
+            typing.to(data.roomID).emit('typing', data);
+        });    
+
+        socket.on('join', function(data) {
+            socket.join(data.room);
+        });
+
+        socket.on('leave', function(data) {
+            socket.leave(data.room);
+        });
+    });
+
     notifs.on('connection', function(socket) {
         socket.on('notify', function(data) {
             socket.broadcast.to(data.roomID).emit('notify', data);
@@ -32,7 +47,12 @@ function init(http, sessionMiddleWare) {
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);
             var room = io.sockets.adapter.rooms[id];
-            room.sockets[socket.id] = socket.request.session.user.username;
+
+            room.sockets[socket.id] = {
+                username: socket.request.session.user.username,
+                userid: socket.request.session.user.id
+            };
+
             io.to(id).emit('connected', {
                 notifs: socket.request.session.members[id].notifs,
                 user: socket.request.session.user, 
@@ -66,6 +86,7 @@ function init(http, sessionMiddleWare) {
             io.to(id).emit('message', message_info);
 
             var line = new Line(id, socket.request.session.user.username, message, crypto.randomBytes(24).toString('hex'));
+
             line.insert();
         });
 

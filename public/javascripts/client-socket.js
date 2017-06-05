@@ -8,15 +8,28 @@ $(document).ready(function() {
     var socketClient = (function() {
         var client = io();
         var notifClient = io('/notifications');
+        var typing = io('/typing');
 
+        var isTyping = false;
         var lastMessage = null;
         var notifications = null;
+        var timer = null;
         
         //TODO abstract to object
         var userSockets = {};
         client.emit('join', {room: roomID});
+        typing.emit('join', {room: roomID});
         client.emit('connected');
         
+        function timeoutTyping() {
+            isTyping = false;
+            typing.emit('typing', {
+                userid: Cookies.get('userid'),
+                roomID: roomID,
+                isTyping: isTyping 
+            });
+        }
+
         //this is ratchet af holy
         function resetCookie(callback, info, info2) {
             $.ajax({
@@ -49,11 +62,36 @@ $(document).ready(function() {
             updateOnlineUsers(data);
         });
 
+        typing.on('typing', function(data) {
+            var userEl = $('#'+data.userid);
+            if(data.isTyping) {
+                userEl.attr('src', '/images/typing.gif');
+            }
+            else {
+                resetTyping(data.userid);
+            }
+        });
+
+
+        $('.submit-message').keyup(function() {
+            if(!isTyping) {
+                isTyping = true;
+                typing.emit('typing', {
+                    userid: Cookies.get('userid'),
+                    roomID: roomID,
+                    isTyping: isTyping
+                });
+            }
+            clearTimeout(timer);
+            timer = setTimeout(timeoutTyping, 700);
+        });
+
         $('.submit-message').submit(function() {
             var msg_input = $('.message-input');
+            var userid = Cookies.get('userid');
             if(msg_input.val().length > 0) {
                 client.emit('message', msg_input.val());
-                sendNotification(Cookies.get('userid'));
+                sendNotification(userid);
                 msg_input.val("");
             }
             return false;
@@ -69,6 +107,10 @@ $(document).ready(function() {
                 displayMessage(msg, userid);
             }
         });
+
+        function resetTyping(userid) {
+            $('#'+userid).attr('src', "");
+        }
 
         function sendNotification(userid) {
 
@@ -93,12 +135,12 @@ $(document).ready(function() {
             var online = "";
             var size = 0;
             for(var key in room) {
-                if(room[key] in userSockets) {
+                if(room[key].userid in userSockets) {
                     continue;
                 }
-                online += '<form class="change-chat" method = "post" action="change.php"> <div class="chat-user-name"> <input class = "btn online-list" style="" type="submit" name = "chatname" value="'+room[key]+'"> <div class="label-warning notif pull-right" style="">  </div> </div> </form>';
+                online += '<div class="chat-user-name"> <input class = "btn online-list" style="" type="submit" name = "chatname" value="'+room[key].username+'"><img src="" id="'+room[key].userid +'"><div class="label-warning notif pull-right" style="">  </div> </div>';
                 //doesn't matter what value is
-                userSockets[room[key]] = null;
+                userSockets[room[key].userid] = null;
                 size++;
 
             }
