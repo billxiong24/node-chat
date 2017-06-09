@@ -1,6 +1,4 @@
 $(document).ready(function() {
-    
-    var notifObj = {};
     $.ajax({
         type: 'POST',
         data: "", 
@@ -9,30 +7,26 @@ $(document).ready(function() {
         success: function(data) {
             /* set cookie on loading home page */
             Cookies.set('userid', data.cookie);
+            sessionStorage.setItem('userid', data.cookie);
             //TODO set up other important information, such as chat lists
-            setup();
+            setup(sessionStorage.getItem('userid'));
         }
     });
 
+    function setup(userid) {
+        var SocketView = socketview($, io);
+        var ChatInfo = chatinfo($, io);
+        var inf = new ChatInfo(new SocketView(null, '/notifications'), roomIDs, userid);
 
-    var setup = function() {
-        var client = io('/notifications');
-        var ids = roomIDs;
-
-        for (var i = 0; i < ids.length; i++) {
-            notifObj[ids[i].id] = ids[i].num_notifications
-            client.emit('join', {room: ids[i].id});
-        }
-
-        client.on('notify', function(msg) {
-            //someone else sent a notification
-            if(msg.userid !== Cookies.get('userid')) {
-                $('#'+msg.roomID + ' span').text(++notifObj[msg.roomID]);
+        inf.listenForNotifications(function(data) {
+            if(data.userid !== sessionStorage.getItem('userid')) {
+                $('#'+data.roomID + ' span').text(inf.incrementGetNotif(data.roomID));
             }
+
             else {
-                notifObj[msg.roomID] = 0;
-                $('#'+msg.roomID + ' span').text("");
+                inf.resetGetNotif(data.roomID);
+                $('#'+data.roomID + ' span').text(""); 
             }
         });
     }
-})
+});

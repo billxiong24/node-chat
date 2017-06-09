@@ -4,8 +4,8 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const routes = require('./routes/index')
-const index = routes
+const routes = require('./routes/index');
+const index = routes;
 const users = require('./routes/users');
 const app = express();
 const passport = require('passport');
@@ -29,7 +29,7 @@ var sessionMiddleWare = session({
     secret: 'asdfog7bsfdogbsfdg',
     resave: true,
     saveUninitialized: true
- }); 
+}); 
 app.use(sessionMiddleWare); // session secret
 
 /* No idea why this code has to be in this specific order */
@@ -44,7 +44,7 @@ var io = require(__dirname + '/app/chat_functions/socketServer.js')(http, sessio
 app.use(function(req, res, next) {
     res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
     next();
-})
+});
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -54,20 +54,20 @@ app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 //var server = app.listen(3000)
@@ -75,10 +75,10 @@ app.use(function(err, req, res, next) {
 
 
 //index.post('/login', passport.authenticate('login', {
-        //successRedirect: '/home',
-        //failureRedirect : '/',
-        //failureFlash : false
-    //}
+//successRedirect: '/home',
+//failureRedirect : '/',
+//failureFlash : false
+//}
 //));
 
 http.listen(3000);

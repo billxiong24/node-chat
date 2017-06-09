@@ -59,6 +59,11 @@ html
 										- if(list[i].num_notifications != 0) {
 											span.label.label-primary= list[i].num_notifications
 										- }
+
+										- else {
+											span.label.label-primary=""
+										- }
+
 							- }
 							#see-all.chat-link.center-block
 								a(href='#') See all
@@ -106,4 +111,6 @@ html
 		script(src='javascripts/socket.io-client/dist/socket.io.js')
 		script.
 			var roomIDs = !{JSON.stringify(list)}
+		script(src='/javascripts/viewmodel/socketview.js')
+		script(src='/javascripts/viewmodel/chatinfo.js')
 		script(src='/javascripts/js/home-setup.js')
