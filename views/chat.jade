@@ -102,24 +102,24 @@ html
 										span.numMessages #{notifs}
 										|  New Messages
 								.ibox-content.fullscreen
-									.col-xs-3.cell1(style='margin-left: 20px')
-										.chat-users
-											.actions-list
-												div(style='margin-top: 20px')
-												.chat-actions
-													form(method='post', action='addchat.php')
-														button.btn.btn-primary(type='submit', name='add') Create new chat
-												.chat-actions
-													form.leave-chat(method='post', action='leavechat.php')
-														button.btn.btn-primary Add people
-												.chat-actions
-													form.leave-chat(method='post', action='leavechat.php')
-														button.btn.btn-primary Delete chat
-												.chat-actions
-													form.leave-chat(method='post', action='leavechat.php')
-														button.btn.btn-primary Leave chat
+									.col-xs-2.cell1(style='margin-left: 20px')
+										//-.chat-users
+											//-.actions-list
+												//-div(style='margin-top: 20px')
+												//-.chat-actions
+													//-form(method='post', action='addchat.php')
+														//-button.btn.btn-primary(type='submit', name='add') Create new chat
+												//-.chat-actions
+													//-form.leave-chat(method='post', action='leavechat.php')
+														//-button.btn.btn-primary Add people
+												//-.chat-actions
+													//-form.leave-chat(method='post', action='leavechat.php')
+														//-button.btn.btn-primary Delete chat
+												//-.chat-actions
+													//-form.leave-chat(method='post', action='leavechat.php')
+														//-button.btn.btn-primary Leave chat
 									.row
-										.col-xs-6.cell2
+										.col-xs-7.cell2
 											.chat-discussion.content
 												- var prevUser = null;
 												- for(var i = 0; i < lines.length; i++) {
@@ -199,12 +199,11 @@ html
 			script(src='/javascripts/js/inspinia.js')
 			script(src='/javascripts/js/plugins/pace/pace.min.js')
 			script(src='/javascripts/js/plugins/slimscroll/jquery.slimscroll.min.js')
+			//script(src='/javascripts/js/require.js')
 			script(src='/javascripts/js.cookie.js')
-			script(src='/javascripts/socket.io-client/dist/socket.io.js')
+			//script(src='/javascripts/socket.io-client/dist/socket.io.js')
 			script.
 				var roomID = "#{id}"
-			script(src='/javascripts/viewmodel/socketview.js')
-			script(src='/javascripts/viewmodel/typingview.js')
-			script(src='/javascripts/viewmodel/notifview.js')
-			script(src='/javascripts/viewmodel/chatview.js')
+			script(src='/javascripts/js/require.js')
+			script(src='/javascripts/requireconfig.js')
 			script(src='/javascripts/client-socket.js')
