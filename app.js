@@ -38,7 +38,7 @@ var http = require('http').Server(app);
 app.locals.http = http;
 app.locals.sessionMiddleWare = sessionMiddleWare;
 /* Set up server side socket*/
-var io = require(__dirname + '/app/chat_functions/socketServer.js')(http, sessionMiddleWare);
+var io = require(__dirname + '/app/sockets/socketServer.js')(http, sessionMiddleWare);
 
 //handles back button problem of caching- reloads page every time to persist session
 app.use(function(req, res, next) {

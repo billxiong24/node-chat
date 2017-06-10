@@ -11,31 +11,40 @@ var Line = (function() {
         this._line_id = line_id; 
     }
 
+    //this will come handly later
+    Line.prototype.toJSON = function() {
+        return {
+            chat_id: this._chat_id,
+            username: this._username,
+            message: this._message,
+            line_id: this._line_id
+        };
+    };
     /*
      *Getters
      */
     Line.prototype.getChatID = function() {
         return this._chat_id;
-    }
+    };
 
     Line.prototype.getUsername = function() {
         return this._username;
-    }
+    };
 
     Line.prototype.getMessage = function() {
         return this._message;
-    }
+    };
 
     Line.prototype.getLineID = function() {
         return this._line_id;
-    }
+    };
 
     /*
      *Setter
      */
     Line.prototype.setChatID = function(id) {
         this._chat_id = id;
-    }
+    };
 
     Line.prototype.insert = function() {
         var info = {
@@ -52,21 +61,21 @@ var Line = (function() {
             console.log(err);
             throw err;
         });
-    }
+    };
 
     Line.prototype.read = function() {
         var chatID = this._chat_id;
 
         return function(poolConnection) {
-            if(poolConnection == null) {
+            if(poolConnection === null) {
                 return null;
             }
             var query =  'SELECT username, message, stamp FROM ChatLines WHERE chat_id = ? ORDER BY stamp ASC';
             return poolConnection.query(query, [chatID]);
         };
-    }
+    };
+
     return Line;
 })();
-
 
 module.exports = Line;

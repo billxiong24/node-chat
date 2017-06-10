@@ -19,38 +19,51 @@ var Chat = (function() {
      */
     Chat.prototype.getID = function() {
         return this._id;
-    }
+    };
 
     Chat.prototype.getName = function() {
         return this._name;
-    }
+    };
 
     Chat.prototype.getCode = function() {
         return this._code;
-    }
+    };
     Chat.prototype.getStamp = function() {
         return this._stamp;
-    }
+    };
     
     /*
      *Setter
      */
     Chat.prototype.setName = function(name) {
        this._name= name; 
-    }
+    };
     Chat.prototype.setID = function(id) {
        this._id = id; 
-    }
+    };
     Chat.prototype.setCode = function(code) {
        this._code = code; 
-    }
+    };
 
-    Chat.prototype.renderAll = function(username, notifs, lines) {
-        var obj = this.render(notifs);
-        obj.lines = lines;
-        obj.username = username;
-        return obj;
-    }
+    Chat.prototype.toJSON2 = function() { 
+        return {
+            id: this._id,
+            name: this._name,
+            code: this._code,
+            stamp: this._stamp
+        };
+    };
+
+    Chat.prototype.toJSON = function(username, notifs, lines) { 
+        return {
+            id: this._id,
+            name: this._name,
+            code: this._code,
+            notifs: notifs,
+            username: username,
+            lines: lines
+        };
+    };
 
     Chat.prototype.render = function(notifs=0) {
         return {
@@ -59,13 +72,13 @@ var Chat = (function() {
             code: this._code,
             notifs: notifs
         };
-    }
+    };
 
     /*
      * transport expects 3 params, Chat, Notif, and Line, and returns a function that takes in
      * the result of the previous promise function, which is the chat lines
      */
-    Chat.prototype.load = function(user, transport=function(obj1, obj2, obj3) { return function(r){}}) {
+    Chat.prototype.load = function(user, transport) {
         //save these outside of scope, so they are saved from promise to promise
         var username = user.getUsername();
         var chatID = this._id;
@@ -93,7 +106,7 @@ var Chat = (function() {
         var getNumNotifs = notif.load();
 
         var transferNotifs = function(result) {
-            if(result == null) {
+            if(result === null) {
                 return null;
             }
             if(result.length > 0) {
@@ -107,7 +120,7 @@ var Chat = (function() {
         connection.executePoolTransaction([getChat, transferChat, getNumNotifs, transferNotifs, getLines, commit], function(err) { 
             throw err; 
         });
-    }
+    };
 
 
     /*
@@ -150,9 +163,9 @@ var Chat = (function() {
         };
 
         connection.executePoolTransaction([startTrans, insertChat, insertMember, commit, callback], err);
-    }
+    };
 
-    Chat.prototype.join = function(user, callback = function(chatobj) {return function(result){}}) {
+    Chat.prototype.join = function(user, callback) {
         var connect;
         var that = this;
         var username = user.getUsername();
@@ -169,7 +182,7 @@ var Chat = (function() {
         };
 
         var validateChat = function(result) {
-            if(result.length == 0) {
+            if(result.length === 0) {
                 return null;
             }
             that._name = result[0].chat_name;
@@ -180,7 +193,7 @@ var Chat = (function() {
         };
 
         var insertMembers = function(result) {
-            if(result == null) {
+            if(result === null) {
                 return null;
             }
             connect.query('INSERT IGNORE INTO MemberOf SET ?', {chat_id: result.id, username});
@@ -188,21 +201,21 @@ var Chat = (function() {
         };
 
         var getLines = function(result) {
-            if(result == null) {
+            if(result === null) {
                 return null;
             }
             chatLine.setChatID(result.id);
             return chatLine.read()(connect);
-        }
+        };
 
         var commit = function(result) {
-            if(result == null) {
+            if(result === null) {
                 return null;
             }
             connect.query('COMMIT');
             connection.release(connect);
             return result;
-        }
+        };
 
         var err = function(err) {
             connect.query('ROLLBACK');
@@ -210,14 +223,14 @@ var Chat = (function() {
         };
 
         connection.executePoolTransaction([startTrans, retrieveChat, validateChat, insertMembers, getLines, commit, callback(that)], err);
-    }
+    };
 
     Chat.prototype.loadLists = function(user, callback=function(rows) {}) {
         var query = 'SELECT Chat.chat_name, Chat.id, Notifications.num_notifications, MemberOf.username FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
 
         connection.execute(query, [user.getUsername(), user.getUsername()], callback);
         
-    }
+    };
 
     return Chat;
 })();
