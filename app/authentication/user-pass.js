@@ -19,16 +19,14 @@ const params = {
 
 //middleware need to return next function
 function checkLoggedOut(req, res, next) {
-    if(!req.session) {
-        res.redirect('/');
+    if(!req.isAuthenticated()) {
+        res.redirect('/login');
     }
-    else if(!req.session.user) {
-        res.redirect('/');
-    }
-    //return next();
+
+    return next();
 }
 function checkLoggedIn(req, res, next) {
-    if(req.session && req.session.user) {
+    if(req.isAuthenticated()) {
         res.redirect('/home');
     }
 
@@ -81,7 +79,7 @@ function signUp(req, res) {
     //TODO encrypt password
     var info = {
         id: crypto.randomBytes(10).toString('hex'),
-        username: req.body.username,
+        username: req.body.user_signup,
         password: req.body.password_signup,
         first: req.body.firstname_signup,
         last: req.body.lastname_signup
@@ -127,10 +125,9 @@ function passportAuth(passport) {
                     return done(null, false, req.flash('error', 'Login error.'));
                 }
 
+                //still need these session variables because of socket shit
                 req.session.user = rows[0];
-                //TODO FILL rooms in
                 req.session.rooms = [];
-                //contains all created chats in this session
                 req.session.members = {};
 
                 return done(null, rows[0]); 

@@ -8,13 +8,13 @@ var chats = require('./chats/chats.js');
 module.exports = function(app, passport) {
     app.use('/', router);
 
-router.get('/',  function(req, res, next) {
+router.get('/', authenticator.checkLoggedIn, function(req, res, next) {
     //console.log(req.app.locals.test + " heyyyy");
     res.render('index');
 });
 
-router.get('/login',  function(req, res, next) {
-    res.render('index');
+router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
+    res.render('index', {error: req.flash('error')[0]});
 });
 
 router.post('/login', passport.authenticate('login', {

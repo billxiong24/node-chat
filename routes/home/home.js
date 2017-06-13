@@ -11,15 +11,15 @@ if(!manager) {
 
 router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
     /* set all cookies here */
-    res.cookie('userid', req.session.user.id, {httpOnly: false}); 
+    res.cookie('userid', req.user.id, {httpOnly: false}); 
     req.session.set_cookie = true;
-    manager.loadChatLists(req.session.user, res);
+    manager.loadChatLists(req.user, res);
 });
 
 /* POST request for fetching all data needed for home page */
 router.post('/fetch_home', authenticator.checkLoggedOut, function(req, res, next) {
     /* send all relevant data here */
-    res.send({cookie: req.session.user.id});
+    res.send({cookie: req.user.id});
 });
 
 module.exports = router;
