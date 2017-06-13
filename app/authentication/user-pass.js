@@ -22,7 +22,6 @@ function checkLoggedOut(req, res, next) {
     if(!req.isAuthenticated()) {
         res.redirect('/login');
     }
-
     return next();
 }
 function checkLoggedIn(req, res, next) {
@@ -94,6 +93,7 @@ function signUp(req, res) {
         res.redirect('/home');
     },
     function(err) {
+        console.log(err);
         res.redirect('/');
     });
 }
