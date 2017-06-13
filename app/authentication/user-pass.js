@@ -19,16 +19,16 @@ const params = {
 //middleware need to return next function
 function checkLoggedOut(req, res, next) {
     if(!req.session) {
-        res.redirect('/')
+        res.redirect('/');
     }
     else if(!req.session.user) {
-        res.redirect('/')
+        res.redirect('/');
     }
     return next();
 }
 function checkLoggedIn(req, res, next) {
     if(req.session && req.session.user) {
-        res.redirect('/home')
+        res.redirect('/home');
     }
 
     return next();
@@ -40,7 +40,7 @@ function authenticate(req, res) {
         if(rows.length > 0) {
             req.session.user = rows[0];
             //TODO FILL rooms in
-            req.session.rooms = new Array();
+            req.session.rooms = [];
             //contains all created chats in this session
             req.session.members = {};
             res.send({login_error: false});
@@ -80,21 +80,23 @@ function signUp(req, res) {
     //TODO encrypt password
     var info = {
         id: crypto.randomBytes(10).toString('hex'),
-        username: req.body.username,
+        username: req.body.user_signup,
         password: req.body.password_signup,
         first: req.body.firstname_signup,
         last: req.body.lastname_signup
-    }
+    };
+
     connection.execute('INSERT INTO User SET ? ', info, function(rows) {
         req.session.user = {
             username: info.username,
             first: info.first,
             last: info.last
-        }
+        };
         
         res.redirect('/home');
     },
     function(err) {
+        console.log(err);
         res.redirect('/');
     });
 }
@@ -103,28 +105,28 @@ function passportAuth(passport) {
 
     //functions for serializing and deserializing users for session
     passport.serializeUser(function(user, done) {
-        done(null, user.id)
-    })
+        done(null, user.id);
+    });
 
     passport.deserializeUser(function(id, done) {
         //TODO fill in query here  
-        done(null, {name:"Bill Xiong", password:"passwo", id:"1234"})
-    })
+        done(null, {name:"Bill Xiong", password:"passwo", id:"1234"});
+    });
 
     passport.use('signup', new LocalStrategy(params, function(req, username, password, done) {
             //authentication here        
         }
-    ))
+    ));
 
     passport.use('login', new LocalStrategy(params, function(username, password, done) {
             //authentication here        
             if(username !== "Bill Xiong" || password !== "passwo") {
-                return done(null, false, {error : 'Bad login'})
+                return done(null, false, {error : 'Bad login'});
             }
-            return done(null, {name:"Bill Xiong", password:"passwo", id:"1234"})
+            return done(null, {name:"Bill Xiong", password:"passwo", id:"1234"});
         }
         
-    ))
+    ));
 }
 
-module.exports = {logOut, checkLoggedOut, checkLoggedIn, authenticate, signUp, checkExistingUser}
+module.exports = {logOut, checkLoggedOut, checkLoggedIn, authenticate, signUp, checkExistingUser};

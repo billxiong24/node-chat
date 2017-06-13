@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var authenticator = require('../app/authentication/user-pass.js')
+var authenticator = require('../app/authentication/user-pass.js');
 var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
 
@@ -11,7 +11,7 @@ router.get('/', authenticator.checkLoggedIn, function(req, res, next) {
 });
 
 router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
-    res.render('index')
+    res.render('index');
 });
 
 router.post('/login', authenticator.checkLoggedIn, function(req, res, next) {
