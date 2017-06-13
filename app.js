@@ -4,13 +4,13 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const routes = require('./routes/index');
-const index = routes;
+const index = require('./routes/index');
 const users = require('./routes/users');
 const app = express();
 const passport = require('passport');
 const session = require('express-session');
 const connection = require('./app/database/config.js');
+const flash = require('connect-flash');
 
 var PORT = process.env.PORT || 3000;
 
@@ -48,11 +48,12 @@ app.use(function(req, res, next) {
     next();
 });
 
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', index);
-//require('./app/authentication/user-pass.js')(passport)
+require('./app/authentication/user-pass.js').passportAuth(passport);
+require('./routes/index')(app, passport);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

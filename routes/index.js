@@ -1,21 +1,27 @@
 var express = require('express');
 var router = express.Router();
-var authenticator = require('../app/authentication/user-pass.js')
+var authenticator = require('../app/authentication/user-pass.js');
 var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
 
 
-router.get('/', authenticator.checkLoggedIn, function(req, res, next) {
+module.exports = function(app, passport) {
+    app.use('/', router);
+
+router.get('/',  function(req, res, next) {
     //console.log(req.app.locals.test + " heyyyy");
     res.render('index');
 });
 
-router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
-    res.render('index')
+router.get('/login',  function(req, res, next) {
+    res.render('index');
 });
 
-router.post('/login', authenticator.checkLoggedIn, function(req, res, next) {
-    authenticator.authenticate(req, res);
+router.post('/login', passport.authenticate('login', {
+    successRedirect: '/home',
+    failureRedirect: '/login',
+    failureFlash: true
+}), function(req, res, next) {
     //dont return next() because it will send headers twice apparently
     //return next()
 });
@@ -40,6 +46,10 @@ router.post('/logout', function(req, res, next) {
 router.use('/home', home);
 router.use('/chats', chats);
 
+return router;
+
+};
+
 //router.post('/login', passport.authenticate('login', {
         //successRedirect: '/home',
         //failureRedirect : '/',
@@ -51,4 +61,4 @@ router.use('/chats', chats);
 
 //));
 
-module.exports = router;
+//module.exports = router;
