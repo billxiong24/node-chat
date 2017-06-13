@@ -13,7 +13,8 @@ $(document).ready(function() {
             }
         });
     });
-    /*$('.user-login').submit(function(event) {
+
+    $('.user-login').submit(function(event) {
         event.preventDefault();
         //TODO sanitize input
         var validate = {
@@ -37,5 +38,5 @@ $(document).ready(function() {
             }
         });
 
-    });*/
+    });
 });

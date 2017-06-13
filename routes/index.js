@@ -8,57 +8,39 @@ var chats = require('./chats/chats.js');
 module.exports = function(app, passport) {
     app.use('/', router);
 
-router.get('/', authenticator.checkLoggedIn, function(req, res, next) {
-    //console.log(req.app.locals.test + " heyyyy");
-    res.render('index');
-});
+    router.get('/', authenticator.checkLoggedIn, function(req, res, next) {
+        res.render('index');
+    });
 
-router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
-    res.render('index', {error: req.flash('error')[0]});
-});
+    router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
+        res.render('index', {error: req.flash('error')[0]});
+    });
 
-router.post('/login', passport.authenticate('login', {
-    successRedirect: '/home',
-    failureRedirect: '/login',
-    failureFlash: true
-}), function(req, res, next) {
-    //dont return next() because it will send headers twice apparently
-    //return next()
-});
+    router.post('/login', function(req, res, next) {
+        //for whatever reason, don't return next, no idea why
+        authenticator.passportAuthCallback(passport, req, res, next);
+    });
 
-router.get('/signup', authenticator.checkLoggedIn, function(req, res, next) {
-    res.render('index');
-});
+    router.get('/signup', authenticator.checkLoggedIn, function(req, res, next) {
+        res.render('index');
+    });
 
-router.post('/signup', authenticator.checkLoggedIn, function(req, res, next) {
-    authenticator.signUp(req, res);
-});
+    router.post('/signup', function(req, res, next) {
+        authenticator.passportSignupCallback(passport, req, res, next);
+    });
 
-router.post('/signup_auth', authenticator.checkLoggedIn, function(req, res, next) {
-    authenticator.checkExistingUser(req, res);
-});
+    router.post('/signup_auth', authenticator.checkLoggedIn, function(req, res, next) {
+        authenticator.checkExistingUser(req, res);
+    });
 
-router.post('/logout', function(req, res, next) {
-    authenticator.logOut(req, res);
-});
+    router.post('/logout', function(req, res, next) {
+        authenticator.logOut(req, res);
+    });
 
-/* GET home page. */
-router.use('/home', home);
-router.use('/chats', chats);
+    /* GET home page. */
+    router.use('/home', home);
+    router.use('/chats', chats);
 
-return router;
+    return router;
 
 };
-
-//router.post('/login', passport.authenticate('login', {
-        //successRedirect: '/home',
-        //failureRedirect : '/',
-        //failureFlash : false
-    //},
-    //function(req, res) {
-        //console.log("success")
-    //}
-
-//));
-
-//module.exports = router;

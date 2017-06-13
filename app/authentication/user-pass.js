@@ -32,26 +32,50 @@ function checkLoggedIn(req, res, next) {
     return next();
 }
 
-function authenticate(req, res) {
-    //TODO does this prevent sql injection??
-    connection.execute('SELECT id, username, first, last FROM User WHERE User.username = ? and User.password = ?', [req.body.username, req.body.password], function(rows) {
-        if(rows.length > 0) {
-            req.session.user = rows[0];
-            //TODO FILL rooms in
-            req.session.rooms = [];
-            //contains all created chats in this session
-            req.session.members = {};
-            res.send({login_error: false});
+function passportSignupCallback(passport, req, res, next) {
+    passport.authenticate('signup', function(err, user, info) {
+        if(err) {
+            console.log(err);
+            return;
         }
-        else {
-            //TODO error checking
-            res.send({login_error: true});
+
+        if(!user) {
+            res.redirect('/');
+            return;
         }
-    });
+
+        req.login(user, function(err) {
+            if(err) {
+                console.log(err);
+                return;
+            }
+            req.session.user = user;
+            res.redirect('/home');
+        });
+    })(req, res, next);
+}
+
+function passportAuthCallback(passport, req, res, next) {
+    passport.authenticate('login', function(err, user, info) {
+        if(err) {
+            console.log(err);
+            return;
+        }
+        if(!user) {
+            res.send({login_error : true});
+            return;
+        }
+
+        req.login(user, function(err) {
+            if(err) { console.log(err); }
+            res.send({login_error : false});
+        });
+
+    })(req, res, next);
 }
 
 function logOut(req, res) {
-    req.session.destroy();
+    req.logout();
     res.redirect('/');
 }
 
@@ -112,8 +136,30 @@ function passportAuth(passport) {
         });
     });
 
-    passport.use('signup', new LocalStrategy(params, function(req, username, password, done) {
+    passport.use('signup', new LocalStrategy({usernameField: 'user_signup', passwordField: 'password_signup', passReqToCallback:true}, function(req, user_signup, password_signup, done) {
             //authentication here        
+            var info = {
+                id: crypto.randomBytes(10).toString('hex'),
+                username: req.body.user_signup,
+                password: req.body.password_signup,
+                first: req.body.firstname_signup,
+                last: req.body.lastname_signup
+            };
+            connection.execute('INSERT INTO User SET ? ', info, function(rows) {
+
+                req.session.user = {
+                    username: info.username,
+                    first: info.first,
+                    last: info.last
+                };
+                req.session.members = {};
+                delete info.password;
+                return done(null, info);
+                //res.redirect('/home');
+            },
+            function(err) {
+                return done(null, false, req.flash('signup_error', 'There was an error signing up'));
+            });
         }
     ));
 
@@ -138,4 +184,4 @@ function passportAuth(passport) {
     ));
 }
 
-module.exports = {logOut, checkLoggedOut, checkLoggedIn, authenticate, signUp, checkExistingUser, passportAuth};
+module.exports = {logOut, checkLoggedOut, checkLoggedIn, passportSignupCallback, checkExistingUser, passportAuth, passportAuthCallback};

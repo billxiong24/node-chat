@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var authenticator = require('../../app/authentication/user-pass.js')
+var authenticator = require('../../app/authentication/user-pass.js');
 const Manager = require('../../app/chat_functions/chat_manager.js');
 const Chat =  require('../../app/models/chat.js');
 

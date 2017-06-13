@@ -10,6 +10,8 @@ $(document).ready(function() {
                 success: function(data) {
                     Cookies.set('userid', data.cookie);
                     sessionStorage.setItem('userid', data.cookie);
+                    console.log(data.cookie + " cookie set");
+                    console.log(sessionStorage.getItem('userid')+ "sessionstorage set");
                     setup($, socketview, typingview, notifview, chatview);
                 }
             });
