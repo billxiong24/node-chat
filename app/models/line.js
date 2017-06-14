@@ -70,7 +70,7 @@ var Line = (function() {
             if(poolConnection === null) {
                 return null;
             }
-            var query =  'SELECT username, message, stamp FROM ChatLines WHERE chat_id = ? ORDER BY stamp ASC';
+            var query =  'SELECT username, message, stamp FROM ChatLines WHERE chat_id = ? ORDER BY stamp DESC LIMIT 20';
             return poolConnection.query(query, [chatID]);
         };
     };

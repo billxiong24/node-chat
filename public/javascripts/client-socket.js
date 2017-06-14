@@ -25,7 +25,14 @@ $(document).ready(function() {
     
     function setup($, socketview, typingview, notifview, chatview) {
         var userid = sessionStorage.getItem('userid');
-        $('.chat-discussion').scrollTop(200000);
+        $('.chat-discussion').scrollTop(2000000);
+
+        $('.chat-discussion').scroll(function() {
+            if($(this).scrollTop() === 0) {
+                //ajax call to the server
+                //$('.chat-discussion').prepend("testing load");
+            }
+        });
 
         var typeViewObj = new typingview.TypingView(userid, new socketview.SocketView(roomID, '/typing'));
         var notifViewObj = new notifview.NotifView(new socketview.SocketView(roomID, '/notifications'));
