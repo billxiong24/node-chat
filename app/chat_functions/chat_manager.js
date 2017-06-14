@@ -1,6 +1,7 @@
 const connection = require('../database/config.js');
 const crypto = require('crypto');
 const sql = require('promise-mysql');
+const line_render = require('./line_render.js');
 
 var Chat =  require('../models/chat.js');
 var User =  require('../models/user.js');
@@ -48,6 +49,7 @@ var ChatManager = (function() {
     };
 
     ChatManager.prototype.loadChat = function(members, username, chatID, res) {
+
         var transport = function(chatObj, notifObj, lineObj) {
             return function(lineResults) {
                 if(lineResults === null) {
@@ -56,6 +58,7 @@ var ChatManager = (function() {
                     return null;
                 }
                 var info = chatObj.toJSON(username, notifObj.getNumNotifications(), lineResults);
+                info.lines = line_render(username, info.lines);
                 members[info.id] = info;
                 res.render('chat', info);
             };

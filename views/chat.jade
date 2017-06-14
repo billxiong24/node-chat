@@ -123,7 +123,7 @@ html
 											.chat-discussion.content
 												- var prevUser = null;
 												- for(var i = 0; i < lines.length; i++) {
-														- var transDate = new Date(lines[i].stamp);
+														- var transDate = lines[i].stamp;
 														- if(!prevUser || lines[i].username !== prevUser) {
 															- if(username === lines[i].username) {
 																	.right
