@@ -12,7 +12,7 @@ define(['socketview', 'notifview'], function(socketview, notifview) {
                 this._socketview.connect();
             }
 
-            ChatView.prototype.listenForOnlineUsers = function() {
+            ChatView.prototype.listenForOnlineUsers = function(onlineList, numOnlineObj, renderList) {
 
                 var that = this;
                 this._socketview.addListener('connected', function(data) {
@@ -20,27 +20,27 @@ define(['socketview', 'notifview'], function(socketview, notifview) {
                     if(that._userid === data.user.id) {
                         that._notifview.setNotif(data.notifs);
                     }
-                    updateOnlineUsers(data);
+                    updateOnlineUsers(data, onlineList, numOnlineObj, renderList);
                 }); 
 
                 this._socketview.addListener('disconnected', function(data) {
                     //delete userSockets[data.room.sockets[data.user.username]];
-                    updateOnlineUsers(data);
+                    updateOnlineUsers(data, onlineList, numOnlineObj, renderList);
                 });
             };
 
-            ChatView.prototype.setReceiveListener = function() {
+            ChatView.prototype.setReceiveListener = function(displayLine) {
                 var that = this;
                 this._socketview.addListener('message', function(msg) {
                     //holy shit this is bad- reset cookie if user deletes it lmao
-                    displayMessage(that, msg, that._userid);
+                    displayMessage(that, msg, that._userid, displayLine);
                 });
             };
 
-            ChatView.prototype.setSubmitListener = function() {
+            ChatView.prototype.setSubmitListener = function(submitForm, messageInput) {
                 var that = this;
-                $('.submit-message').submit(function() {
-                    var msg_input = $('.message-input');
+                submitForm.submit(function() {
+                    var msg_input = messageInput;
                     if(msg_input.val().length > 0) {
                         that._socketview.send('message', msg_input.val());
 
@@ -52,41 +52,39 @@ define(['socketview', 'notifview'], function(socketview, notifview) {
                 
             };
 
-            function updateOnlineUsers(data) {
-                var onlineList = $('.list-online');
+            function updateOnlineUsers(data, onlineList, numOnlineObj, renderList) {
                 onlineList.empty();
                 this._userSockets = {};
-                onlineList.append($(displayOnlineUsers(data.room.sockets, data.user.username)));
+                onlineList.append($(displayOnlineUsers(data.room.sockets, data.user.username, numOnlineObj, renderList)));
             }
-
-            function displayOnlineUsers(room, username) {
+            
+            function displayOnlineUsers(room, username, numOnlineObj, renderList) {
                 var online = "";
                 var size = 0;
                 for(var key in room) {
                     if(room[key].userid in this._userSockets) {
                         continue;
                     }
-                    online += '<div class="chat-user-name"> <input class = "btn online-list" style="" type="submit" name = "chatname" value="'+room[key].username+'"><img src="" id="'+room[key].userid +'"><div class="label-warning notif pull-right" style="">  </div> </div>';
+
+                    online += renderList(room[key].username, room[key].userid);
                     //doesn't matter what value is
                     this._userSockets[room[key].userid] = null;
                     size++;
                 }
-                updateNumOnlineUsers(size);
+                updateNumOnlineUsers(size, numOnlineObj);
                 return online;
             }
             
-            function updateNumOnlineUsers(num) {
-                $('.online-now').text("Online now: " + num);
+            function updateNumOnlineUsers(num, numOnlineObj) {
+                numOnlineObj.text("Online now: " + num);
             }
             
 
-            function displayMessage(that, msg, userid) {
+            function displayMessage(that, msg, userid, displayLine) {
                 if(msg.message.length === 0) {
                     return;
                 }
-
                 var numMessages = $('.numMessages');
-
                 var time = "";
                 var dir;
                 var active;
@@ -102,19 +100,9 @@ define(['socketview', 'notifview'], function(socketview, notifview) {
                 }
 
                 numMessages.text(that._notifview.getNotif());
-
-                var message;
-                if(!that._lastMessage || that._lastMessage !== msg.cookie) {
-                    message = '<div class="'+dir+'"> <div class="author-name" id="mess"> <div class="date-chat">' + time + ' </div> <a class="author-name" href="#">' + msg.username + '</a> </div> <div class="chat-message '+active+'" style="text-align: left">' + msg.message + '</div> </div>';
-                }
-                else {
-                    message = '<div class="'+dir+'">  <div class="chat-message '+active+'" style="text-align: left">' + msg.message + '</div> </div>';
-                }
-                
+                var ownUser = !that._lastMessage || that._lastMessage !== msg.cookie;
+                var message = displayLine(dir, ownUser, msg.username, time, active, msg.message);
                 that._lastMessage = msg.cookie;
-
-                $('.chat-discussion').append($(message));
-                $('.chat-discussion').scrollTop(200000);
             }
 
             return ChatView;

@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
-    require(['jquery', 'socketview', 'typingview', 'notifview', 'chatview'], function($, socketview, typingview, notifview, chatview) {
+    var dependencies = ['jquery', 'onlineview', 'lineview', 'socketview', 'typingview', 'notifview', 'chatview'];
+    require(dependencies, function($, onlineview, lineview, socketview, typingview, notifview, chatview) {
         if(!sessionStorage.getItem('userid')) {
             $.ajax({
                 type: 'POST',
@@ -10,21 +11,20 @@ $(document).ready(function() {
                 success: function(data) {
                     Cookies.set('userid', data.cookie);
                     sessionStorage.setItem('userid', data.cookie);
-                    console.log(data.cookie + " cookie set");
-                    console.log(sessionStorage.getItem('userid')+ "sessionstorage set");
-                    setup($, socketview, typingview, notifview, chatview);
+                    setup($, socketview, typingview, notifview, chatview, lineview, onlineview);
                 }
             });
         }
 
         else {
-            setup($, socketview, typingview, notifview, chatview);
+            setup($, socketview, typingview, notifview, chatview, lineview, onlineview);
         }
     });
     //TODO fix this
     
-    function setup($, socketview, typingview, notifview, chatview) {
+    function setup($, socketview, typingview, notifview, chatview, lineview, onlineview) {
         var userid = sessionStorage.getItem('userid');
+
         $('.chat-discussion').scrollTop(2000000);
 
         $('.chat-discussion').scroll(function() {
@@ -38,11 +38,26 @@ $(document).ready(function() {
         var notifViewObj = new notifview.NotifView(new socketview.SocketView(roomID, '/notifications'));
         var chatViewObj = new chatview.ChatView(userid, new socketview.SocketView(roomID), notifViewObj);
 
-        typeViewObj.listenForTyping();
-        typeViewObj.keyUpEvent();
+        typeViewObj.listenForTyping('/images/typing.gif');
+        typeViewObj.keyUpEvent($('.submit-message'), 700);
 
-        chatViewObj.listenForOnlineUsers();
-        chatViewObj.setReceiveListener();
-        chatViewObj.setSubmitListener();
+
+        //TODO USE handlebars for this
+        chatViewObj.listenForOnlineUsers($('.list-online'), $('.online-now'), function(username, userid) {
+            return new onlineview.OnlineView(username, userid).renderOnlineUser();
+        });
+        
+        chatViewObj.setReceiveListener(function(dir, ownUser, username, time, active, message) {
+            var lineViewObj = new lineview.LineView($('.chat-discussion'), dir, time, active, username, message);
+            if(!ownUser) {
+                lineViewObj.appendMessage(lineViewObj.renderOtherUserMessage());
+            }
+            else {
+                lineViewObj.appendMessage(lineViewObj.renderOwnMessage());
+            }
+            lineViewObj.scrollDown(2000000);
+        });
+
+        chatViewObj.setSubmitListener($('.submit-message'), $('.message-input'));
     }
 });

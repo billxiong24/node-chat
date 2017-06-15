@@ -14,7 +14,9 @@ requirejs.config({
         chatinfo: 'viewmodel/chatinfo',
         typingview: 'viewmodel/typingview',
         notifview: 'viewmodel/notifview',
-        chatview: 'viewmodel/chatview'
+        chatview: 'viewmodel/chatview',
+        lineview: 'view/lineview',
+        onlineview: 'view/onlineview'
     },
     waitSeconds: 3
 });

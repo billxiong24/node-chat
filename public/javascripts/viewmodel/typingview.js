@@ -27,12 +27,12 @@ define(['socketview'], function(socketview) {
                 };
             }
 
-            TypingView.prototype.listenForTyping = function() {
+            TypingView.prototype.listenForTyping = function(gif) {
 
                 this._socketview.addListener('typing', function(data) {
                     var userEl = $('#'+data.userid);
                     if(data.isTyping) {
-                        userEl.attr('src', '/images/typing.gif');
+                        userEl.attr('src', gif);
                     }
                     else {
                         resetTyping(data.userid);
@@ -45,10 +45,10 @@ define(['socketview'], function(socketview) {
             }
 
 
-            TypingView.prototype.keyUpEvent = function() {
+            TypingView.prototype.keyUpEvent = function(element, timerClearOut) {
 
                 var that = this;
-                $('.submit-message').keyup(function() {
+                element.keyup(function() {
                     if(!that._isTyping) {
                         that._isTyping = true;
                         that._socketview.send('typing', {
@@ -58,9 +58,10 @@ define(['socketview'], function(socketview) {
                         });
                     }
                     clearTimeout(that._timer);
-                    that._timer = setTimeout(timeoutTyping(that), 700);
+                    that._timer = setTimeout(timeoutTyping(that), timerClearOut);
                 });
             };
+
             return TypingView;
         })()
     };
