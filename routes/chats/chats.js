@@ -11,7 +11,7 @@ if(!manager) {
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     /* TODO CACHE THIS SHIT*/
-    manager.loadChat(req.session.members, req.session.user.username, req.params.chatID, res);
+    manager.loadChat(req.session.members, req.session.user.username, req.params.chatID, req, res);
     //if(!req.session.members[req.params.chatID]) {
         //manager.loadChat(req.session.members, req.session.user.username, req.params.chatID, res);
     //}
@@ -19,6 +19,10 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     //else {
         //res.render('chat', req.session.members[req.params.chatID]);
     //}
+});
+
+router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
+    manager.loadMoreLines(req.session.username, req.body.chatID, req.session.lastTimeStamp, req, res);
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {

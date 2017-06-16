@@ -31,6 +31,16 @@ $(document).ready(function() {
             if($(this).scrollTop() === 0) {
                 //ajax call to the server
                 //$('.chat-discussion').prepend("testing load");
+                $.ajax({
+                    url: '/chats/loadLines',
+                    type: 'POST',
+                    data: {chatID: window.location.pathname.split("/")[2]},
+                    success: function (data) {
+                        for (var i = 0, l = data.length; i < l; i++) {
+                            console.log(data[i]);
+                        }
+                    }
+                });
             }
         });
 

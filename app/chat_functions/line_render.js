@@ -20,7 +20,9 @@ function renderLines(username, lineInfo) {
 
     var prevTime = null;
     for(var i = 0; i < lineInfo.length; i++) {
-        var date0 = new Date(lineInfo[i].stamp);
+        var time_stamp = lineInfo[i].stamp;
+        //strip away micro seconds
+        var date0 = new Date(time_stamp.substring(0, time_stamp.indexOf(0, ".")));
         var date1 = new Date();
         
         var date2 = date0.getTime();
@@ -36,10 +38,10 @@ function renderLines(username, lineInfo) {
         var years = Math.floor(daysAgo/365);
 
         if(prevTime !== null && Math.abs((minutes - prevTime)) < 20) {
-            lineInfo[i].stamp = "";
+            lineInfo[i].viewStamp = "";
         }
         else {
-            lineInfo[i].stamp = getFormattedDate(date0);
+            lineInfo[i].viewStamp = getFormattedDate(date0);
         }
 
         prevTime = minutes;

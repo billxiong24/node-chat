@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const sql = require('promise-mysql');
 const line_render = require('./line_render.js');
 
+var Line = require('../models/line.js');
 var Chat =  require('../models/chat.js');
 var User =  require('../models/user.js');
 
@@ -48,7 +49,7 @@ var ChatManager = (function() {
         chatobj.join(new User(username), sessionStore);
     };
 
-    ChatManager.prototype.loadChat = function(members, username, chatID, res) {
+    ChatManager.prototype.loadChat = function(members, username, chatID, req, res) {
 
         var transport = function(chatObj, notifObj, lineObj) {
             return function(lineResults) {
@@ -60,6 +61,9 @@ var ChatManager = (function() {
                 var info = chatObj.toJSON(username, notifObj.getNumNotifications(), lineResults);
                 info.lines = line_render(username, info.lines);
                 members[info.id] = info;
+                
+                req.session.lastTimeStamp = lineResults.length > 0 ?  lineResults[lineResults.length - 1].stamp : null;
+                console.log(req.session.lastTimeStamp + "on loadd");
                 res.render('chat', info);
             };
         };
@@ -84,6 +88,21 @@ var ChatManager = (function() {
         });
 
         return chatInfo;
+    };
+
+    ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, req, res) {
+        var line = new Line(chatID);
+        line.readNext(req.session.lastTimeStamp, function(lineResults) {
+            //lineResults = line_render(username, lineResults);
+            console.log(req.session.lastTimeStamp + " BEFORE");
+            req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[lineResults.length - 1].stamp : null;
+            console.log(req.session.lastTimeStamp + "after");
+
+            if(req.session.lastTimeStamp !== null) {
+                res.status(200).json(lineResults);
+            }
+        });
+        
     };
 
     return ChatManager;
