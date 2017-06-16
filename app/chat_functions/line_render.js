@@ -22,7 +22,8 @@ function renderLines(username, lineInfo) {
     for(var i = 0; i < lineInfo.length; i++) {
         var time_stamp = lineInfo[i].stamp;
         //strip away micro seconds
-        var date0 = new Date(time_stamp.substring(0, time_stamp.indexOf(0, ".")));
+        console.log(time_stamp);
+        var date0 = new Date(time_stamp.substring(0, time_stamp.lastIndexOf(":")));
         var date1 = new Date();
         
         var date2 = date0.getTime();
