@@ -4,7 +4,16 @@ define(['socket.io-client/dist/socket.io'], function(io) {
 
                 function SocketView(roomID, namespace=null) {
                     this._roomID = roomID;
-                    this._client = namespace === null ? io() : io(namespace);
+                    //force sockets to use  websockets instead of 
+                    //XHR Polling
+                    //connectOptions = {
+                        //transports:['websocket'], 
+                        //upgrade: false,
+                        //'force new connection' : true
+                    //};
+
+
+                    this._client = namespace === null ? new io(connectOptions) : new io(namespace, connectOptions);
                 }
                 
                 SocketView.prototype.joinRoom = function() {

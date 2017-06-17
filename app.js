@@ -85,4 +85,11 @@ app.use(function(err, req, res, next) {
 
 http.listen(PORT);
 
+//LOAD TESTING
+//2000 concurrent users, 3000 requests
+//if(process.env.NODE_ENV === "loadtest") {
+    //var siege = require('siege');
+    //siege().on(PORT).concurrent(500).for(1000).times.withCookie.post('/login', {username: "billxiong24", pass:"pass"}).get('/').attack();
+//}
+
 module.exports = app;
