@@ -2,7 +2,7 @@
  * Establishes connection to database using node-mysql
  * and node-promise-mysql for promises and connection pooling
  */
-const mysql = require('mysql')
+const mysql = require('mysql');
 const promise_sql = require('promise-mysql');
 
 var pool = null;
@@ -28,9 +28,13 @@ function execute(query, info=null, callback=function(result) {}, error=function(
 
 //more general form of execute function above
 function executePoolTransaction(transactions, error=function(err) {}, info=null) {
+    var connected = pool.getConnection();
+
     transactions.reduce(function(prevFunc, currFunc) {
         return prevFunc.then(currFunc);
-    }, pool.getConnection()).catch(error);
+    }, connected).then(function(res) {
+
+    }).catch(error);
 }
 
 function release(connection) {

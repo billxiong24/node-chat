@@ -413,6 +413,11 @@
       "from": "cookie-signature@1.0.6",
       "resolved": "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.6.tgz"
     },
+    "cookiejar": {
+      "version": "2.1.1",
+      "from": "cookiejar@*",
+      "resolved": "https://registry.npmjs.org/cookiejar/-/cookiejar-2.1.1.tgz"
+    },
     "core-util-is": {
       "version": "1.0.2",
       "from": "core-util-is@>=1.0.0 <1.1.0",
@@ -1591,6 +1596,11 @@
           "resolved": "https://registry.npmjs.org/debug/-/debug-0.8.1.tgz"
         }
       }
+    },
+    "siege": {
+      "version": "0.2.0",
+      "from": "siege@latest",
+      "resolved": "https://registry.npmjs.org/siege/-/siege-0.2.0.tgz"
     },
     "sntp": {
       "version": "1.0.9",

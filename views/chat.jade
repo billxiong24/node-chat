@@ -126,7 +126,7 @@ html
 														- var transDate = lines[i].viewStamp;
 														- if(!prevUser || lines[i].username !== prevUser) {
 															- if(username === lines[i].username) {
-																	.right
+																	.right.chat-line
 																		#mess.author-name
 																			.date-chat= transDate
 																			a.author-name(href='#')= lines[i].username
@@ -134,7 +134,7 @@ html
 	
 															- }
 															- else {
-																	.left
+																	.left.chat-line
 																		#mess.author-name
 																			.date-chat= transDate
 																			a.author-name(href='#')= lines[i].username
@@ -143,12 +143,12 @@ html
 														- }
 														- else {
 															- if(username === lines[i].username) {
-																.right
+																.right.chat-line
 																	.chat-message.active(style='text-align: left')= lines[i].message
 	
 															- }
 															- else {
-																.left
+																.left.chat-line
 																	.chat-message(style='text-align: left')= lines[i].message
 															- }
 

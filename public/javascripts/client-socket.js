@@ -26,19 +26,45 @@ $(document).ready(function() {
         var userid = sessionStorage.getItem('userid');
 
         $('.chat-discussion').scrollTop(2000000);
+        console.log($('.chat-discussion').scrollTop());
+        console.log($(document).scrollTop());
 
         $('.chat-discussion').scroll(function() {
+                var firstMessage = $('.chat-line:first');
+                        console.log(firstMessage.offset().top + "first message");
+                        console.log($('.chat-discussion').scrollTop() + "chat scroll");
             if($(this).scrollTop() === 0) {
                 //ajax call to the server
-                //$('.chat-discussion').prepend("testing load");
                 $.ajax({
                     url: '/chats/loadLines',
                     type: 'POST',
                     data: {chatID: window.location.pathname.split("/")[2]},
                     success: function (data) {
-                        for (var i = 0, l = data.length; i < l; i++) {
-                            console.log(data[i]);
+                        if(data.lines === null) {return;}
+                        var lines = data.lines;
+                        var prevUser = null;
+                        var chatDiscussion = $('.chat-discussion');
+                        var messageContent = "";
+                        for(var i = lines.length - 1; i >= 0; i--){
+                            var dir = data.username === lines[i].username ? "right" : "left";
+                            var active = data.username === lines[i].username ? "active" : "";
+                            var lineViewObj = new lineview.LineView(chatDiscussion, dir, lines[i].viewStamp, active, lines[i].username, lines[i].message);
+
+                            if(!prevUser || lines[i].username !== prevUser) {
+                                messageContent += lineViewObj.renderOwnMessage();
+                                
+                            }
+                            else {
+                                messageContent += lineViewObj.renderOtherUserMessage();
+                            }
+                               
+                            prevUser = lines[i].username;
+
                         }
+                        chatDiscussion.prepend($(messageContent));
+                        chatDiscussion.scrollTop(firstMessage.offset().top - 150);
+                        console.log(firstMessage.offset().top + "first message");
+                        console.log($('.chat-discussion').scrollTop() + "chat scroll");
                     }
                 });
             }

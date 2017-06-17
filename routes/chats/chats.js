@@ -22,7 +22,7 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
 });
 
 router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.loadMoreLines(req.session.username, req.body.chatID, req.session.lastTimeStamp, req, res);
+    manager.loadMoreLines(req.session.user.username, req.body.chatID, req.session.lastTimeStamp, req, res);
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {

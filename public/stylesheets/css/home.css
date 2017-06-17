@@ -102,12 +102,14 @@
     padding-bottom: 20px;
 }
 .small-chat-box .content .chat-message, .chat-message {
+    overflow-wrap:break-word;
+
     padding: 5px 10px;
     border-radius: 13px;
     font-size: 12px;
     font-weight: 600;
     line-height: 20px;
-    max-width: 60%;
+    max-width: 40%;
     background: #f3f3f4;
     margin-bottom: 10px;
 }

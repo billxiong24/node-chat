@@ -93,13 +93,19 @@ var ChatManager = (function() {
     ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, req, res) {
         var line = new Line(chatID);
         line.readNext(req.session.lastTimeStamp, function(lineResults) {
-            //lineResults = line_render(username, lineResults);
+            lineResults = lineResults !== null ? line_render(username, lineResults) : null;
+
             console.log(req.session.lastTimeStamp + " BEFORE");
             req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[lineResults.length - 1].stamp : null;
             console.log(req.session.lastTimeStamp + "after");
 
             if(req.session.lastTimeStamp !== null) {
-                res.status(200).json(lineResults);
+                res.status(200).json({lines: lineResults, username: username});
+                res.end();
+            }
+            else {
+                res.status(200).json({lines: null});
+                res.end();
             }
         });
         

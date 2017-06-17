@@ -115,9 +115,14 @@ var Chat = (function() {
             return conn;
         };
         var getLines = chatLine.read();
+        var releasing = function(result) {
+            console.log("releasing connection");
+            connection.release(conn);
+        };
+
         var commit = transport(that, notif, chatLine);
 
-        connection.executePoolTransaction([getChat, transferChat, getNumNotifs, transferNotifs, getLines, commit], function(err) { 
+        connection.executePoolTransaction([getChat, transferChat, getNumNotifs, transferNotifs, getLines, commit, releasing], function(err) { 
             throw err; 
         });
     };
@@ -158,6 +163,7 @@ var Chat = (function() {
 
         var commit = function(poolConnection) {
             var result = poolConnection.query('COMMIT');
+            console.log("releasing connection");
             connection.release(poolConnection);
             return result;
         };
@@ -213,6 +219,7 @@ var Chat = (function() {
                 return null;
             }
             connect.query('COMMIT');
+            console.log("releasing connection");
             connection.release(connect);
             return result;
         };

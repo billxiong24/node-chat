@@ -66,18 +66,23 @@ var Line = (function() {
                 return null;
             }
             var query =  'SELECT username, message, DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") as stamp FROM ChatLines WHERE chat_id = ? ORDER BY DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") DESC LIMIT 15';
+            //connection.release(poolConnection);
             return poolConnection.query(query, [chatID]);
         };
     };
 
     Line.prototype.readNext = function(latestStamp, callback) {
         var chatID = this._chat_id;
+
         var quer = function(poolConnection) {
             if(poolConnection === null || latestStamp === null) {
+                connection.release(poolConnection);
                 return null;
             }
-            console.log(latestStamp + " in read next");
+
             var query =  'SELECT username, message, DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") as stamp FROM ChatLines WHERE chat_id = ? AND stamp < DATE_FORMAT(?, "%Y-%m-%d %H:%i:%s:%f") ORDER BY stamp DESC LIMIT 15';
+
+            connection.release(poolConnection);
             return poolConnection.query(query, [chatID, latestStamp]);
         };
 
