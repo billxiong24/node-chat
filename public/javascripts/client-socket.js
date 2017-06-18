@@ -26,8 +26,6 @@ $(document).ready(function() {
         var userid = sessionStorage.getItem('userid');
 
         $('.chat-discussion').scrollTop(2000000);
-        console.log($('.chat-discussion').scrollTop());
-        console.log($(document).scrollTop());
 
         $('.chat-discussion').scroll(function() {
                 var firstMessage = $('.chat-line:first');

@@ -12,13 +12,23 @@ var dateMap = {
     11: "Nov",
     12: "Dec"
 };
+
+
+var prevUser = null;
 function renderLines(username, lineInfo) {
     if(lineInfo.length === 0) {
         return lineInfo;
     }
 
     var prevTime = null;
+    var prevUser = null;
     for(var i = 0; i < lineInfo.length; i++) {
+
+        lineInfo[i].direction = username === lineInfo[i].username ? "right" : "left";
+        lineInfo[i].active = username === lineInfo[i].username ? "active" : "";
+
+        lineInfo[i].viewUsername = (!prevUser || lineInfo[i].username !== prevUser) ? lineInfo[i].username : "";
+
         var time_stamp = lineInfo[i].stamp;
         //strip away micro seconds
         var date0 = new Date(time_stamp.substring(0, time_stamp.lastIndexOf(":")));
@@ -45,9 +55,10 @@ function renderLines(username, lineInfo) {
 
         prevTime = minutes;
 
+        prevUser = lineInfo[i].username;
      }
 
-    return lineInfo;
+    return lineInfo.reverse();
 }
 
 //hopefully no one sees this code

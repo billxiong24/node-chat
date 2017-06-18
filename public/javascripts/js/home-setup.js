@@ -3,7 +3,6 @@ $(document).ready(function() {
 
         Handlebars.registerHelper('testhelp', function(list) {
 
-            return JSON.parse(decodeURIComponent(list));
         });
 
         $.ajax({

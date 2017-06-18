@@ -31,18 +31,18 @@ var Chat = (function() {
     Chat.prototype.getStamp = function() {
         return this._stamp;
     };
-    
+
     /*
      *Setter
      */
     Chat.prototype.setName = function(name) {
-       this._name= name; 
+        this._name= name; 
     };
     Chat.prototype.setID = function(id) {
-       this._id = id; 
+        this._id = id; 
     };
     Chat.prototype.setCode = function(code) {
-       this._code = code; 
+        this._code = code; 
     };
 
     Chat.prototype.toJSON2 = function() { 

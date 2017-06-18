@@ -1,9 +1,6 @@
 /**
  * user-password authentication using passport.js
- * Can extend to use other forms of authentication
- * jk super ratchet authentication :(
  */
-//const var passport = require('passport');
 
 const connection = require('../database/config.js');
 const LocalStrategy = require('passport-local').Strategy;
@@ -172,6 +169,7 @@ function passportAuth(passport) {
 
     passport.use('login', new LocalStrategy(params, function(req, username, password, done) {
             //authentication here        
+            //TODO these queries should go in the User class 
             connection.execute('SELECT id, username, first, last FROM User WHERE User.username = ? and User.password = ?', [username, password], function(rows) {
 
                 if(rows.length === 0) {
