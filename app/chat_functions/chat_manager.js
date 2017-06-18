@@ -37,7 +37,6 @@ var ChatManager = (function() {
         chatobj.setCode(chatCode);
 
         var sessionStore = function(chatobj) {
-            //result is the lines, or null
             return function(result) {
                 if(result === null) {
                     //TODO error message
@@ -45,7 +44,7 @@ var ChatManager = (function() {
                     return null;
                 }
                 //TODO FIX THIS SHIT
-                members[chatobj.getID()] = chatobj.toJSON(username, 0, result);
+                members[chatobj.getID()] = chatobj.toJSON(username, 0, null);
                 res.redirect('/chats/' + chatobj.getID());
             };
         };
@@ -61,17 +60,30 @@ var ChatManager = (function() {
                     res.redirect('/home');
                     return null;
                 }
-                var info = chatObj.toJSON(username, notifObj.getNumNotifications(), lineResults);
-                info.lines = line_render(username, info.lines);
-                members[info.id] = info;
-                
-                req.session.lastTimeStamp = lineResults.length > 0 ?  lineResults[0].stamp : null;
 
+                var info = chatObj.toJSON(username, notifObj.getNumNotifications(), null);
+                members[info.id] = info;
                 res.render('chat', info);
             };
         };
         var chatobj = new Chat(chatID);
         chatobj.load(new User(username), transport);
+    };
+
+    ChatManager.prototype.loadLines  = function(username, chatID, req, res) {
+        var chatobj = new Chat(chatID);
+
+        var onLoad = function(lineResults) {
+            if(lineResults === null) {
+                res.redirect('/home');
+                return null;
+            }
+            lineResults = line_render(username, lineResults);
+            req.session.lastTimeStamp = lineResults.length > 0 ? lineResults[0].stamp : null;
+            console.log(req.session.lastTimeStamp + " on load tmee");
+            res.status(200).send({lines: lineResults});
+        };
+        chatobj.retrieveLines(onLoad);
     };
 
     ChatManager.prototype.createChat = function(res, members, chatName, username) {
@@ -97,7 +109,6 @@ var ChatManager = (function() {
         var line = new Line(chatID);
         line.readNext(req.session.lastTimeStamp, function(lineResults) {
             lineResults = lineResults !== null ? line_render(username, lineResults) : null;
-            console.log(lineResults);
 
             console.log(req.session.lastTimeStamp + " BEFORE");
             req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[0].stamp : null;

@@ -1,5 +1,16 @@
 $(document).ready(function() {
 
+    $.ajax({
+        url: window.location.pathname +'/initLines',
+        type: 'POST',
+        success: function (data) {
+            var html = $('#message-template').html();
+            var template = Handlebars.compile(html);
+            $('.chat-discussion').append(template(data.lines));
+            $('.chat-discussion').scrollTop(2000000);
+        }
+    });
+
     var dependencies = ['jquery', 'onlineview', 'lineview', 'socketview', 'typingview', 'notifview', 'chatview'];
     require(dependencies, function($, onlineview, lineview, socketview, typingview, notifview, chatview) {
         if(!sessionStorage.getItem('userid')) {
@@ -25,12 +36,9 @@ $(document).ready(function() {
     function setup($, socketview, typingview, notifview, chatview, lineview, onlineview) {
         var userid = sessionStorage.getItem('userid');
 
-        $('.chat-discussion').scrollTop(2000000);
 
         $('.chat-discussion').scroll(function() {
                 var firstMessage = $('.chat-line:first');
-                        console.log(firstMessage.offset().top + "first message");
-                        console.log($('.chat-discussion').scrollTop() + "chat scroll");
             if($(this).scrollTop() === 0) {
                 //ajax call to the server
                 $.ajax({
@@ -60,9 +68,8 @@ $(document).ready(function() {
 
                         }
                         chatDiscussion.prepend($(messageContent));
+                        //TODO dont hardcode this, okay for now
                         chatDiscussion.scrollTop(firstMessage.offset().top - 150);
-                        console.log(firstMessage.offset().top + "first message");
-                        console.log($('.chat-discussion').scrollTop() + "chat scroll");
                     }
                 });
             }

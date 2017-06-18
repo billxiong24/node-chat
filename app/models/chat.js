@@ -127,6 +127,24 @@ var Chat = (function() {
         });
     };
 
+    Chat.prototype.retrieveLines = function(callback) {
+        var chatLine = new Line(this._id);
+        var getLines = chatLine.read();
+
+        var conn = null;
+        var setConn = function(connect) {
+            conn = connect;
+            return connect;
+        };
+
+        var releaseConn = function(connect) {
+            console.log("releasing connection");
+            connection.release(conn);
+        };
+
+        connection.executePoolTransaction([setConn, getLines, callback, releaseConn], function(err) {throw err;});
+    };
+
 
     /*
      * callback is the last function called in the promise chain
@@ -175,7 +193,7 @@ var Chat = (function() {
         var connect;
         var that = this;
         var username = user.getUsername();
-        var chatLine = new Line();
+        //var chatLine = new Line();
 
         var startTrans = function(poolConnection) {
             connect = poolConnection;
@@ -206,14 +224,6 @@ var Chat = (function() {
             return result;
         };
 
-        var getLines = function(result) {
-            if(result === null) {
-                return null;
-            }
-            chatLine.setChatID(result.id);
-            return chatLine.read()(connect);
-        };
-
         var commit = function(result) {
             if(result === null) {
                 return null;
@@ -229,7 +239,7 @@ var Chat = (function() {
             console.log(err);
         };
 
-        connection.executePoolTransaction([startTrans, retrieveChat, validateChat, insertMembers, getLines, commit, callback(that)], err);
+        connection.executePoolTransaction([startTrans, retrieveChat, validateChat, insertMembers, commit, callback(that)], err);
     };
 
     Chat.prototype.loadLists = function(user, callback=function(rows) {}) {

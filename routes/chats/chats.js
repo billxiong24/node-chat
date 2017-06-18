@@ -25,6 +25,10 @@ router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next)
     manager.loadMoreLines(req.session.user.username, req.body.chatID, req.session.lastTimeStamp, req, res);
 });
 
+router.post('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
+    manager.loadLines(req.session.user.username, req.params.chatID, req, res);
+});
+
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
     manager.joinChat(req.session.members, req.session.user.username, req.body.joinChat, res);
 });

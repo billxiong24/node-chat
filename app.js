@@ -19,7 +19,12 @@ var PORT = process.env.PORT || 3000;
 
 app.set('views', path.join(__dirname, '/views'));
 
-var handlebars = expressHandlebars.create({ });
+var handlebars = expressHandlebars.create({ 
+    partialsDir  : [
+        __dirname + '/views/partials'    
+    ]
+});
+
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
