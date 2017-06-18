@@ -490,6 +490,11 @@
       "from": "decamelize@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/decamelize/-/decamelize-1.2.0.tgz"
     },
+    "define-properties": {
+      "version": "1.1.2",
+      "from": "define-properties@>=1.1.2 <2.0.0",
+      "resolved": "https://registry.npmjs.org/define-properties/-/define-properties-1.1.2.tgz"
+    },
     "delayed-stream": {
       "version": "1.0.0",
       "from": "delayed-stream@>=1.0.0 <1.1.0",
@@ -657,6 +662,28 @@
         }
       }
     },
+    "express-handlebars": {
+      "version": "3.0.0",
+      "from": "express-handlebars@latest",
+      "resolved": "https://registry.npmjs.org/express-handlebars/-/express-handlebars-3.0.0.tgz",
+      "dependencies": {
+        "asap": {
+          "version": "2.0.5",
+          "from": "asap@>=2.0.3 <2.1.0",
+          "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.5.tgz"
+        },
+        "glob": {
+          "version": "6.0.4",
+          "from": "glob@>=6.0.4 <7.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-6.0.4.tgz"
+        },
+        "promise": {
+          "version": "7.3.0",
+          "from": "promise@>=7.0.0 <8.0.0",
+          "resolved": "https://registry.npmjs.org/promise/-/promise-7.3.0.tgz"
+        }
+      }
+    },
     "express-session": {
       "version": "1.15.3",
       "from": "express-session@>=1.15.2 <2.0.0",
@@ -711,6 +738,11 @@
       "from": "findup-sync@>=0.3.0 <0.4.0",
       "resolved": "https://registry.npmjs.org/findup-sync/-/findup-sync-0.3.0.tgz"
     },
+    "foreach": {
+      "version": "2.0.5",
+      "from": "foreach@>=2.0.5 <3.0.0",
+      "resolved": "https://registry.npmjs.org/foreach/-/foreach-2.0.5.tgz"
+    },
     "forever-agent": {
       "version": "0.6.1",
       "from": "forever-agent@>=0.6.1 <0.7.0",
@@ -735,6 +767,11 @@
       "version": "1.0.0",
       "from": "fs.realpath@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
+    },
+    "function-bind": {
+      "version": "1.1.0",
+      "from": "function-bind@>=1.1.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.0.tgz"
     },
     "fusing": {
       "version": "0.2.3",
@@ -774,6 +811,11 @@
       "version": "1.0.0",
       "from": "glogg@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/glogg/-/glogg-1.0.0.tgz"
+    },
+    "graceful-fs": {
+      "version": "4.1.11",
+      "from": "graceful-fs@>=4.1.2 <5.0.0",
+      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz"
     },
     "graceful-readlink": {
       "version": "1.0.1",
@@ -1393,6 +1435,16 @@
       "version": "0.0.3",
       "from": "object-component@0.0.3",
       "resolved": "https://registry.npmjs.org/object-component/-/object-component-0.0.3.tgz"
+    },
+    "object-keys": {
+      "version": "1.0.11",
+      "from": "object-keys@>=1.0.10 <2.0.0",
+      "resolved": "https://registry.npmjs.org/object-keys/-/object-keys-1.0.11.tgz"
+    },
+    "object.assign": {
+      "version": "4.0.4",
+      "from": "object.assign@>=4.0.3 <5.0.0",
+      "resolved": "https://registry.npmjs.org/object.assign/-/object.assign-4.0.4.tgz"
     },
     "on-finished": {
       "version": "2.3.0",

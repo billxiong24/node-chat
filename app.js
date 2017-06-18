@@ -11,13 +11,18 @@ const passport = require('passport');
 const session = require('express-session');
 const connection = require('./app/database/config.js');
 const flash = require('connect-flash');
+const expressHandlebars = require('express-handlebars');
 
 var PORT = process.env.PORT || 3000;
 
 // view engine setup
 
 app.set('views', path.join(__dirname, '/views'));
-app.set('view engine', 'jade');
+
+var handlebars = expressHandlebars.create({ });
+
+app.engine('handlebars', handlebars.engine);
+app.set('view engine', 'handlebars');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -76,12 +81,6 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-//index.post('/login', passport.authenticate('login', {
-//successRedirect: '/home',
-//failureRedirect : '/',
-//failureFlash : false
-//}
-//));
 
 http.listen(PORT);
 

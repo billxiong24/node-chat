@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+        <!-- <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">-->
+        <meta name="viewport" content="width=1024">
+        <title>ChatIO</title>
+        <link href="/stylesheets/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/stylesheets/font-awesome/css/font-awesome.css" rel="stylesheet">
+        <link href="/stylesheets/css/animate.css" rel="stylesheet">
+        <link href="/stylesheets/css/style.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway">
+        <link href="/stylesheets/css/index.css" rel="stylesheet">
+    </head>
+    <body class="top-navigation">
+        <div id="wrapper">
+            <div id="page-wrapper" class="gray-bg">
+                <div class="row border-bottom">
+                    <div class="row border-bottom white-bg">
+                        <nav role="navigation" class="navbar navbar-static-top">
+                            <div class="navbar-header"><a href="home.php" class="navbar-brand">ChatIO</a></div>
+                            <ul class="nav navbar-top-links navbar-right">
+                                <li><a href="login.php" style="font-family: Raleway; font-weight: 200;">{{username}}</a></li>
+                                <li style="" class="dropdown"><a data-toggle="dropdown" href="#" class="dropdown-toggle count-info"><i class="fa fa-bell"></i><span class="label label-primary">8</span></a></li>
+                                <li>
+                                    <form method="post" action="/logout">
+                                        <button name="logout" type="submit" class="btn small-buttons"><i class="fa fa-sign-out"></i></button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div class="wrapper wrapper-content">
+                    <div class="container animated fadeInDown">
+                        <div class="slogan"><span>Welcome, {{first}}!</span></div>
+                        <div class="title"><span>Chat</span></div>
+                        <div class="logo">
+                            <button id="i" class="btn btn-primary filler"></button>
+                            <button id="o" class="btn btn-primary filler"></button>
+                        </div>
+                        <div class="tool-bars">
+                            <form role="form" method="post" action="/chats/join_chat" class="m-t">
+                                <div class="form-group center-block">
+                                    <input name="joinChat" placeholder="Enter Chat Code" autocomplete="off" required="" class="form-control custom-tool">
+                                    <button type="submit" name="join_chat" class="btn btn-primary custom-tool-buttom">Join</button>
+                                </div>
+                            </form>
+                            <form role="form" method="post" action="/chats/create_chat" class="m-t">
+                                <div class="form-group center-block">
+                                    <input name="createChat" placeholder="Create Chat Code" autocomplete="off" required="" class="form-control custom-tool">
+                                    <button type="submit" name="create_chat" class="btn btn-primary custom-tool-buttom">Create</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="subtitle pre-scrollable center-block">
+                            <div style="margin-bottom: 14px">Recent Chats</div>
+                            <!--TODO request this AFTER page has loaded-->
+                            {{#each list}}
+                                <div class="chat-link center-block"> 
+                                    <div id="{{id}}">
+                                        <a href="/chats/{{id}}">{{chat_name}}</a>             
+                                            <span class="label label-primary">{{num_notifications}}</span>
+                                     </div>
+                                </div>
+                            {{/each}}
+                            <div id="see-all" class="chat-link center-block"><a href="#">See all</a></div>
+                        </div>
+                    </div>
+                    <!--
+                        <div class="container animated fadeInDown">
+                        <div class="slogan">
+                        <span>Instant Messaging. Redefined.</span>
+                        </div>
+                        <div class="title">
+                        <span>Chat</span>
+                        </div>
+                        <div class="logo">
+                        <button class="btn btn-primary filler" id="i"></button>
+                        <button class="btn btn-primary filler" id="o"></button>
+                        </div>
+                        <div class="buttons">
+                        <input type="submit" class="btn btn-primary" id="register" value="Sign up">
+                        <input type="submit" class="btn btn-primary" id="login" value="Log in">
+                        </div>
+                        </div>
+                    -->
+                </div>
+                <div class="footer">
+                    <div><strong>Copyright</strong> ChatIO © 2017</div>
+                </div>
+            </div>
+        </div>
+        <!-- Mainly scripts-->
+        <script src="/javascripts/js/jquery-2.1.1.js"></script>
+        <script src="/javascripts/js/bootstrap.min.js"></script>
+        <script src="/javascripts/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+        <script src="/javascripts/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+        <!-- Custom and plugin javascript-->
+        <script src="/javascripts/js/inspinia.js"></script>
+        <script src="/javascripts/js/plugins/pace/pace.min.js"></script>
+        <!-- Flot-->
+        <script src="/javascripts/js/plugins/flot/jquery.flot.js"></script>
+        <script src="/javascripts/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+        <script src="/javascripts/js/plugins/flot/jquery.flot.resize.js"></script>
+        <!-- ChartJS-->
+        <script src="/javascripts/js/plugins/chartJs/Chart.min.js"></script>
+        <!-- Peity-->
+        <script src="/javascripts/js/plugins/peity/jquery.peity.min.js"></script>
+        <!-- Peity demo-->
+        <script src="/javascripts/js/demo/peity-demo.js"></script>
+        <script src="/javascripts/js/formslider.js"></script>
+        <script src="/javascripts/js/handlebars.min.js"></script>
+        <script src="/javascripts/js.cookie.js"></script>
+        <script src="/javascripts/js/require.js"></script>
+        <script src="/javascripts/requireconfig.js"></script>
+        <script>
+            var roomIDs = JSON.parse(decodeURIComponent("{{{parseList}}}"));
+        </script>
+        <script src="/javascripts/js/home-setup.js"></script>
+    </body>
+</html>

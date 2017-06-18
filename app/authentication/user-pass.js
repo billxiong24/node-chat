@@ -20,16 +20,23 @@ const params = {
 //middleware need to return next function
 function checkLoggedOut(req, res, next) {
     if(!req.isAuthenticated()) {
-        res.redirect('/login');
+        res.redirect('/');
     }
-    return next();
+    else {
+        //need to return next to pass on to the next function,
+        //but only do it if we are logged in. Don't do this
+        //if we redirected, because that wiil send headers twice
+        return next();
+    }
 }
 function checkLoggedIn(req, res, next) {
     if(req.isAuthenticated()) {
         res.redirect('/home');
     }
+    else {
+        return next();
+    }
 
-    return next();
 }
 
 function passportSignupCallback(passport, req, res, next) {

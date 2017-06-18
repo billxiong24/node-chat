@@ -6,6 +6,7 @@ const line_render = require('./line_render.js');
 var Line = require('../models/line.js');
 var Chat =  require('../models/chat.js');
 var User =  require('../models/user.js');
+var notifRender = require('./notif_render.js');
 
 //TODO use async library to make things more asynchronous
 //transfer everything using JSON to make transferring data uniform
@@ -16,13 +17,15 @@ var ChatManager = (function() {
         this.chat_obj = chatobj;
     }
 
-
     ChatManager.prototype.loadChatLists = function (userObj, res) {
         //TODO error checking
         var chatobj = new Chat();
         var user = new User(userObj.username, undefined, undefined, userObj.first, userObj.last);
         chatobj.loadLists(user, function(rows) {
             var userJSON = user.toJSON();
+            //this is used for view rendering, will switch to clientside rendering soon
+            userJSON.parseList = encodeURIComponent(JSON.stringify(notifRender(rows)));
+            
             userJSON.list = rows;
             res.render('home', userJSON);
         });

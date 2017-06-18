@@ -13,7 +13,7 @@ define(['socket.io-client/dist/socket.io'], function(io) {
                     //};
 
 
-                    this._client = namespace === null ? new io(connectOptions) : new io(namespace, connectOptions);
+                    this._client = namespace === null ? new io() : new io(namespace);
                 }
                 
                 SocketView.prototype.joinRoom = function() {

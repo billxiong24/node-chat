@@ -1,6 +1,10 @@
 $(document).ready(function() {
-
     require(['jquery','socketview','chatinfo'], function($, socketview, chatinfo) {
+
+        Handlebars.registerHelper('testhelp', function(list) {
+
+            return JSON.parse(decodeURIComponent(list));
+        });
 
         $.ajax({
             type: 'POST',
