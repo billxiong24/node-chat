@@ -22,12 +22,12 @@ function renderLines(username, lineInfo) {
 
     var prevTime = null;
     var prevUser = null;
-    for(var i = 0; i < lineInfo.length; i++) {
+    for(var i = lineInfo.length - 1; i >= 0; i--) {
 
         lineInfo[i].direction = username === lineInfo[i].username ? "right" : "left";
         lineInfo[i].active = username === lineInfo[i].username ? "active" : "";
-
         lineInfo[i].viewUsername = (!prevUser || lineInfo[i].username !== prevUser) ? lineInfo[i].username : "";
+
 
         var time_stamp = lineInfo[i].stamp;
         //strip away micro seconds
@@ -51,6 +51,7 @@ function renderLines(username, lineInfo) {
         }
         else {
             lineInfo[i].viewStamp = getFormattedDate(date0);
+            lineInfo[i].viewUsername = lineInfo[i].username;
         }
 
         prevTime = minutes;

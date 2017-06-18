@@ -43,7 +43,7 @@ $(document).ready(function() {
                         var prevUser = null;
                         var chatDiscussion = $('.chat-discussion');
                         var messageContent = "";
-                        for(var i = lines.length - 1; i >= 0; i--){
+                        for(var i = 0; i < lines.length; i++) {
                             var dir = data.username === lines[i].username ? "right" : "left";
                             var active = data.username === lines[i].username ? "active" : "";
                             var lineViewObj = new lineview.LineView(chatDiscussion, dir, lines[i].viewStamp, active, lines[i].username, lines[i].message);

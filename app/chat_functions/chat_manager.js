@@ -65,8 +65,8 @@ var ChatManager = (function() {
                 info.lines = line_render(username, info.lines);
                 members[info.id] = info;
                 
-                req.session.lastTimeStamp = lineResults.length > 0 ?  lineResults[lineResults.length - 1].stamp : null;
-                console.log(req.session.lastTimeStamp + "on loadd");
+                req.session.lastTimeStamp = lineResults.length > 0 ?  lineResults[0].stamp : null;
+
                 res.render('chat', info);
             };
         };
@@ -97,9 +97,10 @@ var ChatManager = (function() {
         var line = new Line(chatID);
         line.readNext(req.session.lastTimeStamp, function(lineResults) {
             lineResults = lineResults !== null ? line_render(username, lineResults) : null;
+            console.log(lineResults);
 
             console.log(req.session.lastTimeStamp + " BEFORE");
-            req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[lineResults.length - 1].stamp : null;
+            req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[0].stamp : null;
             console.log(req.session.lastTimeStamp + "after");
 
             if(req.session.lastTimeStamp !== null) {
