@@ -60,6 +60,13 @@ var sessionMiddleWare = session({
 }); 
 app.use(sessionMiddleWare);
 
+app.use(function(req, res, next) {
+    if(req.session._csrf === undefined) {
+        req.session._csrf = crypto.randomBytes(20).toString('hex');
+    }
+    return next();
+});
+
 http.globalAgent.maxSockets = Infinity;
 
 /* Set up server side socket*/

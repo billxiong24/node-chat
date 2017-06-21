@@ -10,13 +10,6 @@ if(!manager) {
     manager = new Manager(new Chat());
 }
 
-router.use(function(req, res, next) {
-    if(req.session._csrf === undefined) {
-        req.session._csrf = crypto.randomBytes(20).toString('hex');
-    }
-    return next();
-});
-
 router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
     /* set all cookies here */
     //req.sessionID is stored in redis, use that instead. make sure it expires too

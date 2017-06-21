@@ -3,28 +3,14 @@ var router = express.Router();
 var authenticator = require('../app/authentication/user-pass.js');
 var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
+var check_csrf = require('../app/csrf/check_csrf.js');
 const crypto = require('crypto');
 
 
-function checkCsrf(req, res, callback) {
-    if(req.session._csrf !== req.body._csrf) {
-        res.status(403).send("Forbidden");
-        req.session._csrf = undefined;
-        return false;
-    }
-
-    callback();
-}
 
 module.exports = function(app, passport) {
     app.use('/', router);
 
-    router.use(function(req, res, next) {
-        if(req.session._csrf === undefined) {
-            req.session._csrf = crypto.randomBytes(20).toString('hex');
-        }
-        return next();
-    });
 
     router.get('/', authenticator.checkLoggedIn, function(req, res, next) {
         res.render('index', {csrfToken: req.session._csrf});
@@ -36,7 +22,7 @@ module.exports = function(app, passport) {
 
     router.post('/login', authenticator.checkLoggedIn, function(req, res, next) {
         //for whatever reason, don't return next, no idea why
-        checkCsrf(req, res, function() {
+        check_csrf(req, res, function() {
             authenticator.passportAuthCallback(passport, req, res, next);
         });
     });
@@ -46,7 +32,7 @@ module.exports = function(app, passport) {
     });
 
     router.post('/signup', function(req, res, next) {
-        checkCsrf(req, res, function() {
+        check_csrf(req, res, function() {
             authenticator.passportSignupCallback(passport, req, res, next);
         });
     });
