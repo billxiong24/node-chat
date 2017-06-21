@@ -7,6 +7,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const crypto = require('crypto');
 const Manager = require('../chat_functions/chat_manager.js');
 const Chat = require('../models/chat.js');
+const cache_functions = require('../cache/cache_functions.js');
 
 const params = {
     usernameField : 'username', 
@@ -33,7 +34,6 @@ function checkLoggedIn(req, res, next) {
     else {
         return next();
     }
-
 }
 
 function passportSignupCallback(passport, req, res, next) {
@@ -72,6 +72,7 @@ function passportAuthCallback(passport, req, res, next) {
 
         req.login(user, function(err) {
             if(err) { console.log(err); }
+
             res.send({login_error : false});
         });
 
@@ -80,7 +81,10 @@ function passportAuthCallback(passport, req, res, next) {
 
 function logOut(req, res) {
     req.logout();
-    res.redirect('/');
+    req.session.destroy(function(err) {
+        console.log("destroyed");
+        res.redirect('/');
+    });
 }
 
 function checkExistingUser(req, res) {
@@ -100,32 +104,6 @@ function checkExistingUser(req, res) {
     });
 }
 
-function signUp(req, res) {
-    //sign up logic here
-
-    //TODO encrypt password
-    var info = {
-        id: crypto.randomBytes(10).toString('hex'),
-        username: req.body.user_signup,
-        password: req.body.password_signup,
-        first: req.body.firstname_signup,
-        last: req.body.lastname_signup
-    };
-    connection.execute('INSERT INTO User SET ? ', info, function(rows) {
-        req.session.user = {
-            username: info.username,
-            first: info.first,
-            last: info.last
-        };
-        
-        res.redirect('/home');
-    },
-    function(err) {
-        console.log(err);
-        res.redirect('/');
-    });
-}
-
 function passportAuth(passport) {
 
     //functions for serializing and deserializing users for session
@@ -134,7 +112,6 @@ function passportAuth(passport) {
     });
 
     passport.deserializeUser(function(id, done) {
-        //TODO fill in query here  
         connection.execute('SELECT id, username, first, last FROM User WHERE id = ? ', [id], function(rows) {
             done(null, rows[0]);
         });
@@ -151,6 +128,7 @@ function passportAuth(passport) {
             };
             connection.execute('INSERT INTO User SET ? ', info, function(rows) {
 
+                //TODO USE user object here
                 req.session.user = {
                     username: info.username,
                     first: info.first,
@@ -170,6 +148,7 @@ function passportAuth(passport) {
     passport.use('login', new LocalStrategy(params, function(req, username, password, done) {
             //authentication here        
             //TODO these queries should go in the User class 
+            console.log(req.body._csrf, req.session._csrf);
             connection.execute('SELECT id, username, first, last FROM User WHERE User.username = ? and User.password = ?', [username, password], function(rows) {
 
                 if(rows.length === 0) {

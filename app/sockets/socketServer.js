@@ -2,15 +2,17 @@ var TypingSocket = require('./typingSocket.js');
 var NotifSocket = require('./notifSocket.js');
 var ChatSocket = require('./chatSocket.js');
 var Socket = require('./socket.js');
+var socketio_redis = require('socket.io-redis');
 
 module.exports = function(http, sessionMiddleWare) {
     var io = require('socket.io')(http);
-
-    //force sockets to use websocket protocol and not polling
-    //will help with node clustering later
-    //io.set('transports', ['websockets']);
-    //io.set('upgrade', false);
-    //io.set('force new connection', true);
+    /*
+     * Using the socket.io-redis Adapter will allow
+     * sockets to communicate across multiple
+     * processes (listening on different ports). Combined with
+     * redis store, this helps with scalability issues
+     */
+    io.adapter(socketio_redis({host: process.env.HOST, port: 6379}));
 
     io.use(function(socket, next) {
         sessionMiddleWare(socket.request, socket.request.res, next);
@@ -24,4 +26,6 @@ module.exports = function(http, sessionMiddleWare) {
 
     var chatSocketObj = new ChatSocket(io);
     chatSocketObj.init();
+
+    return io;
 };

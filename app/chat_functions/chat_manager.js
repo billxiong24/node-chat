@@ -17,7 +17,7 @@ var ChatManager = (function() {
         this.chat_obj = chatobj;
     }
 
-    ChatManager.prototype.loadChatLists = function (userObj, res) {
+    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, res) {
         //TODO error checking
         var chatobj = new Chat();
         var user = new User(userObj.username, undefined, undefined, userObj.first, userObj.last);
@@ -27,11 +27,12 @@ var ChatManager = (function() {
             userJSON.parseList = encodeURIComponent(JSON.stringify(notifRender(rows)));
             
             userJSON.list = rows;
+            userJSON.csrfToken = csrfToken;
             res.render('home', userJSON);
         });
     };
 
-    ChatManager.prototype.joinChat = function(members, username, chatCode, res) {
+    ChatManager.prototype.joinChat = function(username, chatCode, req, res) {
         var chatobj = new Chat();
         //fake builder pattern again
         chatobj.setCode(chatCode);
@@ -44,14 +45,14 @@ var ChatManager = (function() {
                     return null;
                 }
                 //TODO FIX THIS SHIT
-                members[chatobj.getID()] = chatobj.toJSON(username, 0, null);
+                req.session.members[chatobj.getID()] = chatobj.toJSON(username, 0, null);
                 res.redirect('/chats/' + chatobj.getID());
             };
         };
         chatobj.join(new User(username), sessionStore);
     };
 
-    ChatManager.prototype.loadChat = function(members, username, chatID, req, res) {
+    ChatManager.prototype.loadChat = function(username, chatID, req, res) {
 
         var transport = function(chatObj, notifObj, lineObj) {
             return function(lineResults) {
@@ -62,7 +63,7 @@ var ChatManager = (function() {
                 }
 
                 var info = chatObj.toJSON(username, notifObj.getNumNotifications(), null);
-                members[info.id] = info;
+                req.session.members[info.id] = info;
                 res.render('chat', info);
             };
         };
@@ -86,7 +87,8 @@ var ChatManager = (function() {
         chatobj.retrieveLines(onLoad);
     };
 
-    ChatManager.prototype.createChat = function(res, members, chatName, username) {
+    
+    ChatManager.prototype.createChat = function(username, chatName, req, res) {
         var chatInfo = {
             id: crypto.randomBytes(8).toString('hex'),
             chat_name: chatName,
@@ -98,7 +100,8 @@ var ChatManager = (function() {
         chat.insert(new User(username), function(result) {
             //just created chat, lines will be null
             var info = chat.toJSON(username, 0, null);
-            members[chat.getID()] = info;
+
+            req.session.members[chat.getID()] = info;
             res.redirect('/chats/' + chat.getID());
         });
 

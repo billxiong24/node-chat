@@ -43,12 +43,14 @@
                         <div class="tool-bars">
                             <form role="form" method="post" action="/chats/join_chat" class="m-t">
                                 <div class="form-group center-block">
+                                    <input name="_csrf" type="hidden" value="{{csrfToken}}">
                                     <input name="joinChat" placeholder="Enter Chat Code" autocomplete="off" required="" class="form-control custom-tool">
                                     <button type="submit" name="join_chat" class="btn btn-primary custom-tool-buttom">Join</button>
                                 </div>
                             </form>
                             <form role="form" method="post" action="/chats/create_chat" class="m-t">
                                 <div class="form-group center-block">
+                                    <input name="_csrf" type="hidden" value="{{csrfToken}}">
                                     <input name="createChat" placeholder="Create Chat Code" autocomplete="off" required="" class="form-control custom-tool">
                                     <button type="submit" name="create_chat" class="btn btn-primary custom-tool-buttom">Create</button>
                                 </div>

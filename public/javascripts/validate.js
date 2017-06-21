@@ -19,7 +19,8 @@ $(document).ready(function() {
         //TODO sanitize input
         var validate = {
             username: $('input[name=username').val(),
-            password: $('input[name=password').val()
+            password: $('input[name=password').val(),
+            _csrf: $('input[name=_csrf').val()
         };
 
         $.ajax({
@@ -28,6 +29,7 @@ $(document).ready(function() {
             contentType: 'application/json',
             url: '/login',
             success: function(data) {
+                console.log("sucess");
                 if(!data.login_error) {
                     window.location.replace('/home');
                 }

@@ -71,6 +71,9 @@
                                                             <div class="form-group">
                                                                 <input type="password" name="password_signup" placeholder="Password" required="" class="form-control"/>
                                                             </div>
+                                                            <div class="form-group">
+                                                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                            </div>
                                                             <button type="submit" name="signup" class="btn btn-primary block full-width m-b">Sign up</button>
                                                             <p class="text-muted text-center"><small>Already have an account?</small></p><a id="showregister" class="btn btn-sm btn-white btn-block">Login</a><a id="showlogin2" class="btn btn-sm btn-white btn-block">Back</a>
                                                         </div>
@@ -97,6 +100,9 @@
                                             <form role="form" action="/login" method="post" class="user-login m-t">
                                                 <div class="form-group">
                                                     <input name="username" placeholder="Username" required="" autocomplete="off" class="form-control"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
                                                 </div>
                                                 <div class="form-group">
                                                     <input type="password" name="password" placeholder="Password" required="" class="form-control"/>

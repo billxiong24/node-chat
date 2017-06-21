@@ -1,6 +1,7 @@
 const urlParser = require('url');
 const crypto = require('crypto');
 const Line = require('../models/line.js');
+const session_handler = require('../session/session_handler.js');
 
 var Socket = require('./socket.js');
 
@@ -21,7 +22,20 @@ var ChatSocket = function(io, namespace) {
                 var url = urlParser.parse(socket.handshake.headers.referer);
                 var id = parseID(url.pathname);
                 var room = io.sockets.adapter.rooms[id];
+                console.log(socket.request);
 
+                //session_handler.handleSession(function(session) {
+                    //room.sockets[socket.id] = {
+                        //username: session.user.username,
+                        //userid: session.user.id
+                    //};
+
+                    //that.getIO().to(id).emit('connected', {
+                        //notifs: session.members[id].notifs,
+                        //user: session.user, 
+                        //room: room
+                    //});
+                //});
                 room.sockets[socket.id] = {
                     username: socket.request.session.user.username,
                     userid: socket.request.session.user.id
