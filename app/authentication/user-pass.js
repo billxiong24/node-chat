@@ -148,7 +148,6 @@ function passportAuth(passport) {
     passport.use('login', new LocalStrategy(params, function(req, username, password, done) {
             //authentication here        
             //TODO these queries should go in the User class 
-            console.log(req.body._csrf, req.session._csrf);
             connection.execute('SELECT id, username, first, last FROM User WHERE User.username = ? and User.password = ?', [username, password], function(rows) {
 
                 if(rows.length === 0) {

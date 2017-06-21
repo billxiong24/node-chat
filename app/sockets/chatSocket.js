@@ -22,7 +22,6 @@ var ChatSocket = function(io, namespace) {
                 var url = urlParser.parse(socket.handshake.headers.referer);
                 var id = parseID(url.pathname);
                 var room = io.sockets.adapter.rooms[id];
-                console.log(socket.request);
 
                 //session_handler.handleSession(function(session) {
                     //room.sockets[socket.id] = {
