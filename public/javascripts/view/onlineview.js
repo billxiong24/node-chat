@@ -7,9 +7,18 @@ define(function() {
                 this._userid = userid;
             }
 
-            OnlineView.prototype.renderOnlineUser = function() {
-                return '<div class="chat-user-name"> <input class = "btn online-list" style="" type="submit" name = "chatname" value="'+this._username+'"><img src="" id="'+this._userid+'"><div class="label-warning notif pull-right" style="">  </div> </div>';
+            OnlineView.prototype.renderOnlineUser = function(partialObj) {
+                var html = partialObj.html();
+                var template = Handlebars.compile(html);
+                return template(toJSON(this));
             };
+
+            function toJSON(that) {
+                return {
+                    username: that._username,
+                    userid: that._userid
+                };
+            }
 
             return OnlineView;
         })()

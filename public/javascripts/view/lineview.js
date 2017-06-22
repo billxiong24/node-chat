@@ -1,8 +1,7 @@
 define(function() {
     return {
         LineView: (function() {
-            function LineView(jqChatObj, dir, time, active, username, message) {
-                this._jqChatObj = jqChatObj;
+            function LineView(dir, time, active, username, message) {
                 this._dir = dir;
                 this._time = time;
                 this._active = active;
@@ -10,29 +9,30 @@ define(function() {
                 this._message = message;
             }
 
-            LineView.prototype.renderOtherUserMessage = function() {
-                return '<div class="'+this._dir+' chat-line">  <div class="chat-message '+this._active+'" style="text-align: left">' + this._message + '</div> </div>';
+            LineView.prototype.generateMessage = function(partialObj) {
+                var html = partialObj.html();
+                var template = Handlebars.compile(html);
+                return template(toJSON(this));
             };
 
-            LineView.prototype.renderOwnMessage = function() {
-                var dir = this._dir;
-                var time = this._time;
-                var username = this._username;
-                var active = this._active;
-                var message = this._message;
+            function toJSON(that) {
+                return {
+                    direction: that._dir,
+                    viewStamp: that._time,
+                    viewUsername: that._username,
+                    active: that._active,
+                    message: that._message
+                };
+            }
 
-                return '<div class="'+dir+' chat-line"> <div class="author-name" id="mess"> <div class="date-chat">' + time + ' </div> <a class="author-name" href="#">' + username + '</a> </div> <div class="chat-message '+active+'" style="text-align: left">' + message + '</div> </div>';
-                
+
+            LineView.prototype.appendMessage = function(jqObj, message) {
+                jqObj.append(message);
             };
 
-            LineView.prototype.appendMessage = function(message) {
-                this._jqChatObj.append($(message));
+            LineView.prototype.scrollDown = function(jqObj, scrollDistance) {
+                jqObj.scrollTop(scrollDistance);
             };
-
-            LineView.prototype.scrollDown = function(scrollDistance) {
-                this._jqChatObj.scrollTop(scrollDistance);
-            };
-    
 
             return LineView;
         })()

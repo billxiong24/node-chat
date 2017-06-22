@@ -1,4 +1,4 @@
-define(['socketview', 'notifview'], function(socketview, notifview) {
+define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, lineview) {
     return {
         ChatView: (function() {
             function ChatView(userid, socketview, notifview, userSockets={}) {
@@ -99,9 +99,22 @@ define(['socketview', 'notifview'], function(socketview, notifview) {
                     that._notifview.incrementNotif();
                 }
 
+                var viewUsername = (!that._lastMessage || that._lastMessage !== msg.cookie) ? msg.username : "";
+                var viewStamp = "";
+
+                var lineInfo = {
+                    direction: dir,
+                    //TODO fix dis
+                    viewStamp: "",
+                    viewUsername:  viewUsername, 
+                    active: active,
+                    message: msg.message
+                };
+
+                lineViewObj = new lineview.LineView(dir, viewStamp, active, viewUsername, msg.message);
+
                 numMessages.text(that._notifview.getNotif());
-                var ownUser = !that._lastMessage || that._lastMessage !== msg.cookie;
-                var message = displayLine(dir, ownUser, msg.username, time, active, msg.message);
+                var message = displayLine(lineViewObj);
                 that._lastMessage = msg.cookie;
             }
 
