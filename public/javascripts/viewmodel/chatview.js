@@ -15,17 +15,28 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
             ChatView.prototype.listenForOnlineUsers = function(onlineList, numOnlineObj, renderList) {
 
                 var that = this;
+
+                this._socketview.addListener('online', function(data) {
+
+                    if(!(data.user.id in that._userSockets)) {
+                        that._userSockets[data.user.id] = data.user.username;
+                        onlineList.append(renderList(data.user.username, data.user.id));
+                    }
+                });
+
                 this._socketview.addListener('connected', function(data) {
                     //if the socket response is you and not some other guy
                     if(that._userid === data.user.id) {
                         that._notifview.setNotif(data.notifs);
                     }
-                    updateOnlineUsers(data, onlineList, numOnlineObj, renderList);
+                    that._socketview.send('online', {});
                 }); 
 
                 this._socketview.addListener('disconnected', function(data) {
-                    //delete userSockets[data.room.sockets[data.user.username]];
-                    updateOnlineUsers(data, onlineList, numOnlineObj, renderList);
+                    if(data.user.id in that._userSockets) { 
+                        delete that._userSockets[data.user.id];
+                    }
+                    $('#'+data.user.id).remove();
                 });
             };
 
@@ -54,7 +65,6 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
 
             function updateOnlineUsers(data, onlineList, numOnlineObj, renderList) {
                 onlineList.empty();
-                this._userSockets = {};
                 onlineList.append($(displayOnlineUsers(data.room.sockets, data.user.username, numOnlineObj, renderList)));
             }
             

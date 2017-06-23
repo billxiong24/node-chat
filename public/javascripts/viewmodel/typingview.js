@@ -30,7 +30,7 @@ define(['socketview'], function(socketview) {
             TypingView.prototype.listenForTyping = function(gif) {
 
                 this._socketview.addListener('typing', function(data) {
-                    var userEl = $('#'+data.userid);
+                    var userEl = $('img[target='+data.userid+']');
                     if(data.isTyping) {
                         userEl.attr('src', gif);
                     }
@@ -41,7 +41,7 @@ define(['socketview'], function(socketview) {
             };
 
             function resetTyping(userid) {
-                $('#'+userid).attr('src', "");
+                $('img[target='+userid+']').attr('src', "");
             }
 
 

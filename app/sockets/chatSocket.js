@@ -23,18 +23,6 @@ var ChatSocket = function(io, namespace) {
                 var id = parseID(url.pathname);
                 var room = io.sockets.adapter.rooms[id];
 
-                //session_handler.handleSession(function(session) {
-                    //room.sockets[socket.id] = {
-                        //username: session.user.username,
-                        //userid: session.user.id
-                    //};
-
-                    //that.getIO().to(id).emit('connected', {
-                        //notifs: session.members[id].notifs,
-                        //user: session.user, 
-                        //room: room
-                    //});
-                //});
                 room.sockets[socket.id] = {
                     username: socket.request.session.user.username,
                     userid: socket.request.session.user.id
@@ -44,6 +32,15 @@ var ChatSocket = function(io, namespace) {
                     notifs: socket.request.session.members[id].notifs,
                     user: socket.request.session.user, 
                     room: room
+                });
+            });
+
+            socket.on('online', function(data) {
+                var url = urlParser.parse(socket.handshake.headers.referer);
+                var id = parseID(url.pathname);
+                that.getIO().to(id).emit('online', {
+                    user: socket.request.session.user,
+                    notifs: socket.request.session.members[id].notifs
                 });
             });
 
