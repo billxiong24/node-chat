@@ -28,26 +28,23 @@ module.exports = function(cluster, http, httpHiddenServer, PORT) {
             addRespawnHandler(workers, i);
         }
         
-        var httpServer = http.createServer();
-        httpServer.on('connection', function(conn) {
+         http.createServer().on('connection', function(conn) {
             conn.pause();
             if(conn.remoteAddress) {
                 var hashIndex = ipHash(conn.remoteAddress, numCPUs);
                 var worker = workers[hashIndex];
                 worker.send("sticky-session", conn);
             }
-        });
-
-        httpServer.listen(PORT, '0.0.0.0');
+        }).listen(PORT, '0.0.0.0');
     }
     else {
 
+        //listen for message from master process
         process.on('message', function(message, conn) {
-            if(message !== 'sticky-session') {
-                return;
+            if(message === 'sticky-session') {
+                httpHiddenServer.emit('connection', conn);
+                conn.resume();
             }
-            httpHiddenServer.emit('connection', conn);
-            conn.resume();
         });
     }
 };

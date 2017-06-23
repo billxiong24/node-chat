@@ -24,7 +24,7 @@ module.exports = function(app, passport) {
         //for whatever reason, don't return next, no idea why
         check_csrf(req, res, function() {
             authenticator.passportAuthCallback(passport, req, res, next);
-        });
+        }, false);
     });
 
     router.get('/signup', authenticator.checkLoggedIn, function(req, res, next) {
@@ -34,7 +34,7 @@ module.exports = function(app, passport) {
     router.post('/signup', function(req, res, next) {
         check_csrf(req, res, function() {
             authenticator.passportSignupCallback(passport, req, res, next);
-        });
+        }, false);
     });
 
     router.post('/signup_auth', authenticator.checkLoggedIn, function(req, res, next) {
