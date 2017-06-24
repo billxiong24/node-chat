@@ -12,26 +12,15 @@ if(!manager) {
 
 router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
     /* set all cookies here */
-    //req.sessionID is stored in redis, use that instead. make sure it expires too
-
     res.cookie('userid', req.session.user.id, {httpOnly: false}); 
-    manager.loadChatLists(req.session._csrf, req.session.user, res);
-
-    //session_handler.handleSession(req.sessionID, function(session) {
-        ////set cookie containg userid for client session, we are local storage now
-        //res.cookie('userid', session.user.id, {httpOnly: false}); 
-        //manager.loadChatLists(session.user, res);
-    //});
+    manager.loadChatLists(req.csrfToken(), req.session.user, res);
 
 });
 
 /* POST request for fetching all data needed for home page */
 router.post('/fetch_home', authenticator.checkLoggedOut, function(req, res, next) {
     /* send all relevant data here */
-
-    res.send({cookie: req.session.user.id});
-    //session_handler.handleSession(req.sessionID, function(session) {
-    //});
+        res.send({cookie: req.session.user.id});
 });
 
 module.exports = router;

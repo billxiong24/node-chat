@@ -32,7 +32,7 @@ var ChatManager = (function() {
         });
     };
 
-    ChatManager.prototype.joinChat = function(username, chatCode, req, res) {
+    ChatManager.prototype.joinChat = function(username, chatCode, members, res) {
         var chatobj = new Chat();
         //fake builder pattern again
         chatobj.setCode(chatCode);
@@ -45,14 +45,14 @@ var ChatManager = (function() {
                     return null;
                 }
                 //TODO FIX THIS SHIT
-                req.session.members[chatobj.getID()] = chatobj.toJSON(username, 0, null);
+                members[chatobj.getID()] = chatobj.toJSON(username, 0, null);
                 res.redirect('/chats/' + chatobj.getID());
             };
         };
         chatobj.join(new User(username), sessionStore);
     };
 
-    ChatManager.prototype.loadChat = function(username, chatID, req, res) {
+    ChatManager.prototype.loadChat = function(username, chatID, members, csrfToken, res) {
 
         var transport = function(chatObj, notifObj, lineObj) {
             return function(lineResults) {
@@ -63,8 +63,11 @@ var ChatManager = (function() {
                 }
 
                 var info = chatObj.toJSON(username, notifObj.getNumNotifications(), null);
-                req.session.members[info.id] = info;
-                res.render('chat', info);
+                members[info.id] = info;
+                
+                var infoDeepCopy = JSON.parse(JSON.stringify(info));
+                infoDeepCopy.csrfToken = csrfToken;
+                res.render('chat', infoDeepCopy);
             };
         };
         var chatobj = new Chat(chatID);
@@ -88,7 +91,7 @@ var ChatManager = (function() {
     };
 
     
-    ChatManager.prototype.createChat = function(username, chatName, req, res) {
+    ChatManager.prototype.createChat = function(username, chatName, members, res) {
         var chatInfo = {
             id: crypto.randomBytes(8).toString('hex'),
             chat_name: chatName,
@@ -101,7 +104,7 @@ var ChatManager = (function() {
             //just created chat, lines will be null
             var info = chat.toJSON(username, 0, null);
 
-            req.session.members[chat.getID()] = info;
+            members[chat.getID()] = info;
             res.redirect('/chats/' + chat.getID());
         });
 
@@ -126,7 +129,6 @@ var ChatManager = (function() {
                 res.end();
             }
         });
-        
     };
 
     return ChatManager;

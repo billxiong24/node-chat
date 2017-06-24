@@ -4,6 +4,7 @@ var authenticator = require('../app/authentication/user-pass.js');
 var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
 var check_csrf = require('../app/csrf/check_csrf.js');
+var session_handler = require('../app/session/session_handler.js');
 const crypto = require('crypto');
 
 
@@ -13,11 +14,12 @@ module.exports = function(app, passport) {
 
 
     router.get('/', authenticator.checkLoggedIn, function(req, res, next) {
-        res.render('index', {csrfToken: req.session._csrf});
+        console.log(req);
+        res.render('index', {csrfToken: req.csrfToken()});
     });
 
     router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
-        res.render('index', {csrfToken: req.session._csrf, error: req.flash('error')[0]});
+        res.render('index', {csrfToken: req.csrfToken(), error: req.flash('error')[0]});
     });
 
     router.post('/login', authenticator.checkLoggedIn, function(req, res, next) {
@@ -28,7 +30,7 @@ module.exports = function(app, passport) {
     });
 
     router.get('/signup', authenticator.checkLoggedIn, function(req, res, next) {
-        res.render('index', {csrfToken: req.session._csrf});
+        res.render('index', {csrfToken: req.csrfToken()});
     });
 
     router.post('/signup', function(req, res, next) {

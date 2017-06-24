@@ -1,13 +1,11 @@
 $(document).ready(function() {
     require(['jquery','socketview','chatinfo'], function($, socketview, chatinfo) {
 
-        Handlebars.registerHelper('testhelp', function(list) {
-
-        });
-
         $.ajax({
             type: 'POST',
-            data: "", 
+            data: JSON.stringify({
+                _csrf: $('input[name=_csrf').val()
+            }), 
             contentType: 'application/json',
             url: '/home/fetch_home',
             success: function(data) {
@@ -17,6 +15,9 @@ $(document).ready(function() {
                 //TODO set up other important information, such as chat lists
                 var userid = sessionStorage.getItem('userid');
                 setup(userid, $, chatinfo, socketview);
+            },
+            error: function(error) {
+                console.log(error);
             }
         });
     });

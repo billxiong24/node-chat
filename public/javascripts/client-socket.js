@@ -2,38 +2,46 @@ $(document).ready(function() {
 
     //TODO organize ajax calls
     //client side rendering
+    var csrfTokenObj = {
+        _csrf: $('input[name=_csrf').val()
+    };
     $.ajax({
         url: window.location.pathname +'/initLines',
         type: 'POST',
+        data: JSON.stringify(csrfTokenObj),
+        contentType: 'application/json',
         success: function (data) {
             var html = $('#message-template').html();
             var template = Handlebars.compile(html);
-            $('.chat-discussion').append(template(data.lines));
-            $('.chat-discussion').scrollTop(2000000);
+            var chatDiscussion = $('.chat-discussion');
+            chatDiscussion.append(template(data.lines));
+            chatDiscussion.scrollTop(2000000);
         }
     });
 
     $('.chat-discussion').scroll(function() {
         var firstMessage = $('.chat-line:first');
-        if($(this).scrollTop() === 0) {
+        if($(this).scrollTop() !== 0) { return; }
             //ajax call to the server
-            $.ajax({
-                url: '/chats/loadLines',
-                type: 'POST',
-                data: {chatID: window.location.pathname.split("/")[2]},
-                success: function (data) {
-                    if(data.lines === null) {return;}
-                    var chatDiscussion = $('.chat-discussion');
+        $.ajax({
+            url: '/chats/loadLines',
+            type: 'POST',
+            data: {
+                chatID: window.location.pathname.split("/")[2],
+                _csrf: csrfTokenObj._csrf
+            },
+            success: function (data) {
+                if(data.lines === null) {return;}
+                var chatDiscussion = $('.chat-discussion');
 
-                    var html = $('#message-template').html();
-                    var template = Handlebars.compile(html);
-                    chatDiscussion.prepend(template(data.lines));
+                var html = $('#message-template').html();
+                var template = Handlebars.compile(html);
+                chatDiscussion.prepend(template(data.lines));
 
-                    //TODO dont hardcode this, okay for now
-                    chatDiscussion.scrollTop(firstMessage.offset().top - 150);
-                }
-            });
-        }
+                //TODO dont hardcode this, okay for now
+                chatDiscussion.scrollTop(firstMessage.offset().top - 150);
+            }
+        });
     });
 
     var dependencies = ['jquery', 'onlineview', 'lineview', 'socketview', 'typingview', 'notifview', 'chatview'];
@@ -41,7 +49,7 @@ $(document).ready(function() {
         if(!sessionStorage.getItem('userid')) {
             $.ajax({
                 type: 'POST',
-                data: "", 
+                data: JSON.stringify(csrfTokenObj),
                 contentType: 'application/json',
                 url: '/home/fetch_home',
                 success: function(data) {

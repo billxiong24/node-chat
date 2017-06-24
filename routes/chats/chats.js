@@ -13,26 +13,11 @@ if(!manager) {
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     /* TODO CACHE THIS SHIT*/
-
-    manager.loadChat(req.session.user.username, req.params.chatID, req, res);
-    
-    //session_handler.handleSession(req.sessionID, function(session) {
-    //});
-    //if(!req.session.members[req.params.chatID]) {
-        //manager.loadChat(req.session.members, req.session.user.username, req.params.chatID, res);
-    //}
-
-    //else {
-        //res.render('chat', req.session.members[req.params.chatID]);
-    //}
+        manager.loadChat(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res);
 });
 
 router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
-
-    manager.loadMoreLines(req.session.user.username, req.body.chatID, req.session.lastTimeStamp, req, res);
-
-    //session_handler.handleSession(req.sessionID, function(session) {
-    //});
+    manager.loadMoreLines(req.session.user.username, req.body.chatID, req.session.lastTimeStamp, req, res); 
 });
 
 router.post('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
@@ -46,19 +31,15 @@ router.post('/:chatID/initLines', authenticator.checkLoggedOut, function(req, re
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
 
     check_csrf(req, res, function() {
-        manager.joinChat(req.session.user.username, req.body.joinChat, req, res);
-    });
-    //session_handler.handleSession(req.sessionID, function(session) {
-    //});
+        manager.joinChat(req.session.user.username, req.body.joinChat, req.session.members, res);
+    }, false);
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
 
     check_csrf(req, res, function() {
-        manager.createChat(req.session.user.username, req.body.createChat, req, res);
-    });
-    //session_handler.handleSession(req.sessionID, function(session) {
-    //});
+        manager.createChat(req.session.user.username, req.body.createChat, req.session.members, res);
+    }, false);
     //req.session.members[info.id] = info; 
 });
 

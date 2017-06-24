@@ -3,6 +3,7 @@ $(document).ready(function() {
         var validate = {};
         var param = $('input[name=user_signup').val();
         validate.username = param;
+        validate._csrf = $('input[name=_csrf').val();
         $.ajax({
             type: 'POST',
             data: JSON.stringify(validate),

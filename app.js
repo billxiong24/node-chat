@@ -17,13 +17,10 @@ const flash = require('connect-flash');
 const expressHandlebars = require('express-handlebars');
 const helmet = require('helmet');
 const cluster = require('cluster');
+const csrf = require('csurf');
 
 var PORT = process.env.PORT || 3000;
 var HOST = process.env.HOST || 'localhost';
-
-//ip hash function
-
-
 
 //LOAD TESTING
 if(process.env.NODE_ENV === "loadtest") {
@@ -62,20 +59,29 @@ function init(port) {
         secret: crypto.randomBytes(10).toString('hex'),
         resave: true,
         saveUninitialized: true,
-        //store : new RedisStore({
-            //host: process.env.HOST,
-            //port: process.env.REDIS_PORT || 6379,
-            //client: cache_store
-        //})
+        store : new RedisStore({
+            host: process.env.HOST,
+            port: process.env.REDIS_PORT || 6379,
+            client: cache_store
+        })
     }); 
     app.use(sessionMiddleWare);
 
-    app.use(function(req, res, next) {
-        if(req.session._csrf === undefined) {
-            req.session._csrf = crypto.randomBytes(20).toString('hex');
-        }
+    app.use(csrf());
+    
+    //store csrf token in cookie
+    app.use(function (req, res, next) {
+        res.cookie('XSRF-TOKEN', req.csrfToken());
+        res.locals.csrftoken = req.csrfToken();
         return next();
     });
+    
+    //app.use(function(req, res, next) {
+        //if(req.session._csrf === undefined) {
+            //req.session._csrf = crypto.randomBytes(20).toString('hex');
+        //}
+        //return next();
+    //});
 
     http.globalAgent.maxSockets = Infinity;
 
@@ -117,7 +123,6 @@ function init(port) {
 
     return httpServer;
 }
-
 
 
 //to disable clustering and ip hashing, comment below line and just call init(3000);
