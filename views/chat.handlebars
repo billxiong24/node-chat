@@ -41,7 +41,8 @@
                                 </li>
                                 <li>
                                     <form method="post" action="/logout">
-                                        <button name="logout" type="submit" class="btn small-buttons"><i class="fa fa-sign-out"></i></button>
+                                        <input name="logout" type="submit" class="btn small-buttons"><i class="fa fa-sign-out"></i></button>
+                                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
                                     </form>
                                 </li>
                             </ul>
@@ -91,7 +92,7 @@
                                     <div class="row">
                                         <div class="col-xs-7 cell2">
                                             <div class="chat-discussion content">
-                                                {{>messages}}
+                                                {{> messages}}
                                                 {{> line}}
                                                 <div id="end-chat"></div>
                                             </div>
@@ -148,14 +149,13 @@
                 <script src="/javascripts/js/plugins/metisMenu/jquery.metisMenu.js"></script>
                 <script src="/javascripts/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
                 <!-- Custom and plugin javascript-->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/0.8.4/purify.min.js"></script>
                 <script src="/javascripts/js/inspinia.js"></script>
                 <script src="/javascripts/js/plugins/pace/pace.min.js"></script>
                 <script src="/javascripts/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-                <!--script(src='/javascripts/js/require.js')-->
                 <script src="/javascripts/js.cookie.js"></script>
-                <!--script(src='/javascripts/socket.io-client/dist/socket.io.js')-->
-                <script src="/javascripts/js/handlebars.min.js"></script>
-                <script>var roomID = "{{id}}" </script>
+                {{!-- <script src="/javascripts/js/handlebars.min.js"></script> --}}
+                <script> const roomID = "{{id}}" </script>
                 <script src="/javascripts/js/require.js"></script>
                 <script src="/javascripts/requireconfig.js"></script>
                 <script src="/javascripts/client-socket.js"></script>

@@ -47,7 +47,6 @@ function init(port) {
 
     app.use(helmet());
     app.use(helmet.hidePoweredBy());
-    //TODO include csrf token in frontend input fields
 
     app.use(logger('dev'));
     app.use(bodyParser.json());
@@ -67,25 +66,9 @@ function init(port) {
     }); 
     app.use(sessionMiddleWare);
 
+    //this middleware stores a csrf token in cookie
     app.use(csrf());
-    
-    //store csrf token in cookie
-    app.use(function (req, res, next) {
-        res.cookie('XSRF-TOKEN', req.csrfToken());
-        res.locals.csrftoken = req.csrfToken();
-        return next();
-    });
-    
-    //app.use(function(req, res, next) {
-        //if(req.session._csrf === undefined) {
-            //req.session._csrf = crypto.randomBytes(20).toString('hex');
-        //}
-        //return next();
-    //});
-
     http.globalAgent.maxSockets = Infinity;
-
-    /* Set up server side socket*/
 
     //handles back button problem of caching- reloads page every time to persist session
     app.use(function(req, res, next) {

@@ -1,7 +1,6 @@
-define(function() {
+define(['js/handlebars.min'], function(Handlebars) {
     return {
         OnlineView: (function() {
-            
             function OnlineView(username, userid) {
                 this._username = username;
                 this._userid = userid;

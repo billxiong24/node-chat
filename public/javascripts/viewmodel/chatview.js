@@ -15,12 +15,16 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
             ChatView.prototype.listenForOnlineUsers = function(onlineList, numOnlineObj, renderList) {
 
                 var that = this;
+                var numMessages = $('.numMessages');
 
                 this._socketview.addListener('online', function(data) {
 
                     if(!(data.user.id in that._userSockets)) {
                         that._userSockets[data.user.id] = data.user.username;
                         onlineList.append(renderList(data.user.username, data.user.id));
+                        updateNumOnlineUsers(Object.keys(that._userSockets).length, numOnlineObj);
+                        //this._notifview.getNotif will have been set in "connected" event
+                        numMessages.text(that._notifview.getNotif());
                     }
                 });
 
@@ -37,6 +41,7 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                         delete that._userSockets[data.user.id];
                     }
                     $('#'+data.user.id).remove();
+                    updateNumOnlineUsers(Object.keys(that._userSockets).length, numOnlineObj);
                 });
             };
 
@@ -63,33 +68,10 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 
             };
 
-            function updateOnlineUsers(data, onlineList, numOnlineObj, renderList) {
-                onlineList.empty();
-                onlineList.append($(displayOnlineUsers(data.room.sockets, data.user.username, numOnlineObj, renderList)));
-            }
-            
-            function displayOnlineUsers(room, username, numOnlineObj, renderList) {
-                var online = "";
-                var size = 0;
-                for(var key in room) {
-                    if(room[key].userid in this._userSockets) {
-                        continue;
-                    }
-
-                    online += renderList(room[key].username, room[key].userid);
-                    //doesn't matter what value is
-                    this._userSockets[room[key].userid] = null;
-                    size++;
-                }
-                updateNumOnlineUsers(size, numOnlineObj);
-                return online;
-            }
-            
             function updateNumOnlineUsers(num, numOnlineObj) {
                 numOnlineObj.text("Online now: " + num);
             }
             
-
             function displayMessage(that, msg, userid, displayLine) {
                 if(msg.message.length === 0) {
                     return;
@@ -124,6 +106,7 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 lineViewObj = new lineview.LineView(dir, viewStamp, active, viewUsername, msg.message);
 
                 numMessages.text(that._notifview.getNotif());
+
                 var message = displayLine(lineViewObj);
                 that._lastMessage = msg.cookie;
             }

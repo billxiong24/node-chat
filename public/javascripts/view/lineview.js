@@ -1,4 +1,4 @@
-define(function() {
+define(['js/handlebars.min'], function(Handlebars) {
     return {
         LineView: (function() {
             function LineView(dir, time, active, username, message) {

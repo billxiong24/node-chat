@@ -16,7 +16,9 @@ requirejs.config({
         notifview: 'viewmodel/notifview',
         chatview: 'viewmodel/chatview',
         lineview: 'view/lineview',
-        onlineview: 'view/onlineview'
+        onlineview: 'view/onlineview',
+        handlebars: 'js/handlebars.min',
+        chatAjaxService: 'service/chatAjaxService'
     },
     waitSeconds: 3
 });
