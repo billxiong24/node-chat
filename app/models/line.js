@@ -1,18 +1,12 @@
 const connection = require('../database/config.js');
 
-var Line = (function() {
-    /*
-     *Constructor
-     */
-    function Line(chat_id=null, username=undefined, message=undefined, line_id=undefined) {
-        this._chat_id = chat_id; 
-        this._username = username; 
-        this._message = message; 
-        this._line_id = line_id; 
-    }
+var Line = function Line(chat_id=null, username=undefined, message=undefined, line_id=undefined) {
+    this._chat_id = chat_id; 
+    this._username = username; 
+    this._message = message; 
+    this._line_id = line_id; 
 
-    //this will come handly later
-    Line.prototype.toJSON = function() {
+    this.toJSON = function() {
         return {
             chat_id: this._chat_id,
             username: this._username,
@@ -23,30 +17,30 @@ var Line = (function() {
     /*
      *Getters
      */
-    Line.prototype.getChatID = function() {
+    this.getChatID = function() {
         return this._chat_id;
     };
 
-    Line.prototype.getUsername = function() {
+    this.getUsername = function() {
         return this._username;
     };
 
-    Line.prototype.getMessage = function() {
+    this.getMessage = function() {
         return this._message;
     };
 
-    Line.prototype.getLineID = function() {
+    this.getLineID = function() {
         return this._line_id;
     };
 
     /*
      *Setter
      */
-    Line.prototype.setChatID = function(id) {
+    this.setChatID = function(id) {
         this._chat_id = id;
     };
 
-    Line.prototype.insert = function() {
+    this.insert = function() {
         var info = [this._chat_id, this._username, this._message, this._line_id];
         //TRIGGER IncrementNotification takes care of incrementing notifications
         //inserts are implicitly part of autocommit transaction? so ok
@@ -58,7 +52,7 @@ var Line = (function() {
         });
     };
 
-    Line.prototype.read = function() {
+    this.read = function() {
         var chatID = this._chat_id;
 
         return function(poolConnection) {
@@ -71,7 +65,7 @@ var Line = (function() {
         };
     };
 
-    Line.prototype.readNext = function(latestStamp, callback) {
+    this.readNext = function(latestStamp, callback) {
         var chatID = this._chat_id;
 
         var quer = function(poolConnection) {
@@ -88,8 +82,6 @@ var Line = (function() {
 
         connection.executePoolTransaction([quer, callback], function(err) {console.log(err);});
     };
-
-    return Line;
-})();
+};
 
 module.exports = Line;

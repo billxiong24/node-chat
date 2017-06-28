@@ -15,6 +15,9 @@ function chatAjaxRequire(Handlebars) {
             contentType: 'application/json',
             success: function (data) {
                 callback(data, Handlebars);
+            },
+            error: function(err) {
+                console.log(err);
             }
         });
     };        

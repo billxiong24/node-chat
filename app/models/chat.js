@@ -1,6 +1,8 @@
 const connection = require('../database/config.js');
 var Line = require('./line.js');
+var LineCache = require('./line_cache.js');
 var Notification = require('./notification.js');
+const cache_functions = require('../cache/cache_functions.js');
 
 var Chat = (function() {
     /*
@@ -114,7 +116,7 @@ var Chat = (function() {
             }
             return conn;
         };
-        var getLines = chatLine.read();
+
         var releasing = function(result) {
             console.log("releasing connection");
             connection.release(conn);
@@ -122,14 +124,15 @@ var Chat = (function() {
 
         var commit = transport(that, notif, chatLine);
 
-        connection.executePoolTransaction([getChat, transferChat, getNumNotifs, transferNotifs, getLines, commit, releasing], function(err) { 
+        connection.executePoolTransaction([getChat, transferChat, getNumNotifs, transferNotifs, commit, releasing], function(err) { 
             throw err; 
         });
     };
 
     Chat.prototype.retrieveLines = function(callback) {
-        var chatLine = new Line(this._id);
+        var chatLine = new LineCache(this._id);
         var getLines = chatLine.read();
+
 
         var conn = null;
         var setConn = function(connect) {
@@ -141,8 +144,21 @@ var Chat = (function() {
             console.log("releasing connection");
             connection.release(conn);
         };
+        var appendCacheLines = function(cacheResults) {
+            return function(lineResults) {
+                //TODO this is stupid, find a way around this
+                for(var i = 0; i < cacheResults.length; i++)   {
+                    cacheResults[i] = JSON.parse(cacheResults[i]);
+                }
 
-        connection.executePoolTransaction([setConn, getLines, callback, releaseConn], function(err) {throw err;});
+                return cacheResults.length === 0 ? lineResults : cacheResults.concat(lineResults);
+            };
+        };
+
+        cache_functions.retrieveArray(this._id, 0, -1, function(err, result) {
+            connection.executePoolTransaction([setConn, getLines, appendCacheLines(result), callback, releaseConn], function(err) {throw err;});
+        });
+
     };
 
 

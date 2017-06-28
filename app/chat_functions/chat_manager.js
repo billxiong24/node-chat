@@ -4,6 +4,7 @@ const sql = require('promise-mysql');
 const line_render = require('./line_render.js');
 
 var Line = require('../models/line.js');
+var LineCache = require('../models/line_cache.js');
 var Chat =  require('../models/chat.js');
 var User =  require('../models/user.js');
 var notifRender = require('./notif_render.js');
@@ -74,7 +75,7 @@ var ChatManager = (function() {
         chatobj.load(new User(username), transport);
     };
 
-    ChatManager.prototype.loadLines  = function(username, chatID, req, res) {
+    ChatManager.prototype.loadLines = function(username, chatID, req, res) {
         var chatobj = new Chat(chatID);
 
         var onLoad = function(lineResults) {
@@ -87,6 +88,7 @@ var ChatManager = (function() {
             console.log(req.session.lastTimeStamp + " on load tmee");
             res.status(200).send({lines: lineResults});
         };
+
         chatobj.retrieveLines(onLoad);
     };
 
@@ -112,7 +114,7 @@ var ChatManager = (function() {
     };
 
     ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, req, res) {
-        var line = new Line(chatID);
+        var line = new LineCache(chatID);
         line.readNext(req.session.lastTimeStamp, function(lineResults) {
             lineResults = lineResults !== null ? line_render(username, lineResults) : null;
 

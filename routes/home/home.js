@@ -20,7 +20,7 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
 /* POST request for fetching all data needed for home page */
 router.post('/fetch_home', authenticator.checkLoggedOut, function(req, res, next) {
     /* send all relevant data here */
-        res.send({cookie: req.session.user.id});
+    res.send({cookie: req.session.user.id});
 });
 
 module.exports = router;

@@ -1,7 +1,6 @@
 /**
  * user-password authentication using passport.js
  */
-
 const connection = require('../database/config.js');
 const LocalStrategy = require('passport-local').Strategy;
 const crypto = require('crypto');
@@ -72,7 +71,7 @@ function passportAuthCallback(passport, req, res, next) {
 
         req.login(user, function(err) {
             if(err) { console.log(err); }
-
+            
             res.send({login_error : false});
         });
 
