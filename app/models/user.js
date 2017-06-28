@@ -1,36 +1,32 @@
 const connection = require('../database/config.js');
 
-var User = (function() {
-
-    //fake builder pattern
-    function User(username, id=undefined, password=undefined, first=undefined, last=undefined) {
-        this._id = id;    
-        this._username = username;    
-        this._password = password;    
-        this._first = first;    
-        this._last = last;    
-    }
+var User = function User(username, id=undefined, password=undefined, first=undefined, last=undefined) {
+    this._id = id;    
+    this._username = username;    
+    this._password = password;    
+    this._first = first;    
+    this._last = last;    
 
     /*
      *Getters
      */
-    User.prototype.getID = function() {
+    this.getID = function() {
         return this._id;
     };
 
-    User.prototype.getUsername = function() {
+    this.getUsername = function() {
         return this._username;
     };
 
-    User.prototype.getFirst = function() {
+    this.getFirst = function() {
         return this._first;
     };
     
-    User.prototype.getLast = function() {
+    this.getLast = function() {
         return this._last;
     };
 
-    User.prototype.toJSON = function() {
+    this.toJSON = function() {
         return {
             username: this._username,
             id: this._id,
@@ -39,9 +35,8 @@ var User = (function() {
             last: this._last
         }; 
     };
-    
-    return User;
-})();
+};
+
 
 
 module.exports = User;

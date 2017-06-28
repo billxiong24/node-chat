@@ -4,50 +4,42 @@ var LineCache = require('./line_cache.js');
 var Notification = require('./notification.js');
 const cache_functions = require('../cache/cache_functions.js');
 
-var Chat = (function() {
-    /*
-     *Constructor
-     */
-    function Chat(id=null, name=null, code=null, stamp=null) {
+var Chat = function Chat(id=null, name=null, code=null, stamp=null) {
         //emulates private variables, do not access outside
-        this._id = id;
-        this._name = name;
-        this._code = code;
-        this._stamp = stamp;
-    }
+    this._id = id;
+    this._name = name;
+    this._code = code;
+    this._stamp = stamp;
 
-    /*
-     *Getters
-     */
-    Chat.prototype.getID = function() {
+    this.getID = function() {
         return this._id;
     };
 
-    Chat.prototype.getName = function() {
+    this.getName = function() {
         return this._name;
     };
 
-    Chat.prototype.getCode = function() {
+    this.getCode = function() {
         return this._code;
     };
-    Chat.prototype.getStamp = function() {
+    this.getStamp = function() {
         return this._stamp;
     };
 
     /*
      *Setter
      */
-    Chat.prototype.setName = function(name) {
+    this.setName = function(name) {
         this._name= name; 
     };
-    Chat.prototype.setID = function(id) {
+    this.setID = function(id) {
         this._id = id; 
     };
-    Chat.prototype.setCode = function(code) {
+    this.setCode = function(code) {
         this._code = code; 
     };
 
-    Chat.prototype.toJSON2 = function() { 
+    this.toJSON2 = function() { 
         return {
             id: this._id,
             name: this._name,
@@ -56,7 +48,7 @@ var Chat = (function() {
         };
     };
 
-    Chat.prototype.toJSON = function(username, notifs, lines) { 
+    this.toJSON = function(username, notifs, lines) { 
         return {
             id: this._id,
             name: this._name,
@@ -67,7 +59,7 @@ var Chat = (function() {
         };
     };
 
-    Chat.prototype.render = function(notifs=0) {
+    this.render = function(notifs=0) {
         return {
             id: this._id,
             name: this._name,
@@ -80,7 +72,7 @@ var Chat = (function() {
      * transport expects 3 params, Chat, Notif, and Line, and returns a function that takes in
      * the result of the previous promise function, which is the chat lines
      */
-    Chat.prototype.load = function(user, transport) {
+    this.load = function(user, transport) {
         //save these outside of scope, so they are saved from promise to promise
         var username = user.getUsername();
         var chatID = this._id;
@@ -129,7 +121,7 @@ var Chat = (function() {
         });
     };
 
-    Chat.prototype.retrieveLines = function(callback) {
+    this.retrieveLines = function(callback) {
         var chatLine = new LineCache(this._id);
         var getLines = chatLine.read();
 
@@ -165,7 +157,7 @@ var Chat = (function() {
     /*
      * callback is the last function called in the promise chain
      */
-    Chat.prototype.insert = function(user, callback=function(result) {}) {
+    this.insert = function(user, callback=function(result) {}) {
         var conn = null;
 
         var chatInfo = {
@@ -205,7 +197,7 @@ var Chat = (function() {
         connection.executePoolTransaction([startTrans, insertChat, insertMember, commit, callback], err);
     };
 
-    Chat.prototype.join = function(user, callback) {
+    this.join = function(user, callback) {
         var connect;
         var that = this;
         var username = user.getUsername();
@@ -258,14 +250,17 @@ var Chat = (function() {
         connection.executePoolTransaction([startTrans, retrieveChat, validateChat, insertMembers, commit, callback(that)], err);
     };
 
-    Chat.prototype.loadLists = function(user, callback=function(rows) {}) {
+    this.loadLists = function(user, callback=function(rows) {}) {
         var query = 'SELECT Chat.chat_name, Chat.id, Notifications.num_notifications, MemberOf.username FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
 
         connection.execute(query, [user.getUsername(), user.getUsername()], callback);
         
     };
+};
 
-    return Chat;
-})();
+    /*
+     *Getters
+     */
+
 
 module.exports = Chat;
