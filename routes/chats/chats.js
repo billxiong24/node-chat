@@ -12,7 +12,16 @@ if(!manager) {
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     /* TODO CACHE THIS SHIT*/
+
+    if(req.params.chatID in req.session.members) {
+        console.log("GET chatID cached");
+        //TODO fix this shit
+        req.session.members[req.params.chatID].csrfToken = req.csrfToken();
+        res.render('chat', req.session.members[req.params.chatID]);
+    }
+    else {
         manager.loadChat(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res);
+    }
 });
 
 router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
@@ -22,14 +31,22 @@ router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next)
 router.post('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
 
     manager.loadLines(req.session.user.username, req.params.chatID, req, res);
-
-    //session_handler.handleSession(req.sessionID, function(session) {
-    //});
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
 
+    for(var key in req.session.members) {
+        //chat code was found 
+        if(req.session.members[key].code === req.body.joinChat) {
+            console.log("POST join_chat cached");
+            res.redirect('/chats/' +  req.session.members[key].id);
+            return;
+        }
+    } 
+
+    //chat was not found
     manager.joinChat(req.session.user.username, req.body.joinChat, req.session.members, res);
+
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {

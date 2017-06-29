@@ -12,7 +12,6 @@ var ChatSocket = function(io, namespace) {
     //lazy instantiation
     this.url = null;
     this.id = null;
-    this.room = null;
 
     this.init = function() {
         var that = this;
@@ -22,17 +21,10 @@ var ChatSocket = function(io, namespace) {
             socket.on('connected', function(data) {
                 var url = urlParser.parse(socket.handshake.headers.referer);
                 var id = parseID(url.pathname);
-                var room = io.sockets.adapter.rooms[id];
-
-                room.sockets[socket.id] = {
-                    username: socket.request.session.user.username,
-                    userid: socket.request.session.user.id
-                };
 
                 that.getIO().to(id).emit('connected', {
                     notifs: socket.request.session.members[id].notifs,
-                    user: socket.request.session.user, 
-                    room: room
+                    user: socket.request.session.user
                 });
             });
 
@@ -68,8 +60,7 @@ var ChatSocket = function(io, namespace) {
             socket.on('disconnect', function(data) {
                 var url = urlParser.parse(socket.handshake.headers.referer);
                 var id = parseID(url.pathname);
-                var room = io.sockets.adapter.rooms[id];
-                io.to(id).emit('disconnected', {user: socket.request.session.user, room: room});
+                io.to(id).emit('disconnected', {user: socket.request.session.user});
             });
         });
         

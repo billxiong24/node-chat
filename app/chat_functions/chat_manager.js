@@ -18,17 +18,26 @@ var ChatManager = (function() {
         this.chat_obj = chatobj;
     }
 
-    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, res) {
+    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, members, res) {
         //TODO error checking
         var chatobj = new Chat();
         var user = new User(userObj.username, undefined, undefined, userObj.first, userObj.last);
         chatobj.loadLists(user, function(rows) {
             var userJSON = user.toJSON();
             //this is used for view rendering, will switch to clientside rendering soon
-            userJSON.parseList = encodeURIComponent(JSON.stringify(notifRender(rows)));
-            
-            userJSON.list = rows;
+
+            var rowString = JSON.stringify(rows);
+            userJSON.list = notifRender(JSON.parse(rowString));
+            userJSON.parseList = encodeURIComponent(rowString);
             userJSON.csrfToken = csrfToken;
+
+            var list = rows;
+            //cache all chats in members
+            for(var i = 0; i < list.length; i++) {
+                members[list[i].id] = new Chat(list[i].id, list[i].chat_name, list[i].code)
+                    .toJSON(list[i].username, list[i].num_notifications, null);
+            }
+
             res.render('home', userJSON);
         });
     };
@@ -47,6 +56,7 @@ var ChatManager = (function() {
                 }
                 //TODO FIX THIS SHIT
                 members[chatobj.getID()] = chatobj.toJSON(username, 0, null);
+                //TODO WTF IS THIS how did i not see this
                 res.redirect('/chats/' + chatobj.getID());
             };
         };
