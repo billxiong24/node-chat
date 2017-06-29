@@ -10,33 +10,33 @@ var User = function User(username, id=undefined, password=undefined, first=undef
     /*
      *Getters
      */
-    this.getID = function() {
-        return this._id;
-    };
-
-    this.getUsername = function() {
-        return this._username;
-    };
-
-    this.getFirst = function() {
-        return this._first;
-    };
-    
-    this.getLast = function() {
-        return this._last;
-    };
-
-    this.toJSON = function() {
-        return {
-            username: this._username,
-            id: this._id,
-            password: this._password,
-            first: this._first,
-            last: this._last
-        }; 
-    };
 };
 
+User.prototype.getID = function() {
+    return this._id;
+};
+
+User.prototype.getUsername = function() {
+    return this._username;
+};
+
+User.prototype.getFirst = function() {
+    return this._first;
+};
+
+User.prototype.getLast = function() {
+    return this._last;
+};
+
+User.prototype.toJSON = function() {
+    return {
+        username: this._username,
+        id: this._id,
+        password: this._password,
+        first: this._first,
+        last: this._last
+    }; 
+};
 
 
 module.exports = User;
