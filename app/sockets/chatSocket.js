@@ -10,75 +10,76 @@ var ChatSocket = function(io, namespace) {
     Socket.call(this, io, namespace);
 
     //lazy instantiation
-    this.url = null;
-    this.id = null;
+    this._url = null;
+    this._id = null;
+};
 
-    this.init = function() {
-        var that = this;
-        this.addOnConnectionListener(function(socket) {
-            socket = that.addJoinLeaveListener(socket);
+ChatSocket.prototype = Object.create(Socket.prototype);
+ChatSocket.prototype.constructor = ChatSocket;
 
-            socket.on('connected', function(data) {
-                var url = urlParser.parse(socket.handshake.headers.referer);
-                var id = parseID(url.pathname);
+//override
+ChatSocket.prototype.init = function() {
+    var that = this;
+    this.addOnConnectionListener(function(socket) {
+        socket = Socket.prototype.addJoinLeaveListener.call(that, socket);
 
-                that.getIO().to(id).emit('connected', {
-                    notifs: socket.request.session.members[id].notifs,
-                    user: socket.request.session.user
-                });
-            });
+        socket.on('connected', function(data) {
+            var url = urlParser.parse(socket.handshake.headers.referer);
+            var id = parseID(url.pathname);
 
-            socket.on('online', function(data) {
-                var url = urlParser.parse(socket.handshake.headers.referer);
-                var id = parseID(url.pathname);
-                that.getIO().to(id).emit('online', {
-                    user: socket.request.session.user,
-                    notifs: socket.request.session.members[id].notifs
-                });
-            });
-
-            socket.on('message', function(message) {
-                //console.log(socket.handshake.headers);
-                var url = urlParser.parse(socket.handshake.headers.referer);
-
-                var message_info = {
-                    message : message, 
-                    username: socket.request.session.user.username,
-                    /* cookie set should be same as userid */
-                    cookie: socket.request.session.user.id
-                };
-
-                var id = parseID(url.pathname);
-                //console.log(io.sockets.clients(id));
-
-                io.to(id).emit('message', message_info);
-
-                var line = new LineCache(id, socket.request.session.user.username, message, crypto.randomBytes(24).toString('hex'));
-                line.insert();
-            });
-
-            socket.on('disconnect', function(data) {
-                var url = urlParser.parse(socket.handshake.headers.referer);
-                var id = parseID(url.pathname);
-                io.to(id).emit('disconnected', {user: socket.request.session.user});
+            Socket.prototype.getIO.call(that).to(id).emit('connected', {
+                notifs: socket.request.session.members[id].notifs,
+                user: socket.request.session.user
             });
         });
-        
-    };
 
-    function parseID(pathname) {
-        var str;
-        if(pathname.charAt(pathname.length - 1) === '/') {
-            pathname = pathname.substring(0, pathname.length - 1);
-            str = pathname.substring(pathname.lastIndexOf("/") + 1);
-        }
-        else {
-            str = pathname.substring(pathname.lastIndexOf("/") + 1);
-        }
-        return str;
-    }
+        socket.on('online', function(data) {
+            var url = urlParser.parse(socket.handshake.headers.referer);
+            var id = parseID(url.pathname);
+            Socket.prototype.getIO.call(that).to(id).emit('online', {
+                user: socket.request.session.user,
+                notifs: socket.request.session.members[id].notifs
+            });
+        });
+
+        socket.on('message', function(message) {
+            //console.log(socket.handshake.headers);
+            var url = urlParser.parse(socket.handshake.headers.referer);
+
+            var message_info = {
+                message : message, 
+                username: socket.request.session.user.username,
+                /* cookie set should be same as userid */
+                cookie: socket.request.session.user.id
+            };
+
+            var id = parseID(url.pathname);
+
+            Socket.prototype.getIO.call(that).to(id).emit('message', message_info);
+
+            var line = new LineCache(id, socket.request.session.user.username, message, crypto.randomBytes(24).toString('hex'));
+            line.insert();
+        });
+
+        socket.on('disconnect', function(data) {
+            var url = urlParser.parse(socket.handshake.headers.referer);
+            var id = parseID(url.pathname);
+            Socket.prototype.getIO.call(that).to(id).emit('disconnected', {user: socket.request.session.user});
+        });
+    });
+    
 };
-ChatSocket.prototype = Socket.prototype;
-ChatSocket.prototype.constructor = ChatSocket;
+
+function parseID(pathname) {
+    var str;
+    if(pathname.charAt(pathname.length - 1) === '/') {
+        pathname = pathname.substring(0, pathname.length - 1);
+        str = pathname.substring(pathname.lastIndexOf("/") + 1);
+    }
+    else {
+        str = pathname.substring(pathname.lastIndexOf("/") + 1);
+    }
+    return str;
+}
 
 module.exports = ChatSocket;
