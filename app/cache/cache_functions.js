@@ -50,8 +50,14 @@ function pushMessage(key, arr, callback) {
     multi.exec(callback);
 }
 
-function popMessage(key, callback) {
-    cache_store.rpop(key, callback);
+function popMessage(key, numMessages, callback) {
+    var multi = cache_store.multi();
+    for(var i = 0; i < numMessages; i++) {
+        multi.rpop(key);
+    } 
+
+    multi.exec(callback);
+    //cache_store.rpop(key, callback);
 }
 
 function retrieveArray(key, start, end, callback) {
