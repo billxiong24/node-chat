@@ -1,13 +1,14 @@
 /**
  * user-password authentication using passport.js
  */
+const password_util = require('./password_util');
+const validate_cred_util = require('./validate_cred_util.js');
 const connection = require('../database/config.js');
 const LocalStrategy = require('passport-local').Strategy;
 const crypto = require('crypto');
 const Manager = require('../chat_functions/chat_manager.js');
 const Chat = require('../models/chat.js');
 const cache_functions = require('../cache/cache_functions.js');
-const bcrypt = require('bcrypt-nodejs');
 
 const params = {
     usernameField : 'username', 
@@ -45,7 +46,10 @@ function passportSignupCallback(passport, req, res, next) {
         }
 
         if(!user) {
-            res.render('index', {csrfToken:req.csrfToken(), signup_error: "There was an error. Pleas try again."});
+            res.render('index', {
+                csrfToken:req.csrfToken(),
+                signup_error: "There was an error. Pleas try again."
+            });
             return;
         }
 
@@ -90,7 +94,7 @@ function logOut(req, res) {
 
 function checkExistingUser(req, res) {
 
-    if(req.body.username.length < 4) {
+    if(!validate_cred_util.validateUsername(req.body.username)) {
         res.send("Username must be at least 4 characters long.");
         return;
     }
@@ -121,7 +125,11 @@ function passportAuth(passport) {
         });
     });
 
-    passport.use('signup', new LocalStrategy({usernameField: 'user_signup', passwordField: 'password_signup', passReqToCallback:true}, function(req, user_signup, password_signup, done) {
+    passport.use('signup', new LocalStrategy({
+        usernameField: 'user_signup',
+        passwordField: 'password_signup', passReqToCallback: true
+    }, function(req, user_signup, password_signup, done) {
+            
             var info = {
                 id: crypto.randomBytes(10).toString('hex'),
                 username: user_signup,
@@ -130,25 +138,26 @@ function passportAuth(passport) {
                 last: req.body.lastname_signup
             };
 
-            if(info.username.length < 4) {
+            if(!validate_cred_util.validateUsername(info.username)) {
                 return done(null, false, req.flash('error', 'Signup error.'));
             }
 
-            connection.execute('INSERT INTO User SET ? ', info, function(rows) {
-
-                //TODO USE user object here
-                req.session.user = {
-                    username: info.username,
-                    first: info.first,
-                    last: info.last
-                };
-                req.session.members = {};
-                delete info.password;
-                return done(null, info);
-                //res.redirect('/home');
-            },
-            function(err) {
-                return done(null, false, req.flash('signup_error', 'There was an error signing up'));
+            password_util.storePassword(info.password, function(err, hash) {
+                info.password = hash;
+                connection.execute('INSERT INTO User SET ? ', info, function(rows) {
+                    //TODO USE user object here
+                    req.session.user = {
+                        username: info.username,
+                        first: info.first,
+                        last: info.last
+                    };
+                    req.session.members = {};
+                    delete info.password;
+                    return done(null, info);
+                },
+                function(err) {
+                    return done(null, false, req.flash('signup_error', 'There was an error signing up'));
+                });
             });
         }
     ));
@@ -156,20 +165,33 @@ function passportAuth(passport) {
     passport.use('login', new LocalStrategy(params, function(req, username, password, done) {
             //authentication here        
             //TODO these queries should go in the User class 
-            connection.execute('SELECT id, username, first, last FROM User WHERE User.username = ? and User.password = ?', [username, password], function(rows) {
 
+            var conn = null;
+            var checkDB = function(poolConnection) {
+                conn = poolConnection;
+                return poolConnection.query('SELECT * FROM User WHERE User.username = ?', [username]);
+            };
+
+            var validate = function(rows) {
                 if(rows.length === 0) {
                     return done(null, false, req.flash('error', 'Login error.'));
                 }
+                password_util.retrievePassword(password, rows[0].password, function(err, result) {
+                    //result is either true or false
+                    if(result) {
+                        req.session.user = rows[0];
+                        req.session.rooms = [];
+                        req.session.members = {};
 
-                //still need these session variables because of socket shit
-                req.session.user = rows[0];
-                req.session.rooms = [];
-                req.session.members = {};
+                        return done(null, rows[0]); 
+                    }
+                    return done(null, false, req.flash('error', 'Login error.'));
+                });
+                console.log("releasing connection");
+                connection.release(conn);
+            };
 
-                return done(null, rows[0]); 
-
-            }, function(err) {console.log(err);});
+            connection.executePoolTransaction([checkDB, validate], function(err) {console.log(err);});
         }
         
     ));
