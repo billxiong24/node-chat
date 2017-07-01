@@ -29,7 +29,7 @@ module.exports = function(app, passport) {
         res.render('index', {csrfToken: req.csrfToken()});
     });
 
-    router.post('/signup', function(req, res, next) {
+    router.post('/signup', authenticator.checkLoggedIn, function(req, res, next) {
         authenticator.passportSignupCallback(passport, req, res, next);
     });
 

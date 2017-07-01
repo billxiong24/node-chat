@@ -28,6 +28,7 @@
                 </div>
                 <div class="wrapper wrapper-content">
                     <div class="container animated fadeInDown">
+                        <div>{{signup_error}}</div>
                         <div class="slogan"><span>Instant Messaging. Redefined.</span></div>
                         <div class="title"><span>Chat</span></div>
                         <div class="logo">
@@ -39,15 +40,15 @@
                                 <div id="content-login">
                                     <div class="content">
                                         <div class="buttons">
-                                            <input id="showsignup" type="submit" value="Sign up" class="btn btn-primary register"/>
-                                            <input id="showregister" type="submit" value="Log in" class="btn btn-primary login"/>
+                                            <input id="showsignup" type="" value="Sign up" class="btn btn-primary register"/>
+                                            <input id="showregister" type="" value="Log in" class="btn btn-primary login"/>
                                         </div>
                                     </div>
                                 </div>
                                 <div id="content-register2">
                                     <div class="content">
                                         <div class="loginColumns">
-                                            <form role="form" method="post" action="/signup" class="m-t">
+                                            <form class="signup-form" role="form" method="post" action="/signup" class="m-t">
                                                 <div class="row">
                                                     <div style="border-top: solid #C3C3C3 1px" class="col-md-6">
                                                         <div style="margin-top: 15px" class="form-group">
@@ -89,13 +90,8 @@
                                 <div class="content">
                                     <div style="margin-top: 180px" class="middle-box text-center loginscreen loginflip">
                                         <div>
-                                            <!--
-                                                <h3>Login</h3>
-                                                <p>Perfectly designed and precisely prepared to suit your needs. Login in to see it in action.
-                                            -->
                                             <div style="border: solid #D2D2D2 1px;"><i style="font-size: 130px;" class="fa fa-user"></i></div>
-                                            <!-- Continually expanded and constantly improved Inspinia Admin Them (IN+)-->
-                                            <p></p>
+                                       
                                             <div class="login-error"></div>
                                             <form role="form" action="/login" method="post" class="user-login m-t">
                                                 <div class="form-group">
