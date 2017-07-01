@@ -26,10 +26,10 @@ $(document).ready(function() {
         var inf = new chatinfo.ChatInfo(new socketview.SocketView(null, '/notifications'), roomIDs, userid);
 
         inf.listenForNotifications(function(data) {
+            console.log("received");
             if(data.userid !== sessionStorage.getItem('userid')) {
                 $('#'+data.roomID + ' span').text(inf.incrementGetNotif(data.roomID));
             }
-
             else {
                 inf.resetGetNotif(data.roomID);
                 $('#'+data.roomID + ' span').text(""); 

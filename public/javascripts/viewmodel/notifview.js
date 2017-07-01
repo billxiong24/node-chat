@@ -7,6 +7,9 @@ define(['socketview'], function(socketview) {
                 this._notifications = notifications;
             }
 
+            NotifView.prototype.getRoomID = function() {
+                return this._socketview.getRoomID();    
+            };
             NotifView.prototype.incrementNotif = function() {
                this._notifications++; 
             };
@@ -24,6 +27,18 @@ define(['socketview'], function(socketview) {
                 return this._notifications; 
             };
 
+            
+            NotifView.prototype.cacheNotification = function(userid) {
+                    
+                var notifications = this._notifications;
+                var roomID = this._socketview.getRoomID();
+
+                //this._socketview.send('cacheNotifications', {
+                    //userid: userid,
+                    //notif: notifications,
+                    //roomID: roomID
+                //});
+            };
             NotifView.prototype.sendNotification = function(userid) {
                 this.resetNotif();
                 var notifications = this._notifications;
@@ -36,6 +51,14 @@ define(['socketview'], function(socketview) {
                 });
                 
             };
+
+            function toJSON(that, userid) {
+                return {
+                    userid: userid,
+                    notif: that._notifications,
+                    roomID: that._socketview.roomID()
+                };
+            }
 
             return NotifView;
         })()

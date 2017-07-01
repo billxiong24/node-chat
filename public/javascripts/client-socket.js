@@ -10,6 +10,10 @@ $(document).ready(function() {
 
     require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, typingview, notifview, chatview) {
 
+        chatAjaxService.chatAjax(window.location.pathname+'/renderNotifs', 'POST', JSON.stringify(csrfTokenObj), 
+            function(data, Handlebars) {
+                //TODO figure this out later
+        });
         chatAjaxService.chatAjax(window.location.pathname+'/initLines', 'POST', JSON.stringify(csrfTokenObj), 
             function(data, Handlebars) {
                 var html = $('#message-template').html();

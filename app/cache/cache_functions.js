@@ -35,6 +35,10 @@ function retrieveJSONElement(key, element, callback) {
     cache_store.hget(key, element, callback);
 }
 
+function addJSONElement(key, element, value, callback) {
+    cache_store.hset(key, element, value, callback);
+}
+
 //err, reply
 function pushMessage(key, arr, callback) {
     var multi = cache_store.multi();
@@ -54,12 +58,14 @@ function retrieveArray(key, start, end, callback) {
     cache_store.lrange(key, start, end, callback);
 }
 
+
 module.exports = {
     addValue, 
     retrieveValue,
     addJSON,
     retrieveJSON,
     retrieveJSONElement,
+    addJSONElement,
     pushMessage,
     retrieveArray,
     popMessage,

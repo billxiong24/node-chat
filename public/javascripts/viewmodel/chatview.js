@@ -50,6 +50,7 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 this._socketview.addListener('message', function(msg) {
                     //holy shit this is bad- reset cookie if user deletes it lmao
                     displayMessage(that, msg, that._userid, displayLine);
+                    //that._notifview.sendNotification(that._userid);
                 });
             };
 
@@ -72,6 +73,7 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 numOnlineObj.text("Online now: " + num);
             }
             
+            //this message is cancerous
             function displayMessage(that, msg, userid, displayLine) {
                 if(msg.message.length === 0) {
                     return;
@@ -106,6 +108,7 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 lineViewObj = new lineview.LineView(dir, viewStamp, active, viewUsername, msg.message);
 
                 numMessages.text(that._notifview.getNotif());
+                //that._notifview.cacheNotification(userid);
 
                 var message = displayLine(lineViewObj);
                 that._lastMessage = msg.cookie;

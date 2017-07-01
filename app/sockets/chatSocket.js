@@ -2,6 +2,7 @@ const urlParser = require('url');
 const crypto = require('crypto');
 //const Line = require('../models/line.js');
 const LineCache = require('../models/line_cache.js');
+const Notification = require('../models/notification.js');
 const session_handler = require('../session/session_handler.js');
 
 var Socket = require('./socket.js');
@@ -59,6 +60,8 @@ ChatSocket.prototype.init = function() {
 
             var line = new LineCache(id, socket.request.session.user.username, message, crypto.randomBytes(24).toString('hex'));
             line.insert();
+            var notif = new Notification(id, socket.request.session.user.username, -1);
+            notif.flush();
         });
 
         socket.on('disconnect', function(data) {

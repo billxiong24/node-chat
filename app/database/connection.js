@@ -18,7 +18,7 @@ function getPool(host, user, password, connectionLim) {
     return pool;
 }
 
-function execute(query, info=null, callback=function(result) {}, error=function(err) {}) {
+function execute(query, info=null, callback=function(result) {}, error=function(err) {console.log(err);}) {
     pool.getConnection().then(function(connection) {
         var result = connection.query(query, info);
         pool.releaseConnection(connection);

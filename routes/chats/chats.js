@@ -3,6 +3,8 @@ var router = express.Router();
 var authenticator = require('../../app/authentication/user-pass.js');
 const Manager = require('../../app/chat_functions/chat_manager.js');
 const Chat =  require('../../app/models/chat.js');
+const Notification = require('../../app/models/notification.js');
+const NotificationManager = require('../../app/chat_functions/notif_manager.js');
 const session_handler = require('../../app/session/session_handler.js');
 
 var manager;
@@ -13,19 +15,28 @@ if(!manager) {
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     /* TODO CACHE THIS SHIT*/
 
-    if(req.params.chatID in req.session.members) {
-        console.log("GET chatID cached");
-        //TODO fix this shit
-        req.session.members[req.params.chatID].csrfToken = req.csrfToken();
-        res.render('chat', req.session.members[req.params.chatID]);
-    }
-    else {
-        manager.loadChat(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res);
-    }
+    var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.session.user.username, -1));
+    notif_manager.loadNotifications(function(numNotifs) {
+
+        if(req.params.chatID in req.session.members) {
+            console.log("GET chatID cached");
+            //TODO fix this shit
+            req.session.members[req.params.chatID].csrfToken = req.csrfToken();
+            req.session.members[req.params.chatID].notifs = numNotifs;
+            res.render('chat', req.session.members[req.params.chatID]);
+        }
+        else {
+            manager.loadChat(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res);
+        }
+    });
 });
 
 router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
     manager.loadMoreLines(req.session.user.username, req.body.chatID, req.session.lastTimeStamp, req, res); 
+});
+
+router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req, res, next) {
+
 });
 
 router.post('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
@@ -43,7 +54,6 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
             return;
         }
     } 
-
     //chat was not found
     manager.joinChat(req.session.user.username, req.body.joinChat, req.session.members, res);
 

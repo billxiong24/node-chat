@@ -103,6 +103,7 @@ Chat.prototype.load = function(user, transport) {
         return null;
     };
 
+    //why tf are we loading notifs from database twice- cache this shit
     var getNumNotifs = notif.load();
 
     var transferNotifs = function(result) {

@@ -5,7 +5,6 @@ var Notification = function Notification(chatID, username, num_notifications) {
     this._username = username;
     this._num_notifications = num_notifications;
 
-    //this will come handy later
 };
 
 Notification.prototype.toJSON = function() {
@@ -47,6 +46,12 @@ Notification.prototype.load = function() {
     };
 };
 
+Notification.prototype.flush = function() {
+    connection.execute("UPDATE Notifications SET num_notifications = num_notifications + 1 WHERE Notifications.chat_id = ? AND Notifications.username <> ?", [this._chatID, this._username]);
+    
+    connection.execute("UPDATE Notifications SET num_notifications = 0 WHERE Notifications.chat_id = ? AND Notifications.username = ?", [this._chatID, this._username]);
+        
+};
 Notification.prototype.write = function() {
     var info = {
         chat_id: this._chatID,

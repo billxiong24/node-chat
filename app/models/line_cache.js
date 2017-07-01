@@ -23,6 +23,17 @@ LineCache.prototype.insert = function() {
     });
 };
 
+//TODO test this method, it most likely does not work
+LineCache.prototype.flush = function() {
+    var that = this;
+    cache_functions.popMessage(Line.prototype.getChatID.call(that), function(err, message) {
+        var query = "INSERT INTO ChatLines SET ?";
+        connection.execute(query, JSON.parse(message), function(row) {
+            console.log("flushed to database");
+        });
+    });
+};
+
 LineCache.prototype.read = function() {
     //call super method for now
     return Line.prototype.read.call(this);
