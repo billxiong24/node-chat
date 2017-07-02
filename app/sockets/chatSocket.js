@@ -58,8 +58,10 @@ ChatSocket.prototype.init = function() {
 
             Socket.prototype.getIO.call(that).to(id).emit('message', message_info);
 
+            //violates open close principle
             var line = new LineCache(id, socket.request.session.user.username, message, crypto.randomBytes(24).toString('hex'));
             line.insert();
+            //TODO find a way to cache this
             var notif = new Notification(id, socket.request.session.user.username, -1);
             notif.flush();
         });

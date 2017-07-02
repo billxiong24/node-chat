@@ -38,5 +38,17 @@ User.prototype.toJSON = function() {
     }; 
 };
 
+User.prototype.read = function() {
+    var username = this._username;
+    return function(poolConnection) {
+        return poolConnection.query('SELECT * FROM User WHERE User.username = ?', [username]);
+    };
+};
+User.prototype.insert = function() {
+};
+
+User.prototype.flush = function() {
+
+};
 
 module.exports = User;
