@@ -7,6 +7,21 @@ var UserManager = function(userObj) {
     this._userObj = userObj;
 }; 
 
+UserManager.prototype.signup = function(password, signupFailure, signupSuccess) {
+    var that = this;
+    password_util.storePassword(password, function(err, hash) {
+        that._userObj.setPassword(hash);
+        that._userObj.insert(function(rows) {
+            var jsonObj = that._userObj.toJSON();
+            delete jsonObj.password;
+            return signupSuccess(jsonObj);
+        }, 
+        function(err) {
+            return signupFailure();
+        });
+    });
+};
+
 UserManager.prototype.authenticate = function(password, loginFailure, loginSuccess) {
     var conn = null;
     var inCache = false;
@@ -23,6 +38,7 @@ UserManager.prototype.authenticate = function(password, loginFailure, loginSucce
                     console.log("user login cache miss");
                     user.addToCache(rows[0]);
                 }
+                delete rows[0].password;
                 return loginSuccess(rows[0]);
             }
             return loginFailure();
@@ -30,8 +46,7 @@ UserManager.prototype.authenticate = function(password, loginFailure, loginSucce
         console.log("releasing connection");
         connection.release(conn);
     };
-
-    cache_functions.retrieveJSON(user.getKey(), function(err, result) {
+    user.retrieveFromCache(function(err, result) {
         if(result) {
             console.log("found user cache when loggin in");
             checkDB = function(poolConnection) {
@@ -41,7 +56,6 @@ UserManager.prototype.authenticate = function(password, loginFailure, loginSucce
         }
         connection.executePoolTransaction([setConn, checkDB, validate], function(err) {console.log(err);});
     });
-    
 };
 
 module.exports = UserManager;

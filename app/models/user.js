@@ -28,6 +28,10 @@ User.prototype.getLast = function() {
     return this._last;
 };
 
+User.prototype.setPassword = function(password) {
+    this._password = password;
+};
+
 User.prototype.toJSON = function() {
     return {
         username: this._username,

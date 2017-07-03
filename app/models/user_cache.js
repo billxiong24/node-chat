@@ -14,7 +14,7 @@ UserCache.prototype.read = function() {
     return User.prototype.read.call(this);
 };
 
-UserCache.prototype.insert = function() {
+UserCache.prototype.insert = function(callback = function(rows) {}) {
     var userObj = User.prototype.toJSON.call(this);
     //write through
     cache_functions.addJSON('info:'+User.prototype.getUsername.call(this), userObj, function(err, reply) {});
@@ -25,6 +25,12 @@ UserCache.prototype.insert = function() {
 UserCache.prototype.addToCache = function(jsonObj = null) {
     var userObj = !jsonObj ? User.prototype.toJSON.call(this) : jsonObj;
     cache_functions.addJSON(this.getKey(), userObj, function(err, reply) {});
+};
+
+UserCache.prototype.retrieveFromCache = function(callback) {
+    cache_functions.retrieveJSON(this.getKey(), function(err, result) {
+        callback(err, result);
+    });
 };
 
 UserCache.prototype.flush = function() {

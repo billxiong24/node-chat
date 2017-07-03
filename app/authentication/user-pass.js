@@ -6,7 +6,6 @@ const validate_cred_util = require('./validate_cred_util.js');
 const connection = require('../database/config.js');
 const LocalStrategy = require('passport-local').Strategy;
 const crypto = require('crypto');
-const cache_functions = require('../cache/cache_functions.js');
 const UserCache = require('../models/user_cache.js');
 const UserManager = require('../models/user_manager.js');
 
@@ -39,7 +38,6 @@ function checkLoggedIn(req, res, next) {
 
 function passportSignupCallback(passport, req, res, next) {
     passport.authenticate('signup', function(err, user, info) {
-        console.log(err, user, info);
         if(err) {
             console.log(err);
             return;
@@ -95,7 +93,7 @@ function logOut(req, res) {
 function checkExistingUser(req, res) {
 
     if(!validate_cred_util.validateUsername(req.body.username)) {
-        res.send("Username must be at least 4 characters long.");
+        res.send("Username must be at least 5 characters long.");
         return;
     }
 
@@ -129,7 +127,6 @@ function passportAuth(passport) {
         usernameField: 'user_signup',
         passwordField: 'password_signup', passReqToCallback: true
     }, function(req, user_signup, password_signup, done) {
-            
             var info = {
                 id: crypto.randomBytes(10).toString('hex'),
                 username: user_signup,
@@ -142,23 +139,18 @@ function passportAuth(passport) {
                 return done(null, false, req.flash('error', 'Signup error.'));
             }
 
-            password_util.storePassword(info.password, function(err, hash) {
-                info.password = hash;
-                connection.execute('INSERT INTO User SET ? ', info, function(rows) {
-                    //TODO USE user object here
-                    req.session.user = {
-                        username: info.username,
-                        first: info.first,
-                        last: info.last
-                    };
-                    req.session.members = {};
-                    delete info.password;
-                    return done(null, info);
-                },
-                function(err) {
-                    return done(null, false, req.flash('signup_error', 'There was an error signing up'));
-                });
-            });
+            var user_manager = new UserManager(new UserCache(user_signup, info.id, info.password, info.first, info.last));
+            var signupFailure = function() {
+                return done(null, false, req.flash('signup_error', 'There was an error signing up'));
+            };
+            var signupSuccess = function(userObj) {
+                console.log(userObj);
+                req.session.user = userObj; 
+                req.session.members = {};
+                return done(null, info);
+            };
+
+            user_manager.signup(password_signup, signupFailure, signupSuccess);
         }
     ));
 
