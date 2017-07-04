@@ -28,6 +28,10 @@ module.exports = function(cluster, http, httpHiddenServer, PORT) {
             addRespawnHandler(workers, i);
         }
         
+        //var options = {
+            //key: fs.readFileSync(),
+            //cert: fs.readFileSync()
+        //};
          http.createServer().on('connection', function(conn) {
             conn.pause();
             if(conn.remoteAddress) {

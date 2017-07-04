@@ -16,23 +16,27 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     /* TODO CACHE THIS SHIT*/
 
     var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.session.user.username, -1));
-    notif_manager.loadNotifications(function(numNotifs) {
 
-        if(req.params.chatID in req.session.members) {
+    if(req.params.chatID in req.session.members) {
+        notif_manager.loadNotifications(function(numNotifs) {
             console.log("GET chatID cached");
             //TODO fix this shit
             req.session.members[req.params.chatID].csrfToken = req.csrfToken();
             req.session.members[req.params.chatID].notifs = numNotifs;
             res.render('chat', req.session.members[req.params.chatID]);
-        }
-        else {
-            manager.loadChat(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res);
-        }
-    });
+        });
+    }
+    else {
+        manager.loadChat(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res);
+    }
 });
 
 router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
     manager.loadMoreLines(req.session.user.username, req.body.chatID, req.session.lastTimeStamp, req, res); 
+});
+
+router.post('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, res, next) {
+
 });
 
 router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req, res, next) {
