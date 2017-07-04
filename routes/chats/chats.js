@@ -36,7 +36,22 @@ router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next)
 });
 
 router.post('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, res, next) {
+    //hack
+    var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.session.user.username, -1));
 
+    if(req.params.chatID in req.session.members) {
+        notif_manager.loadNotifications(function(numNotifs) {
+            console.log("post renderinfo cached");
+            //TODO fix this shit
+            req.session.members[req.params.chatID].csrfToken = req.csrfToken();
+            req.session.members[req.params.chatID].notifs = numNotifs;
+            res.send(req.session.members[req.params.chatID]);
+        });
+    }
+    else {
+        console.log("post renderinfo not cached");
+        manager.renderChatInfo(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res);
+    }
 });
 
 router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req, res, next) {

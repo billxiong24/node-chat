@@ -85,6 +85,29 @@ var ChatManager = (function() {
         chatobj.load(new User(username), transport);
     };
 
+    ChatManager.prototype.renderChatInfo = function(uesrname, chatID, members, csrfToken, res) {
+        //hack
+        var transport = function(chatObj, notifObj, lineObj) {
+            return function(lineResults) {
+                if(lineResults === null) {
+                    //TODO add error message here
+                    res.redirect('/home');
+                    return null;
+                }
+
+                var info = chatObj.toJSON(username, notifObj.getNumNotifications(), null);
+                members[info.id] = info;
+                
+                var infoDeepCopy = JSON.parse(JSON.stringify(info));
+                infoDeepCopy.csrfToken = csrfToken;
+                res.send('chat', infoDeepCopy);
+            };
+        };
+
+        var chatobj = new Chat(chatID);
+        chatobj.load(new User(username), transport);
+    };
+
     ChatManager.prototype.loadLines = function(username, chatID, req, res) {
         var chatobj = new Chat(chatID);
 

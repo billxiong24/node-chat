@@ -1,17 +1,21 @@
 $(document).ready(function() {
-
-    
-   
     //TODO organize ajax calls
     //client side rendering
     var csrfTokenObj = {
-        _csrf: $('input[name=_csrf').val()
+        _csrf: $('input[name=_csrf]').val()
     };
     var roomID = window.location.pathname.split("/")[2];
     var dependencies = ['jquery', 'chatAjaxService', 'onlineview', 'lineview', 'socketview', 'typingview', 'notifview', 'chatview'];
 
     require(['url_changer'], function(url_changer) {
         //console.log(url_changer.addChangeURLEvent);
+        var test = $('.test-url');
+        var select = $('.test-input');
+        url_changer.addChangeURLEvent(test, test.attr('href'), test.attr('href')+'/renderInfo', csrfTokenObj, function(data, Handlebars){
+            console.log(data);
+            roomID = data.id;
+            initializeData(roomID, csrfTokenObj, dependencies);
+        });
         //TODO do url changing events here, have everything we need, i think
     });
 
@@ -21,6 +25,25 @@ $(document).ready(function() {
 
 function initializeData(roomID, csrfTokenObj, dependencies) {
     require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, typingview, notifview, chatview) {
+        chatAjaxService.chatAjax(window.location.pathname+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
+            $('.ibox-title').remove();
+            var html = $('#chatinfo-template').html();
+            var template = Handlebars.compile(html);
+            $('.ibox.chat-view').prepend(template(data));
+            //zombie cookie
+            if(!sessionStorage.getItem('userid')) {
+                chatAjaxService.chatAjax('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj), 
+                    function(data, Handlebars) {
+                        Cookies.set('userid', data.cookie);
+                        sessionStorage.setItem('userid', data.cookie);
+                        setup($, socketview, typingview, notifview, chatview, lineview, onlineview);
+                });
+            }
+
+            else {
+                setup(roomID, $, socketview, typingview, notifview, chatview, lineview, onlineview);
+            }
+        });
         chatAjaxService.chatAjax(window.location.pathname+'/initLines', 'POST', JSON.stringify(csrfTokenObj), 
             function(data, Handlebars) {
                 var html = $('#message-template').html();
@@ -52,18 +75,6 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
             });
         });
 
-        if(!sessionStorage.getItem('userid')) {
-            chatAjaxService.chatAjax('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj), 
-                function(data, Handlebars) {
-                    Cookies.set('userid', data.cookie);
-                    sessionStorage.setItem('userid', data.cookie);
-                    setup($, socketview, typingview, notifview, chatview, lineview, onlineview);
-            });
-        }
-
-        else {
-            setup(roomID, $, socketview, typingview, notifview, chatview, lineview, onlineview);
-        }
     });
 }
 
