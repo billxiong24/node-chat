@@ -48,7 +48,7 @@ UserManager.prototype.authenticate = function(password, loginFailure, loginSucce
     };
     user.retrieveFromCache(function(err, result) {
         if(result) {
-            console.log("found user cache when loggin in");
+            console.log("found user cache when logging in");
             checkDB = function(poolConnection) {
                 inCache = true;
                 return [result]; 

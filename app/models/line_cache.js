@@ -21,6 +21,7 @@ LineCache.prototype.insert = function() {
         lineObj.stamp = row[0].stamp;
         cache_functions.pushMessage(Line.prototype.getChatID.call(that), [JSON.stringify(lineObj)], function(err, reply) {
             //TODO Optional flushing??
+            that.flush(3);
         });
     });
 
@@ -31,14 +32,26 @@ LineCache.prototype.insert = function() {
 LineCache.prototype.flush = function(numMessages) {
     var that = this;
     cache_functions.popMessage(Line.prototype.getChatID.call(that), numMessages, function(err, message) {
-        var callback = function(rows) {console.log("flushed to database");};
+        var query = "INSERT INTO ChatLines (chat_id, username, message, stamp, line_id) VALUES ";
+        var jsonArr = [];
+        var first = true;
 
-        for(var i = 0; i < message.length; i++) {
+        for(var i = 0; i < numMessages; i++) {
             var jsonObj = JSON.parse(message[i]);
-            if(jsonObj) {
-                var query = "INSERT INTO ChatLines (chat_id, username, message, stamp, line_id) VALUES (?, ?, ?, STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s:%f'), ?)";
-                connection.execute(query, [jsonObj.chat_id, jsonObj.username, jsonObj.message, jsonObj.stamp, jsonObj.line_id], callback);
+            //if false, that means the queue of messages is empty, break
+            if(!jsonObj) { break; }
+            else {
+                if(!first) {
+                    query += ",";
+                }
+                first = false;
+                query += "(?, ?, ?, STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s:%f'), ?)";
+                jsonArr = jsonArr.concat([jsonObj.chat_id, jsonObj.username, jsonObj.message, jsonObj.stamp, jsonObj.line_id]);
             }
+        }
+        //if we never entered loop, nothing to insert
+        if(!first) {
+            connection.execute(query, jsonArr, function(rows) {console.log("flushed to database");});
         }
     });
 };
