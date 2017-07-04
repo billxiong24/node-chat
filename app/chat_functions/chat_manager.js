@@ -18,7 +18,7 @@ var ChatManager = (function() {
         this.chat_obj = chatobj;
     }
 
-    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, members, res) {
+    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, members, res, callback) {
         //TODO error checking
         var chatobj = new Chat();
         var user = new User(userObj.username, undefined, undefined, userObj.first, userObj.last);
@@ -38,7 +38,8 @@ var ChatManager = (function() {
                     .toJSON(list[i].username, list[i].num_notifications, null);
             }
 
-            res.render('home', userJSON);
+            callback(userJSON);
+            //res.render('home', userJSON);
         });
     };
 
@@ -63,7 +64,7 @@ var ChatManager = (function() {
         chatobj.join(new User(username), sessionStore);
     };
 
-    ChatManager.prototype.loadChat = function(username, chatID, members, csrfToken, res) {
+    ChatManager.prototype.loadChat = function(username, chatID, members, csrfToken, res, callback) {
 
         var transport = function(chatObj, notifObj, lineObj) {
             return function(lineResults) {
@@ -78,32 +79,9 @@ var ChatManager = (function() {
                 
                 var infoDeepCopy = JSON.parse(JSON.stringify(info));
                 infoDeepCopy.csrfToken = csrfToken;
-                res.render('chat', infoDeepCopy);
+                callback(infoDeepCopy);
             };
         };
-        var chatobj = new Chat(chatID);
-        chatobj.load(new User(username), transport);
-    };
-
-    ChatManager.prototype.renderChatInfo = function(uesrname, chatID, members, csrfToken, res) {
-        //hack
-        var transport = function(chatObj, notifObj, lineObj) {
-            return function(lineResults) {
-                if(lineResults === null) {
-                    //TODO add error message here
-                    res.redirect('/home');
-                    return null;
-                }
-
-                var info = chatObj.toJSON(username, notifObj.getNumNotifications(), null);
-                members[info.id] = info;
-                
-                var infoDeepCopy = JSON.parse(JSON.stringify(info));
-                infoDeepCopy.csrfToken = csrfToken;
-                res.send('chat', infoDeepCopy);
-            };
-        };
-
         var chatobj = new Chat(chatID);
         chatobj.load(new User(username), transport);
     };

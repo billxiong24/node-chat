@@ -14,21 +14,20 @@ if(!manager) {
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     /* TODO CACHE THIS SHIT*/
+    var cachedCB = function(members) {
+        res.render('chat', members[req.params.chatID]);
+    };
+    var missCB = function(deepCopy) {
+        res.render('chat', deepCopy);
+    };
 
-    var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.session.user.username, -1));
-
-    if(req.params.chatID in req.session.members) {
-        notif_manager.loadNotifications(function(numNotifs) {
-            console.log("GET chatID cached");
-            //TODO fix this shit
-            req.session.members[req.params.chatID].csrfToken = req.csrfToken();
-            req.session.members[req.params.chatID].notifs = numNotifs;
-            res.render('chat', req.session.members[req.params.chatID]);
-        });
-    }
-    else {
-        manager.loadChat(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res);
-    }
+    //TODO create utility hold common elements in response object, such as csrfToken
+    //rest of info will be filled in by renderInfo and initLines (clientside rendering)
+    //this shit needs to be cached
+    manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON) {
+        res.render('chat', userJSON);
+    });
+    //res.render('chat', {csrfToken: req.csrfToken()});
 });
 
 router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
@@ -37,21 +36,13 @@ router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next)
 
 router.post('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, res, next) {
     //hack
-    var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.session.user.username, -1));
-
-    if(req.params.chatID in req.session.members) {
-        notif_manager.loadNotifications(function(numNotifs) {
-            console.log("post renderinfo cached");
-            //TODO fix this shit
-            req.session.members[req.params.chatID].csrfToken = req.csrfToken();
-            req.session.members[req.params.chatID].notifs = numNotifs;
-            res.send(req.session.members[req.params.chatID]);
-        });
-    }
-    else {
-        console.log("post renderinfo not cached");
-        manager.renderChatInfo(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res);
-    }
+    var cachedCB = function(members) {
+        res.send(members[req.params.chatID]);
+    };
+    var missCB = function(deepCopy) {
+        res.send(deepCopy);
+    };
+    chatRender(req, res, cachedCB, missCB);
 });
 
 router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req, res, next) {
@@ -79,11 +70,25 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-
     manager.createChat(req.session.user.username, req.body.createChat, req.session.members, res);
-    //req.session.members[info.id] = info; 
 });
 
+function chatRender(req, res, cachedCB, missCB) {
+    var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.session.user.username, -1));
+    if(req.params.chatID in req.session.members) {
+        notif_manager.loadNotifications(function(numNotifs) {
+            console.log("post renderinfo cached");
+            req.session.members[req.params.chatID].csrfToken = req.csrfToken();
+            req.session.members[req.params.chatID].notifs = numNotifs;
+            cachedCB(req.session.members);
+        });
+    }
+    else {
+        console.log("post renderinfo not cached");
+        manager.loadChat(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res, function(deepCopy) {
+            missCB(deepCopy);
+        });
+    }
+}
 
 module.exports = router;
-

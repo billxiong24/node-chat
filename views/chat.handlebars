@@ -44,7 +44,13 @@
                     </div>
                     </div>
                 -->
-                <a class="test-url" href="/chats/019274b44a472600">019274b44a472600</a>
+                {{!-- <a class="test-url" href="/chats/019274b44a472600">019274b44a472600</a> --}}
+                {{#each list}}
+                    <div id="{{id}}">
+                        <a href="/chats/{{id}}">{{chat_name}}</a>             
+                            <span class="label label-primary">{{num_notifications}}</span>
+                     </div>
+                {{/each}}
                 <div class="wrapper wrapper-content animated fadeInRight">
                     <!--
                         <div class="row">

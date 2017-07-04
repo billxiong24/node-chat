@@ -16,7 +16,6 @@ $(document).ready(function() {
             roomID = data.id;
             initializeData(roomID, csrfTokenObj, dependencies);
         });
-        //TODO do url changing events here, have everything we need, i think
     });
 
     initializeData(roomID, csrfTokenObj, dependencies);

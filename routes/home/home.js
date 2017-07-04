@@ -17,8 +17,9 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
         httpOnly: true,
         secure: true
     }); 
-    manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res);
-
+    manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON) {
+        res.render('home', userJSON);
+    });
 });
 
 /* POST request for fetching all data needed for home page */

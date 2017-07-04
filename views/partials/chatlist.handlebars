@@ -1,0 +1,10 @@
+<script id="chatlist-template" type="text/x-handlebars-template">
+    \{{#each this}}
+        <div class="chat-link center-block"> 
+            <div id="\{{id}}">
+                <a href="/chats/\{{id}}">{{chat_name}}</a>             
+                <span class="label label-primary">\{{num_notifications}}</span>
+             </div>
+        </div>
+    {{/each}}
+</script>
