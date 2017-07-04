@@ -1,19 +1,26 @@
 $(document).ready(function() {
 
+    
+   
     //TODO organize ajax calls
     //client side rendering
     var csrfTokenObj = {
         _csrf: $('input[name=_csrf').val()
     };
-
+    var roomID = window.location.pathname.split("/")[2];
     var dependencies = ['jquery', 'chatAjaxService', 'onlineview', 'lineview', 'socketview', 'typingview', 'notifview', 'chatview'];
 
-    require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, typingview, notifview, chatview) {
+    require(['url_changer'], function(url_changer) {
+        //console.log(url_changer.addChangeURLEvent);
+        //TODO do url changing events here, have everything we need, i think
+    });
 
-        //chatAjaxService.chatAjax(window.location.pathname+'/renderNotifs', 'POST', JSON.stringify(csrfTokenObj), 
-            //function(data, Handlebars) {
-                ////TODO figure this out later
-        //});
+    initializeData(roomID, csrfTokenObj, dependencies);
+});
+
+
+function initializeData(roomID, csrfTokenObj, dependencies) {
+    require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, typingview, notifview, chatview) {
         chatAjaxService.chatAjax(window.location.pathname+'/initLines', 'POST', JSON.stringify(csrfTokenObj), 
             function(data, Handlebars) {
                 var html = $('#message-template').html();
@@ -28,7 +35,7 @@ $(document).ready(function() {
 
             var firstMessage = $('.chat-line:first');
             var dataObj = {
-                chatID: window.location.pathname.split("/")[2],
+                chatID: roomID,
                 _csrf: csrfTokenObj._csrf
             };
             chatAjaxService.chatAjax('/chats/loadLines', 'POST', JSON.stringify(dataObj), 
@@ -55,31 +62,31 @@ $(document).ready(function() {
         }
 
         else {
-            setup($, socketview, typingview, notifview, chatview, lineview, onlineview);
+            setup(roomID, $, socketview, typingview, notifview, chatview, lineview, onlineview);
         }
     });
+}
+
+function setup(roomID, $, socketview, typingview, notifview, chatview, lineview, onlineview) {
+    var userid = sessionStorage.getItem('userid');
+
+
+    var typeViewObj = new typingview.TypingView(userid, new socketview.SocketView(roomID, '/typing'));
+    var notifViewObj = new notifview.NotifView(new socketview.SocketView(roomID, '/notifications'));
+    var chatViewObj = new chatview.ChatView(userid, new socketview.SocketView(roomID), notifViewObj);
+
+    typeViewObj.listenForTyping('/images/typing.gif');
+    typeViewObj.keyUpEvent($('.submit-message'), 700);
+
+    chatViewObj.listenForOnlineUsers($('.list-online'), $('.online-now'), function(username, userid) {
+        return new onlineview.OnlineView(username, userid).renderOnlineUser($('#onlineuser-template'));
+    });
     
-    function setup($, socketview, typingview, notifview, chatview, lineview, onlineview) {
-        var userid = sessionStorage.getItem('userid');
+    chatViewObj.setReceiveListener(function(lineViewObj) {
+        var message = lineViewObj.generateMessage($('#line-template'));
+        lineViewObj.appendMessage($('.chat-discussion'), message);
+        lineViewObj.scrollDown($('.chat-discussion'), 2000000);
+    });
 
-
-        var typeViewObj = new typingview.TypingView(userid, new socketview.SocketView(roomID, '/typing'));
-        var notifViewObj = new notifview.NotifView(new socketview.SocketView(roomID, '/notifications'));
-        var chatViewObj = new chatview.ChatView(userid, new socketview.SocketView(roomID), notifViewObj);
-
-        typeViewObj.listenForTyping('/images/typing.gif');
-        typeViewObj.keyUpEvent($('.submit-message'), 700);
-
-        chatViewObj.listenForOnlineUsers($('.list-online'), $('.online-now'), function(username, userid) {
-            return new onlineview.OnlineView(username, userid).renderOnlineUser($('#onlineuser-template'));
-        });
-        
-        chatViewObj.setReceiveListener(function(lineViewObj) {
-            var message = lineViewObj.generateMessage($('#line-template'));
-            lineViewObj.appendMessage($('.chat-discussion'), message);
-            lineViewObj.scrollDown($('.chat-discussion'), 2000000);
-        });
-
-        chatViewObj.setSubmitListener($('.submit-message'), $('.message-input'));
-    }
-});
+    chatViewObj.setSubmitListener($('.submit-message'), $('.message-input'));
+}

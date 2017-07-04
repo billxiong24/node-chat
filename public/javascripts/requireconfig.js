@@ -18,7 +18,8 @@ requirejs.config({
         lineview: 'view/lineview',
         onlineview: 'view/onlineview',
         handlebars: 'js/handlebars.min',
-        chatAjaxService: 'service/chatAjaxService'
+        chatAjaxService: 'service/chatAjaxService',
+        url_changer: 'url_changer'
     },
     waitSeconds: 3
 });

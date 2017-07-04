@@ -21,31 +21,6 @@
                     <div class="row border-bottom white-bg">
                         <nav role="navigation" class="navbar navbar-static-top">
                             <div class="navbar-header"><a href="home.php" class="navbar-brand">ChatIO</a></div>
-                            <ul class="nav navbar-top-links navbar-right">
-                                <li><a href="login.php" style="font-family: Raleway; font-weight: 200;">{{username}}</a></li>
-                                <li style="" class="dropdown"><a data-toggle="dropdown" href="#" class="dropdown-toggle count-info"><i class="fa fa-bell"></i><span class="label label-primary">8</span></a>
-                                    <ul class="dropdown-menu dropdown-alerts">
-                                        <li><a href="mailbox.html">
-                                                <div><i class="fa fa-envelope fa-fw"></i> You have 16 messages<span class="pull-right text-muted small">4 minutes ago</span></div></a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="profile.html">
-                                                <div><i class="fa fa-twitter fa-fw"></i> 3 New Followers<span class="pull-right text-muted small">12 minutes ago</span></div></a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="grid_options.html">
-                                                <div><i class="fa fa-upload fa-fw"></i> Server Rebooted<span class="pull-right text-muted small">4 minutes ago</span></div></a></li>
-                                        <li class="divider"></li>
-                                        <li>
-                                            <div class="text-center link-block"><a href="notifications.html"><strong>See All Alerts</strong><i class="fa fa-angle-right"></i></a></div>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <form method="post" action="/logout">
-                                        <button name="logout" type="submit" class="btn small-buttons"><i class="fa fa-sign-out"></i></button>
-                                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-                                    </form>
-                                </li>
-                            </ul>
                         </nav>
                     </div>
                 </div>
@@ -85,7 +60,15 @@
                     <div class="container1">
                         <div class="row">
                             <div class="ibox chat-view">
-                                <div class="ibox-title"><span class="chat-name">{{name}}</span><span class="success user-title">Code: {{code}} </span><span style="background-color: #6CC417;" class="online-now pull-right user-title">Online now:</span><span class="pull-right date-title"> <span class="numMessages"></span> New Messages</span></div>
+                                <div class="ibox-title">
+                                    <span class="chat-name">{{name}}</span>
+                                    <span class="success user-title">Code: {{code}} </span>
+                                    <span style="background-color: #6CC417;" class="online-now pull-right user-title">Online now:</span>
+                                    <span class="pull-right date-title"> 
+                                        <span class="numMessages"></span> 
+                                        New Messages
+                                    </span>
+                                </div>
                                 <div class="ibox-content fullscreen">
                                     <div style="margin-left: 20px" class="col-xs-2 cell1">
                                     </div>
@@ -154,8 +137,6 @@
                 <script src="/javascripts/js/plugins/pace/pace.min.js"></script>
                 <script src="/javascripts/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
                 <script src="/javascripts/js.cookie.js"></script>
-                {{!-- <script src="/javascripts/js/handlebars.min.js"></script> --}}
-                <script> const roomID = "{{id}}" </script>
                 <script src="/javascripts/js/require.js"></script>
                 <script src="/javascripts/requireconfig.js"></script>
                 <script src="/javascripts/client-socket.js"></script>
