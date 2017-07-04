@@ -12,7 +12,11 @@ if(!manager) {
 
 router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
     /* set all cookies here */
-    res.cookie('userid', req.session.user.id, {httpOnly: false}); 
+    //prevent user from manipulating cookie with browser javascript 
+    res.cookie('userid', req.session.user.id, {
+        httpOnly: true,
+        secure: true
+    }); 
     manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res);
 
 });

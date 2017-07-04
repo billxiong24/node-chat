@@ -21,7 +21,7 @@ LineCache.prototype.insert = function() {
         lineObj.stamp = row[0].stamp;
         cache_functions.pushMessage(Line.prototype.getChatID.call(that), [JSON.stringify(lineObj)], function(err, reply) {
             //TODO Optional flushing??
-            that.flush(3);
+            //that.flush(3);
         });
     });
 
@@ -35,7 +35,7 @@ LineCache.prototype.flush = function(numMessages) {
         var query = "INSERT INTO ChatLines (chat_id, username, message, stamp, line_id) VALUES ";
         var jsonArr = [];
         var first = true;
-
+        //even though looks ratchet, query is protected against sql injection bc still executing parameterized queries
         for(var i = 0; i < numMessages; i++) {
             var jsonObj = JSON.parse(message[i]);
             //if false, that means the queue of messages is empty, break

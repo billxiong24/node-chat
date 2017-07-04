@@ -1,11 +1,6 @@
 var cache_store = require('./cache_store.js');
 
-cache_store.on("error", function(err) {
-    console.log("error : " + err);
-});
-
 //all callbacks take err, result as parameters
-
 function addValue(key, value, callback, expireTime = null) {
     if(!expireTime) {
         cache_store.set(key, value, callback);
@@ -57,7 +52,6 @@ function popMessage(key, numMessages, callback) {
     } 
 
     multi.exec(callback);
-    //cache_store.rpop(key, callback);
 }
 
 function retrieveArray(key, start, end, callback) {

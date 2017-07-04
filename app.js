@@ -19,18 +19,13 @@ const expressHandlebars = require('express-handlebars');
 const helmet = require('helmet');
 const cluster = require('cluster');
 const csrf = require('csurf');
+const compression = require('compression');
 
 var PORT = process.env.PORT || 3000;
 var HOST = process.env.HOST || 'localhost';
 
-//LOAD TESTING
-if(process.env.NODE_ENV === "loadtest") {
-    var siege = require('siege');
-    siege().on(PORT).concurrent(500).for(1000).times.withCookie.post('/login', {username: "billxiong24", pass:"pass"}).get('/home').attack();
-}
-
-
 function init(port) {
+    app.use(compression());
     app.set('views', path.join(__dirname, '/views'));
 
     var handlebars = expressHandlebars.create({ 
@@ -111,5 +106,11 @@ function init(port) {
 
 //to disable clustering and ip hashing, comment below line and just call init(3000);
 require('./cluster_node.js')(cluster, http, init(0), PORT);
+
+//LOAD TESTING
+if(process.env.NODE_ENV === "loadtest") {
+    var siege = require('siege');
+    siege().on(PORT).concurrent(500).for(1000).times.withCookie.post('/login', {username: "billxiong24", pass:"pass"}).get('/home').attack();
+}
 
 module.exports = app;
