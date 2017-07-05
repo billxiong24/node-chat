@@ -5,25 +5,25 @@ $(document).ready(function() {
         _csrf: $('input[name=_csrf]').val()
     };
     var roomID = window.location.pathname.split("/")[2];
-    var dependencies = ['jquery', 'chatAjaxService', 'onlineview', 'lineview', 'socketview', 'typingview', 'notifview', 'chatview'];
+    var dependencies = ['jquery', 'chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 'typingview', 'notifview', 'chatview'];
 
-    require(['url_changer'], function(url_changer) {
-        //console.log(url_changer.addChangeURLEvent);
-        var test = $('.test-url');
-        var select = $('.test-input');
-        url_changer.addChangeURLEvent(test, test.attr('href'), test.attr('href')+'/renderInfo', csrfTokenObj, function(data, Handlebars){
-            console.log(data);
-            roomID = data.id;
-            initializeData(roomID, csrfTokenObj, dependencies);
-        });
-    });
+    //require(['url_changer'], function(url_changer) {
+        ////console.log(url_changer.addChangeURLEvent);
+        //var test = $('.test-url');
+        //var select = $('.test-input');
+        //url_changer.addChangeURLEvent(test, test.attr('href'), test.attr('href')+'/renderInfo', csrfTokenObj, function(data, Handlebars){
+            //console.log(data);
+            //roomID = data.id;
+            //initializeData(roomID, csrfTokenObj, dependencies);
+        //});
+    //});
 
     initializeData(roomID, csrfTokenObj, dependencies);
 });
 
 
 function initializeData(roomID, csrfTokenObj, dependencies) {
-    require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, typingview, notifview, chatview) {
+    require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, chatinfo, typingview, notifview, chatview) {
         chatAjaxService.chatAjax(window.location.pathname+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
             $('.ibox-title').remove();
             var html = $('#chatinfo-template').html();
@@ -35,12 +35,12 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                     function(data, Handlebars) {
                         Cookies.set('userid', data.cookie);
                         sessionStorage.setItem('userid', data.cookie);
-                        setup($, socketview, typingview, notifview, chatview, lineview, onlineview);
+                        setup($, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview);
                 });
             }
 
             else {
-                setup(roomID, $, socketview, typingview, notifview, chatview, lineview, onlineview);
+                setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview);
             }
         });
         chatAjaxService.chatAjax(window.location.pathname+'/initLines', 'POST', JSON.stringify(csrfTokenObj), 
@@ -77,8 +77,20 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
     });
 }
 
-function setup(roomID, $, socketview, typingview, notifview, chatview, lineview, onlineview) {
+function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview) {
     var userid = sessionStorage.getItem('userid');
+    var inf = new chatinfo.ChatInfo(new socketview.SocketView(null, '/notifications'), roomIDs, userid);
+
+    inf.listenForNotifications(function(data) {
+        console.log("received");
+        if(data.userid !== sessionStorage.getItem('userid')) {
+            $('#'+data.roomID + ' span').text(inf.incrementGetNotif(data.roomID));
+        }
+        else {
+            inf.resetGetNotif(data.roomID);
+            $('#'+data.roomID + ' span').text(""); 
+        }
+    });
 
 
     var typeViewObj = new typingview.TypingView(userid, new socketview.SocketView(roomID, '/typing'));

@@ -20,7 +20,17 @@
                 <div class="row border-bottom">
                     <div class="row border-bottom white-bg">
                         <nav role="navigation" class="navbar navbar-static-top">
-                            <div class="navbar-header"><a href="home.php" class="navbar-brand">ChatIO</a></div>
+                            <div class="navbar-header"><a href="/home" class="navbar-brand">ChatIO</a></div>
+                            <ul class="nav navbar-top-links navbar-right">
+                                <li><a href="login.php" style="font-family: Raleway; font-weight: 200;">{{username}}</a></li>
+                                <li style="" class="dropdown"><a data-toggle="dropdown" href="#" class="dropdown-toggle count-info"><i class="fa fa-bell"></i><span class="label label-primary">8</span></a></li>
+                                <li>
+                                    <form method="post" action="/logout">
+                                        <button name="logout" type="submit" class="btn small-buttons"><i class="fa fa-sign-out"></i></button>
+                                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                    </form>
+                                </li>
+                            </ul>
                         </nav>
                     </div>
                 </div>
@@ -138,6 +148,9 @@
                 <script src="/javascripts/js.cookie.js"></script>
                 <script src="/javascripts/js/require.js"></script>
                 <script src="/javascripts/requireconfig.js"></script>
+                <script>
+                    var roomIDs = JSON.parse(decodeURIComponent("{{{parseList}}}"));
+                </script>
                 <script src="/javascripts/client-socket.js"></script>
                 </div>
     </body>
