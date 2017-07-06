@@ -17,7 +17,7 @@ module.exports = function(app, passport) {
     });
 
     router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
-        res.render('index', {csrfToken: req.csrfToken(), error: req.flash('error')[0]});
+        res.render('login', {csrfToken: req.csrfToken(), error: req.flash('error')[0]});
     });
 
     router.post('/login', authenticator.checkLoggedIn, function(req, res, next) {
@@ -26,7 +26,7 @@ module.exports = function(app, passport) {
     });
 
     router.get('/signup', authenticator.checkLoggedIn, function(req, res, next) {
-        res.render('index', {csrfToken: req.csrfToken()});
+        res.render('signup', {csrfToken: req.csrfToken()});
     });
 
     router.post('/signup', authenticator.checkLoggedIn, function(req, res, next) {

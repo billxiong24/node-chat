@@ -44,9 +44,12 @@ function passportSignupCallback(passport, req, res, next) {
         }
 
         if(!user) {
-            res.render('index', {
+            console.log("error signup");
+            res.render('signup', {
                 csrfToken:req.csrfToken(),
-                signup_error: "There was an error. Pleas try again."
+                signup_error: "There was an error. Please try again.",
+                //for css class to display error
+                visible: 'visible'
             });
             return;
         }
@@ -138,6 +141,8 @@ function passportAuth(passport) {
             if(!validate_cred_util.validateUsername(info.username)) {
                 return done(null, false, req.flash('error', 'Signup error.'));
             }
+
+            //TODO add password checker
 
             var user_manager = new UserManager(new UserCache(user_signup, info.id, info.password, info.first, info.last));
             var signupFailure = function() {

@@ -1,0 +1,161 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>ChatIO</title>
+        <link href="stylesheets/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="stylesheets/font-awesome/css/font-awesome.css" rel="stylesheet"/>
+        <link href="stylesheets/css/animate.css" rel="stylesheet"/>
+        <link href="stylesheets/css/style.css" rel="stylesheet"/>
+        <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway"/>
+        <link href="stylesheets/css/index.css" rel="stylesheet"/>
+        <link href="stylesheets/css/flip.css" rel="stylesheet"/>
+    </head>
+    <body class="top-navigation">
+        <div id="wrapper">
+            <div id="page-wrapper">
+                <div class="row border-bottom white-bg">
+                    <nav role="navigation" class="navbar navbar-static-top">
+                        <div class="navbar-header">
+                            <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" type="button" class="navbar-toggle collapsed"><i class="fa fa-reorder"></i></button><a href="#" class="navbar-brand">ChatIO</a>
+                        </div>
+                        <div id="navbar" class="navbar-collapse collapse">
+                            <ul class="nav navbar-top-links navbar-right">
+                                <li><a href="" style="font-family: Raleway; font-weight: 200;" class="navbar-brand"><i class="fa fa-sign-in"></i> Log in</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+                <div class="wrapper wrapper-content">
+                    <div class="container animated fadeInDown">
+                        <div>{{signup_error}}</div>
+                        <div class="slogan"><span>Instant Messaging. Redefined.</span></div>
+                        <div class="title"><span>Chat</span></div>
+                        <div class="logo">
+                            <button id="i" class="btn btn-primary filler"></button>
+                            <button id="o" class="btn btn-primary filler"></button>
+                        </div>
+                        <div id="w">
+                            <div id="page">
+                                <div id="content-login">
+                                    <div class="content">
+                                        <div class="buttons">
+                                            <input id="showsignup" type="submit" value="Sign up" class="btn btn-primary register"/>
+                                            <input id="showregister" type="submit" value="Log in" class="btn btn-primary login"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="content-register2">
+                                    <div class="content">
+                                        <div class="loginColumns">
+                                            <form class="signup-form" role="form" method="post" action="/signup" class="m-t">
+                                                <div class="row">
+                                                    <div style="border-top: solid #C3C3C3 1px" class="col-md-6">
+                                                        <div style="margin-top: 15px" class="form-group">
+                                                            <input name="firstname_signup" placeholder="First name" autocomplete="off" required="" class="form-control"/>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <input name="lastname_signup" placeholder="Last name" autocomplete="off" required="" class="form-control"/>
+                                                        </div>
+                                                        <h2 class="font-bold">Welcome to ChatIO</h2>
+                                                        <p>
+                                                        A perfectly designed and precisely prepared chat client,
+                                                        ChatIO is committed to revolutionizing and redefining instant messaging, one step at a time.
+                                                        </p>
+                                                        <p>Get started by entering a username and password and clicking "Sign up". It's that easy. </p>
+                                                    </div>
+                                                    <div style="border-top: solid #C3C3C3 1px" class="col-md-6">
+                                                        <div style="border: none" class="ibox-content">
+                                                            <div class="form-group">
+                                                                <input name="user_signup" placeholder="Username" autocomplete="off" required="" class="form-control"/><span style="color:red" class="error-message"> </span>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <input type="password" name="password_signup" placeholder="Password" required="" class="form-control"/>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                            </div>
+                                                            <button type="submit" name="signup" class="btn btn-primary block full-width m-b">Sign up</button>
+                                                            <p class="text-muted text-center"><small>Already have an account?</small></p><a id="showregister" class="btn btn-sm btn-white btn-block">Login</a><a id="showlogin2" class="btn btn-sm btn-white btn-block">Back</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <hr/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="content-register">
+                                <div class="content">
+                                    <div style="margin-top: 180px" class="middle-box text-center loginscreen loginflip">
+                                        <div>
+                                            <div style="border: solid #D2D2D2 1px;"><i style="font-size: 130px;" class="fa fa-user"></i></div>
+                                       
+                                            <div class="login-error"></div>
+                                            <form role="form" action="/login" method="post" class="user-login m-t">
+                                                <div class="form-group">
+                                                    <input name="username" placeholder="Username" required="" autocomplete="off" class="form-control"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="password" name="password" placeholder="Password" required="" class="form-control"/>
+                                                </div>
+                                                <button type="submit" name="loginbutton" class="btn btn-primary block full-width m-b">Login</button><a id="showlogin" class="btn btn-sm btn-white btn-block">Back</a><a href="#"> <small>Forgot password?</small></a>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+                        <div class="container animated fadeInDown">
+                        <div class="slogan">
+                        <span>Instant Messaging. Redefined.</span>
+                        </div>
+                        <div class="title">
+                        <span>Chat</span>
+                        </div>
+                        <div class="logo">
+                        <button class="btn btn-primary filler" id="i"></button>
+                        <button class="btn btn-primary filler" id="o"></button>
+                        </div>
+                        <div class="buttons">
+                        <input type="submit" class="btn btn-primary" id="register" value="Sign up">
+                        <input type="submit" class="btn btn-primary" id="login" value="Log in">
+                        </div>
+                        </div>
+                    -->
+                </div>
+                <div class="footer">
+                    <div><strong>Copyright</strong> ChatIO © 2017</div>
+                </div>
+            </div>
+        </div>
+        <!-- Mainly scripts-->
+        <script src="javascripts/js/jquery-2.1.1.js"></script>
+        <script src="javascripts/js/bootstrap.min.js"></script>
+        <script src="javascripts/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+        <script src="javascripts/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+        <!-- Custom and plugin javascript-->
+        <script src="javascripts/js/inspinia.js"></script>
+        <script src="javascripts/js/plugins/pace/pace.min.js"></script>
+        <!-- Flot-->
+        <script src="javascripts/js/plugins/flot/jquery.flot.js"></script>
+        <script src="javascripts/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+        <script src="javascripts/js/plugins/flot/jquery.flot.resize.js"></script>
+        <!-- ChartJS-->
+        <script src="javascripts/js/plugins/chartJs/Chart.min.js"></script>
+        <!-- Peity-->
+        <script src="javascripts/js/plugins/peity/jquery.peity.min.js"></script>
+        <!-- Peity demo-->
+        <script src="javascripts/js/demo/peity-demo.js"></script>
+        <script src="javascripts/js/formslider.js"></script>
+        <script src="/javascripts/js/require.js"></script>
+        <script src="/javascripts/requireconfig.js"></script>
+        <script src="javascripts/validate.js"></script>
+    </body>
+</html>
