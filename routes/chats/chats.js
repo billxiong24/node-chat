@@ -15,17 +15,17 @@ if(!manager) {
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     /* TODO CACHE THIS SHIT*/
     var cachedCB = function(members) {
-        res.render('chat', members[req.params.chatID]);
+        res.render('groupchat', members[req.params.chatID]);
     };
     var missCB = function(deepCopy) {
-        res.render('chat', deepCopy);
+        res.render('groupchat', deepCopy);
     };
 
     //TODO create utility hold common elements in response object, such as csrfToken
     //rest of info will be filled in by renderInfo and initLines (clientside rendering)
     //this shit needs to be cached
     manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON) {
-        res.render('chat', userJSON);
+        res.render('groupchat', userJSON);
     });
     //res.render('chat', {csrfToken: req.csrfToken()});
 });

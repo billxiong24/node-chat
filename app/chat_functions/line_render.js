@@ -26,6 +26,10 @@ function renderLines(username, lineInfo) {
 
         lineInfo[i].direction = username === lineInfo[i].username ? "right" : "left";
         lineInfo[i].active = username === lineInfo[i].username ? "active" : "";
+        lineInfo[i].user_direction = username === lineInfo[i].username ? "active" : "";
+        lineInfo[i].circle = username === lineInfo[i].username ? "active" : "";
+        lineInfo[i].message_direction = username === lineInfo[i].username ? "active" : "";
+
         lineInfo[i].viewUsername = (!prevUser || lineInfo[i].username !== prevUser) ? lineInfo[i].username : "";
 
 

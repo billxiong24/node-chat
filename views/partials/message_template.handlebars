@@ -1,0 +1,23 @@
+<script id="messages-template" type="text/x-handlebars-template">
+    <li class="clearfix">
+        <div class="message-data align-right">
+            <span class="message-data-time" >\{{viewStamp}}</span>
+            <span class="message-data-name" >\{{viewUsername}}</span> <i class="fa fa-circle me"></i>
+        </div>
+        <div class="message other-message float-right">
+            \{{message}}
+        </div>
+    </li>
+</script>
+
+<script id="message-response-template" type="text/x-handlebars-template">
+    <li>
+        <div class="message-data">
+            <span class="message-data-name"><i class="fa fa-circle online"></i>\{{viewUsername}}</span>
+            <span class="message-data-time">\{{viewStamp}}</span>
+        </div>
+        <div class="message my-message">
+            \{{message}}
+        </div>
+    </li>
+</script>
