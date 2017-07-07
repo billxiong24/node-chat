@@ -80,80 +80,15 @@
 						<span class="title">Dashboard</span>
 					</a>
 					<ul>
-						<li>
-							<a href="index.html">
-								<span class="title">Dashboard 1</span>
-							</a>
-						</li>
-						<li>
-							<a href="dashboard-2.html">
-								<span class="title">Dashboard 2</span>
-							</a>
-						</li>
-						<li>
-							<a href="dashboard-3.html">
-								<span class="title">Dashboard 3</span>
-							</a>
-						</li>
-						<li class="has-sub">
-							<a href="skin-black.html">
-								<span class="title">Skins</span>
-							</a>
-							<ul>
-								<li>
-									<a href="skin-black.html">
-										<span class="title">Black Skin</span>
-									</a>
-								</li>
-								<li>
-									<a href="skin-white.html">
-										<span class="title">White Skin</span>
-									</a>
-								</li>
-								<li>
-									<a href="skin-purple.html">
-										<span class="title">Purple Skin</span>
-									</a>
-								</li>
-								<li>
-									<a href="skin-cafe.html">
-										<span class="title">Cafe Skin</span>
-									</a>
-								</li>
-								<li>
-									<a href="skin-red.html">
-										<span class="title">Red Skin</span>
-									</a>
-								</li>
-								<li>
-									<a href="skin-green.html">
-										<span class="title">Green Skin</span>
-									</a>
-								</li>
-								<li>
-									<a href="skin-yellow.html">
-										<span class="title">Yellow Skin</span>
-									</a>
-								</li>
-								<li>
-									<a href="skin-blue.html">
-										<span class="title">Blue Skin</span>
-									</a>
-								</li>
-								<li>
-									<a href="skin-facebook.html">
-										<span class="title">Facebook Skin</span>
-										<span class="badge badge-secondary badge-roundless">New</span>
-									</a>
-								</li>
-							</ul>
-						</li>
-						<li>
-							<a href="highlights.html">
-								<span class="title">What's New</span>
-								<span class="badge badge-success badge-roundless">v2.0</span>
-							</a>
-						</li>
+                        {{#each list}}
+                            <li>
+                                <a id="{{id}}" href="/chats/{{id}}">
+                                    <span class="title">{{chat_name}}</span>
+                                    {{!-- <span class="badge badge-success badge-roundless">{{num_notifications}}</span> --}}
+                                    <span class="badge badge-secondary">{{num_notifications}}</span>
+                                </a>             
+                            </li>
+                        {{/each}}
 					</ul>
 				</li>
 				<li class="has-sub">
@@ -1171,15 +1106,18 @@
         
       </div> <!-- end chat-history -->
       
-      <div class="chat-message clearfix">
-        <textarea name="message-to-send" id="message-to-send" placeholder ="Type your message" rows="3"></textarea>
-                
-        <i class="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp;
-        <i class="fa fa-file-image-o"></i>
-        
-        <button>Send</button>
+      <form action="" class="submit-message">
+          <div class="chat-message clearfix">
+            <textarea name="message-to-send" id="message-to-send" placeholder ="Type your message" rows="3"></textarea>
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    
+            <i class="fa fa-file-o"></i>
+            <i class="fa fa-file-image-o"></i>
+            
+            <button type="submit">Send</button>
 
-      </div> <!-- end chat-message -->
+          </div> <!-- end chat-message -->
+      </form>
       
     </div> <!-- end chat -->
     
@@ -1187,6 +1125,7 @@
 
 {{>message_template}}
 {{>chatinfo}}
+{{>online_user}}
   <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 <script src='http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.0/handlebars.min.js'></script>
 <script src='http://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js'></script>
@@ -1205,8 +1144,6 @@
 	<div id="chat" class="fixed" data-current-user="Art Ramadani" data-order-by-status="1" data-max-chat-history="25">
 	
 		<div class="chat-inner">
-	
-	
 			<h2 class="chat-header">
 				<a href="#" class="chat-close"><i class="entypo-cancel"></i></a>
 	
@@ -1217,34 +1154,14 @@
 	
 	
 			<div class="chat-group" id="group-1">
-				<strong>Favorites</strong>
+                <strong>Online  (<span class="online-now"></span>)</strong>
 	
-				<a href="#" id="sample-user-123" data-conversation-history="#sample_history"><span class="user-status is-online"></span> <em>Catherine J. Watkins</em></a>
-				<a href="#"><span class="user-status is-online"></span> <em>Nicholas R. Walker</em></a>
-				<a href="#"><span class="user-status is-busy"></span> <em>Susan J. Best</em></a>
-				<a href="#"><span class="user-status is-offline"></span> <em>Brandon S. Young</em></a>
-				<a href="#"><span class="user-status is-idle"></span> <em>Fernando G. Olson</em></a>
+				{{!-- <a href="#" id="sample-user-123" data-conversation-history="#sample_history"><span class="user-status is-online"></span> <em>Catherine J. Watkins</em></a> --}}
+				{{!-- <a href="#"><span class="user-status is-online"></span> <em>Nicholas R. Walker</em></a> --}}
+				{{!-- <a href="#"><span class="user-status is-busy"></span> <em>Susan J. Best</em></a> --}}
+				{{!-- <a href="#"><span class="user-status is-offline"></span> <em>Brandon S. Young</em></a> --}}
+				{{!-- <a href="#"><span class="user-status is-idle"></span> <em>Fernando G. Olson</em></a> --}}
 			</div>
-	
-	
-			<div class="chat-group" id="group-2">
-				<strong>Work</strong>
-	
-				<a href="#"><span class="user-status is-offline"></span> <em>Robert J. Garcia</em></a>
-				<a href="#" data-conversation-history="#sample_history_2"><span class="user-status is-offline"></span> <em>Daniel A. Pena</em></a>
-				<a href="#"><span class="user-status is-busy"></span> <em>Rodrigo E. Lozano</em></a>
-			</div>
-	
-	
-			<div class="chat-group" id="group-3">
-				<strong>Social</strong>
-	
-				<a href="#"><span class="user-status is-busy"></span> <em>Velma G. Pearson</em></a>
-				<a href="#"><span class="user-status is-offline"></span> <em>Margaret R. Dedmon</em></a>
-				<a href="#"><span class="user-status is-online"></span> <em>Kathleen M. Canales</em></a>
-				<a href="#"><span class="user-status is-offline"></span> <em>Tracy J. Rodriguez</em></a>
-			</div>
-	
 		</div>
 	
 		<!-- conversation template -->

@@ -19,22 +19,22 @@
         },
         render: function() {
             this.scrollToBottom();
-            if (this.messageToSend.trim() !== '') {
-                var template = Handlebars.compile( $("#message-template").html());
-                var context = { 
-                    messageOutput: this.messageToSend,
-                    time: this.getCurrentTime()
-                };
+            //if (this.messageToSend.trim() !== '') {
+                //var template = Handlebars.compile( $("#message-template").html());
+                //var context = { 
+                    //messageOutput: this.messageToSend,
+                    //time: this.getCurrentTime()
+                //};
 
-                console.log(context);
-                console.log(template);
-                this.$chatHistoryList.append(template(context));
-                this.scrollToBottom();
-                this.$textarea.val('');
+                //console.log(context);
+                //console.log(template);
+                //this.$chatHistoryList.append(template(context));
+                //this.scrollToBottom();
+                //this.$textarea.val('');
 
-                // responses
-                var templateResponse = Handlebars.compile( $("#message-response-template").html());
-            }
+                //// responses
+                //var templateResponse = Handlebars.compile( $("#message-response-template").html());
+            //}
         },
 
         addMessage: function() {
@@ -44,7 +44,7 @@
         addMessageEnter: function(event) {
             // enter was pressed
             if (event.keyCode === 13) {
-                this.addMessage();
+                //this.addMessage();
             }
         },
         scrollToBottom: function() {

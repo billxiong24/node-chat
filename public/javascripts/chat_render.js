@@ -22,6 +22,20 @@ $(document).ready(function() {
 });
 
 
+function displayLines(chatList, Handlebars, lines, display) {
+    for(var i = 0; i < lines.length; i++) {
+        var html, template;
+        if(lines[i].direction === "right") {
+            html = $('#messages-template').html();
+            template = Handlebars.compile(html);
+        }
+        else {
+            html = $('#message-response-template').html();
+            template = Handlebars.compile(html);
+        }
+        display(template(lines[i]));
+    }
+}
 function initializeData(roomID, csrfTokenObj, dependencies) {
     require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, chatinfo, typingview, notifview, chatview) {
         chatAjaxService.chatAjax(window.location.pathname+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
@@ -46,30 +60,19 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
 
         chatAjaxService.chatAjax(window.location.pathname+'/initLines', 'POST', JSON.stringify(csrfTokenObj), 
             function(data, Handlebars) {
-                console.log(data.lines);
                 var chat = $('.chat-history-group');
                 var chatList = chat.find('ul');
                 //TODO precomile these templates
-                for(var i = 0; i < data.lines.length; i++) {
-                    var html, template;
-                    if(data.lines[i].direction === "right") {
-                        html = $('#messages-template').html();
-                        template = Handlebars.compile(html);
-                        chatList.append(template(data.lines[i]));
-                    }
-                    else {
-                        html = $('#message-response-template').html();
-                        template = Handlebars.compile(html);
-                        chatList.append(template(data.lines[i]));
-                    }
-                }
+                displayLines(chatList, Handlebars, data.lines, function(line) {
+                    chatList.append(line);
+                });
                 chat.scrollTop(chat[0].scrollHeight);
         });
 
-        $('.chat-discussion').scroll(function() {
+        $('.chat-history-group').scroll(function() {
             if($(this).scrollTop() !== 0) { return; }
 
-            var firstMessage = $('.chat-line:first');
+            var firstMessage = $('.message-data:first');
             var dataObj = {
                 chatID: roomID,
                 _csrf: csrfTokenObj._csrf
@@ -78,13 +81,16 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                 function(data, Handlebars) {
                     if(data.lines === null) {return;}
 
-                    var chatDiscussion = $('.chat-discussion');
-                    var html = $('#message-template').html();
-                    var template = Handlebars.compile(html);
-                    chatDiscussion.prepend(template(data.lines));
+                    var chat = $('.chat-history-group');
+                    var chatList = chat.find('ul');
+
+                    //we want to prepend to beginning of list, since scrolling up
+                    displayLines(chatList, Handlebars, data.lines, function(line) {
+                        chatList.prepend(line);
+                    });
 
                     //TODO dont hardcode this, okay for now
-                    chatDiscussion.scrollTop(firstMessage.offset().top - 150);
+                    //chatDiscussion.scrollTop(firstMessage.offset().top - 150);
             });
         });
 
@@ -97,11 +103,11 @@ function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview,
 
     inf.listenForNotifications(function(data) {
         if(data.userid !== sessionStorage.getItem('userid')) {
-            $('#'+data.roomID + ' span').text(inf.incrementGetNotif(data.roomID));
+            $('#'+data.roomID + ' .badge').text(inf.incrementGetNotif(data.roomID));
         }
         else {
             inf.resetGetNotif(data.roomID);
-            $('#'+data.roomID + ' span').text(""); 
+            $('#'+data.roomID + ' .badge').text(""); 
         }
     });
 
@@ -113,15 +119,23 @@ function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview,
     typeViewObj.listenForTyping('/images/typing.gif');
     typeViewObj.keyUpEvent($('.submit-message'), 700);
 
-    chatViewObj.listenForOnlineUsers($('.list-online'), $('.online-now'), function(username, userid) {
-        //return new onlineview.OnlineView(username, userid).renderOnlineUser($('#onlineuser-template'));
+    chatViewObj.listenForOnlineUsers($('.chat-group'), $('.online-now'), function(username, userid) {
+        return new onlineview.OnlineView(username, userid).renderOnlineUser($('#onlineuser-template'));
     });
     
     chatViewObj.setReceiveListener(function(lineViewObj) {
-        //var message = lineViewObj.generateMessage($('#line-template'));
-        //lineViewObj.appendMessage($('.chat-discussion'), message);
-        //lineViewObj.scrollDown($('.chat-discussion'), 2000000);
+        var history = $('.chat-history-group');
+        var list = history.find('ul');
+        var message;
+        if(lineViewObj.getDirection() === "right") {
+            message = lineViewObj.generateMessage($('#messages-template'));
+        }
+        else {
+            message = lineViewObj.generateMessage($('#message-response-template'));
+        }
+        lineViewObj.appendMessage(list, message);
+        lineViewObj.scrollDown(history, history[0].scrollHeight);
     });
 
-    chatViewObj.setSubmitListener($('.submit-message'), $('.message-input'));
+    chatViewObj.setSubmitListener($('#message-to-send'), $('.submit-message'), $('.message-input'));
 }

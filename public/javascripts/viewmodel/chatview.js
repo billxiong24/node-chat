@@ -54,23 +54,30 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 });
             };
 
-            ChatView.prototype.setSubmitListener = function(submitForm, messageInput) {
+            ChatView.prototype.setSubmitListener = function(textareaObj, submitForm, messageInput) {
                 var that = this;
-                submitForm.submit(function() {
-                    var msg_input = messageInput;
-                    if(msg_input.val().length > 0) {
-                        that._socketview.send('message', msg_input.val());
-
+                var textobj = textareaObj;
+                submitForm.submit(function(event) {
+                    var message = textobj.val().trim();
+                    textobj.val('');
+                    if(message.length > 0) {
+                        that._socketview.send('message', message);
                         that._notifview.sendNotification(that._userid);
-                        msg_input.val("");
                     }
                     return false;
                 });
+                textobj.keyup(function(event) {
+                    var message = textobj.val();
+                    if(event.keyCode == 13) {
+                        submitForm.submit();
+                    }
+                });
+
                 
             };
 
             function updateNumOnlineUsers(num, numOnlineObj) {
-                numOnlineObj.text("Online now: " + num);
+                numOnlineObj.text(num);
             }
             
             //this message is cancerous

@@ -26,6 +26,9 @@ define(['js/handlebars.min'], function(Handlebars) {
             }
 
 
+            LineView.prototype.getDirection = function() {
+                return this._dir;
+            };
             LineView.prototype.appendMessage = function(jqObj, message) {
                 jqObj.append(message);
             };
