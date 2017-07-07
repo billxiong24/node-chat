@@ -102,12 +102,13 @@ function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview,
     var inf = new chatinfo.ChatInfo(new socketview.SocketView(null, '/notifications'), roomIDs, userid);
 
     inf.listenForNotifications(function(data) {
+        var notif = $('#'+data.roomID + ' .badge');
         if(data.userid !== sessionStorage.getItem('userid')) {
-            $('#'+data.roomID + ' .badge').text(inf.incrementGetNotif(data.roomID));
+            notif.text(inf.incrementGetNotif(data.roomID));
         }
         else {
             inf.resetGetNotif(data.roomID);
-            $('#'+data.roomID + ' .badge').text(""); 
+            notif.text(""); 
         }
     });
 

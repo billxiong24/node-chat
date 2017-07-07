@@ -26,7 +26,6 @@ ChatSocket.prototype.init = function() {
 
         socket.on('connected', function(data) {
             var url = urlParser.parse(socket.handshake.headers.referer);
-            console.log(url);
             var id = parseID(url.pathname);
 
             Socket.prototype.getIO.call(that).to(id).emit('connected', {
@@ -37,7 +36,6 @@ ChatSocket.prototype.init = function() {
 
         socket.on('online', function(data) {
             var url = urlParser.parse(socket.handshake.headers.referer);
-            console.log(url);
             var id = parseID(url.pathname);
             Socket.prototype.getIO.call(that).to(id).emit('online', {
                 user: socket.request.session.user,
@@ -48,7 +46,6 @@ ChatSocket.prototype.init = function() {
         socket.on('message', function(message) {
             //console.log(socket.handshake.headers);
             var url = urlParser.parse(socket.handshake.headers.referer);
-            console.log(url);
 
             var message_info = {
                 message : message, 

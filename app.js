@@ -24,6 +24,11 @@ const compression = require('compression');
 var PORT = process.env.PORT || 3000;
 var HOST = process.env.HOST || 'localhost';
 
+//if we in production, disable print statements...shouldn't be debugging in production
+if(process.env.NODE_ENV === "production") {
+    console.log = function(input) {};
+}
+
 function init(port) {
     app.use(compression());
     app.set('views', path.join(__dirname, '/views'));
