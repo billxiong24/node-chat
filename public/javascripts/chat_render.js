@@ -1,3 +1,5 @@
+var handlebars = Handlebars;
+
 $(document).ready(function() {
     //TODO organize ajax calls
     //client side rendering
@@ -11,7 +13,7 @@ $(document).ready(function() {
         ////console.log(url_changer.addChangeURLEvent);
         //var test = $('.test-url');
         //var select = $('.test-input');
-        //url_changer.addChangeURLEvent(test, test.attr('href'), test.attr('href')+'/renderInfo', csrfTokenObj, function(data, Handlebars){
+        //url_changer.addChangeURLEvent(test, test.attr('href'), test.attr('href')+'/renderInfo', csrfTokenObj, function(data, handlebars){
             //console.log(data);
             //roomID = data.id;
             //initializeData(roomID, csrfTokenObj, dependencies);
@@ -22,18 +24,18 @@ $(document).ready(function() {
 });
 
 
-function displayLines(chatList, Handlebars, lines, display) {
+function displayLines(chatList, handlebars, lines, display) {
     for(var i = 0; i < lines.length; i++) {
         var html, template;
         if(lines[i].direction === "right") {
-            html = $('#messages-template').html();
-            template = Handlebars.compile(html);
+            //html = $('#messages-template').html();
+            template = handlebars.templates.message_template(lines[i]);
         }
         else {
-            html = $('#message-response-template').html();
-            template = Handlebars.compile(html);
+            //html = $('#message-response-template').html();
+            template = handlebars.templates.message_response_template(lines[i]);
         }
-        display(template(lines[i]));
+        display(template);
     }
 }
 function initializeData(roomID, csrfTokenObj, dependencies) {
@@ -41,8 +43,7 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
         chatAjaxService.chatAjax(window.location.pathname+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
             $('.chat-header').remove();
             var html = $('#chatheader-template').html();
-            var template = Handlebars.compile(html);
-            $('.chat').prepend(template(data));
+            $('.chat').prepend(handlebars.templates.chatinfo(data));
             //zombie cookie
             if(!sessionStorage.getItem('userid')) {
                 chatAjaxService.chatAjax('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj), 
@@ -63,7 +64,7 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                 var chat = $('.chat-history-group');
                 var chatList = chat.find('ul');
                 //TODO precomile these templates
-                displayLines(chatList, Handlebars, data.lines, function(line) {
+                displayLines(chatList, handlebars, data.lines, function(line) {
                     chatList.append(line);
                 });
                 chat.scrollTop(chat[0].scrollHeight);
@@ -85,7 +86,7 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                     var chatList = chat.find('ul');
 
                     //we want to prepend to beginning of list, since scrolling up
-                    displayLines(chatList, Handlebars, data.lines, function(line) {
+                    displayLines(chatList, handlebars, data.lines, function(line) {
                         chatList.prepend(line);
                     });
 
@@ -121,7 +122,7 @@ function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview,
     typeViewObj.keyUpEvent($('.submit-message'), 700);
 
     chatViewObj.listenForOnlineUsers($('.chat-group'), $('.online-now'), function(username, userid) {
-        return new onlineview.OnlineView(username, userid).renderOnlineUser($('#onlineuser-template'));
+        return new onlineview.OnlineView(username, userid).renderOnlineUser(handlebars, 'online_user');
     });
     
     chatViewObj.setReceiveListener(function(lineViewObj) {

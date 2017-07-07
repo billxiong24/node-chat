@@ -1,26 +1,12 @@
-<script id="chatinfo-template" type="text/x-handlebars-template">
-    <div class="ibox-title">
-        <span class="chat-name">\{{name}}</span>
-        <span class="success user-title">Code: \{{code}} </span>
-        <span style="background-color: #6CC417;" class="online-now pull-right user-title">Online now:</span>
-        <span class="pull-right date-title"> 
-            <span class="numMessages"></span> 
-            New Messages
-        </span>
-    </div>
-</script>
-
-<script id="chatheader-template" type="text/x-handlebars-template">
     <div class="chat-header clearfix">
         <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01_green.jpg" alt="avatar" />
 
         <div class="chat-about">
-            <div class="chat-with">\{{name}}</div>
-            <div class="chat-num-messages">Code: \{{code}}</div>
+            <div class="chat-with">{{name}}</div>
+            <div class="chat-num-messages">Code: {{code}}</div>
         </div>
         <i class="fa fa-star"></i>
         <div class="pull-right">
             New messages: <span class="numMessages pull-right"></span>
         </div>
     </div> <!-- end chat-header -->
-</script>

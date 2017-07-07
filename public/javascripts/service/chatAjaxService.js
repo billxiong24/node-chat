@@ -1,5 +1,5 @@
 //chat ajax function
-define(['js/handlebars.min'], function(Handlebars) {
+define(['js/handlebars'], function(Handlebars) {
     return {
         chatAjax: chatAjaxRequire(Handlebars)
     };

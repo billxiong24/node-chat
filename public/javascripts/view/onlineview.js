@@ -6,10 +6,10 @@ define(['js/handlebars.min'], function(Handlebars) {
                 this._userid = userid;
             }
 
-            OnlineView.prototype.renderOnlineUser = function(partialObj) {
-                var html = partialObj.html();
-                var template = Handlebars.compile(html);
-                return template(toJSON(this));
+            OnlineView.prototype.renderOnlineUser = function(handlebars, partialObj) {
+                //var html = partialObj.html();
+                //var template = Handlebars.compile(html);
+                return handlebars.templates[partialObj](toJSON(this));
             };
 
             function toJSON(that) {

@@ -49,5 +49,6 @@
     "siege": "^0.2.0",
     "socket.io": "^2.0.2",
     "socket.io-redis": "^5.1.0"
-  }
+  },
+  "devDependencies": {}
 }
