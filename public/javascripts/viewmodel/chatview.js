@@ -54,7 +54,7 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 });
             };
 
-            ChatView.prototype.setSubmitListener = function(textareaObj, submitForm, messageInput) {
+            ChatView.prototype.setSubmitListener = function(textareaObj, submitForm) {
                 var that = this;
                 var textobj = textareaObj;
                 submitForm.submit(function(event) {
@@ -72,8 +72,6 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                         submitForm.submit();
                     }
                 });
-
-                
             };
 
             function updateNumOnlineUsers(num, numOnlineObj) {

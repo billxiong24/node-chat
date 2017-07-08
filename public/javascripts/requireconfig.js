@@ -19,7 +19,9 @@ requirejs.config({
         onlineview: 'view/onlineview',
         handlebars: 'js/handlebars.min',
         chatAjaxService: 'service/chatAjaxService',
-        url_changer: 'url_changer'
+        url_changer: 'url_changer',
+        viewrender: 'view/viewrender',
+        chatviewmodel: './chatViewModel'
     },
     waitSeconds: 3
 });

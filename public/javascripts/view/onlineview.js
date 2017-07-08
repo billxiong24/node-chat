@@ -1,23 +1,20 @@
-define(['js/handlebars.min'], function(Handlebars) {
+define(['js/handlebars.min', './viewrender'], function(Handlebars, viewrender) {
     return {
         OnlineView: (function() {
             function OnlineView(username, userid) {
-                this._username = username;
+                viewrender.ViewRender.call(this, username);
                 this._userid = userid;
             }
 
-            OnlineView.prototype.renderOnlineUser = function(handlebars, partialObj) {
-                //var html = partialObj.html();
-                //var template = Handlebars.compile(html);
-                return handlebars.templates[partialObj](toJSON(this));
-            };
-
-            function toJSON(that) {
+            OnlineView.prototype = Object.create(viewrender.ViewRender.prototype);
+            OnlineView.prototype.constructor = OnlineView;
+            
+            OnlineView.prototype.toJSON = function() {
                 return {
-                    username: that._username,
-                    userid: that._userid
+                    username: this.getUsername(),
+                    userid: this._userid
                 };
-            }
+            };
 
             return OnlineView;
         })()

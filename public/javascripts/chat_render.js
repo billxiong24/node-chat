@@ -1,48 +1,57 @@
-var handlebars = Handlebars;
+//WHEN Handlebars IS LOADED BY REQUIRE.JS, Handlebars.templates, which loads
+//precompiled templates, is undefined, so have to use this global variable for now.
+//No idea why thsi happens
+//make sure to use handlebars 4.0.10 for both global and local binary
+const handlebars = Handlebars;
 
-$(document).ready(function() {
-    //TODO organize ajax calls
-    //client side rendering
-    var csrfTokenObj = {
-        _csrf: $('input[name=_csrf]').val()
-    };
-    var roomID = window.location.pathname.split("/")[2];
-    var dependencies = ['jquery', 'chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 'typingview', 'notifview', 'chatview'];
+function parseID(url) {
+    var str = url;
+    if(str.charAt(str.length - 1) === '/') {
+        str = str.substring(0, str.length - 1);
+    }
 
-    //require(['url_changer'], function(url_changer) {
-        ////console.log(url_changer.addChangeURLEvent);
-        //var test = $('.test-url');
-        //var select = $('.test-input');
-        //url_changer.addChangeURLEvent(test, test.attr('href'), test.attr('href')+'/renderInfo', csrfTokenObj, function(data, handlebars){
-            //console.log(data);
-            //roomID = data.id;
-            //initializeData(roomID, csrfTokenObj, dependencies);
-        //});
-    //});
+    return str.split("/")[2];
 
-    initializeData(roomID, csrfTokenObj, dependencies);
-});
+}
 
+function cutSlash(url) {
+    var str = url;
+    if(str.charAt(str.length - 1) === '/') {
+        return str.substring(0, str.length - 1);
+    }
+    return str;
+}
 
 function displayLines(chatList, handlebars, lines, display) {
     for(var i = 0; i < lines.length; i++) {
         var html, template;
         if(lines[i].direction === "right") {
-            //html = $('#messages-template').html();
             template = handlebars.templates.message_template(lines[i]);
         }
         else {
-            //html = $('#message-response-template').html();
             template = handlebars.templates.message_response_template(lines[i]);
         }
         display(template);
     }
 }
+
+$(document).ready(function() {
+    //TODO organize ajax calls
+    var csrfTokenObj = {
+        _csrf: $('input[name=_csrf]').val()
+    };
+    var roomID = parseID(window.location.pathname);
+    var dependencies = ['jquery', 'chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 'typingview', 'notifview', 'chatview', 'chatviewmodel'];
+
+    initializeData(roomID, csrfTokenObj, dependencies);
+});
+
 function initializeData(roomID, csrfTokenObj, dependencies) {
-    require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, chatinfo, typingview, notifview, chatview) {
-        chatAjaxService.chatAjax(window.location.pathname+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
+
+    require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, chatinfo, typingview, notifview, chatview, chatviewmodel) {
+
+        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
             $('.chat-header').remove();
-            var html = $('#chatheader-template').html();
             $('.chat').prepend(handlebars.templates.chatinfo(data));
             //zombie cookie
             if(!sessionStorage.getItem('userid')) {
@@ -50,16 +59,15 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                     function(data, Handlebars) {
                         Cookies.set('userid', data.cookie);
                         sessionStorage.setItem('userid', data.cookie);
-                        setup($, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview);
+                        setup($, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel);
                 });
             }
-
             else {
-                setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview);
+                setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel);
             }
         });
 
-        chatAjaxService.chatAjax(window.location.pathname+'/initLines', 'POST', JSON.stringify(csrfTokenObj), 
+        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/initLines', 'POST', JSON.stringify(csrfTokenObj), 
             function(data, Handlebars) {
                 var chat = $('.chat-history-group');
                 var chatList = chat.find('ul');
@@ -98,46 +106,15 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
     });
 }
 
-function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview) {
+function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel) {
     var userid = sessionStorage.getItem('userid');
-    var inf = new chatinfo.ChatInfo(new socketview.SocketView(null, '/notifications'), roomIDs, userid);
 
-    inf.listenForNotifications(function(data) {
-        var notif = $('#'+data.roomID + ' .badge');
-        if(data.userid !== sessionStorage.getItem('userid')) {
-            notif.text(inf.incrementGetNotif(data.roomID));
-        }
-        else {
-            inf.resetGetNotif(data.roomID);
-            notif.text(""); 
-        }
-    });
+    var cvm = new chatviewmodel.ChatViewModel(userid, roomID, handlebars);
+    cvm.initChatNotifs(roomIDs, chatinfo, socketview);
+    cvm.initTyping(typingview, socketview);
+    cvm.initChat(socketview, chatview, notifview, onlineview);
 
-
-    var typeViewObj = new typingview.TypingView(userid, new socketview.SocketView(roomID, '/typing'));
-    var notifViewObj = new notifview.NotifView(new socketview.SocketView(roomID, '/notifications'));
-    var chatViewObj = new chatview.ChatView(userid, new socketview.SocketView(roomID), notifViewObj);
-
-    typeViewObj.listenForTyping('/images/typing.gif');
-    typeViewObj.keyUpEvent($('.submit-message'), 700);
-
-    chatViewObj.listenForOnlineUsers($('.chat-group'), $('.online-now'), function(username, userid) {
-        return new onlineview.OnlineView(username, userid).renderOnlineUser(handlebars, 'online_user');
-    });
-    
-    chatViewObj.setReceiveListener(function(lineViewObj) {
-        var history = $('.chat-history-group');
-        var list = history.find('ul');
-        var message;
-        if(lineViewObj.getDirection() === "right") {
-            message = lineViewObj.generateMessage($('#messages-template'));
-        }
-        else {
-            message = lineViewObj.generateMessage($('#message-response-template'));
-        }
-        lineViewObj.appendMessage(list, message);
-        lineViewObj.scrollDown(history, history[0].scrollHeight);
-    });
-
-    chatViewObj.setSubmitListener($('#message-to-send'), $('.submit-message'), $('.message-input'));
+    //var typeViewObj = new typingview.TypingView(userid, new socketview.SocketView(roomID, '/typing'));
+    //typeViewObj.listenForTyping('/images/typing.gif');
+    //typeViewObj.keyUpEvent($('.submit-message'), 700);
 }

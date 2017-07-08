@@ -1,5 +1,6 @@
 //chat ajax function
-define(['js/handlebars'], function(Handlebars) {
+//why the fuck is Handlebars.templates undefined
+define(['js/handlebars.min'], function(Handlebars) {
     return {
         chatAjax: chatAjaxRequire(Handlebars)
     };

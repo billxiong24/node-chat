@@ -1,34 +1,34 @@
-define(['js/handlebars.min'], function(Handlebars) {
+define(['js/handlebars.min', './viewrender'], function(Handlebars, viewrender) {
     return {
         LineView: (function() {
             function LineView(dir, time, active, username, message) {
+                viewrender.ViewRender.call(this, username);
                 this._dir = dir;
                 this._time = time;
                 this._active = active;
-                this._username = username;
+                //this._username = username;
                 this._message = message;
             }
 
-            LineView.prototype.generateMessage = function(partialObj) {
-                var html = partialObj.html();
-                var template = Handlebars.compile(html);
-                return template(toJSON(this));
-            };
+            LineView.prototype = Object.create(viewrender.ViewRender.prototype);
+            LineView.prototype.constructor = LineView;
 
-            function toJSON(that) {
+            //override
+            LineView.prototype.toJSON = function() {
                 return {
-                    direction: that._dir,
-                    viewStamp: that._time,
-                    viewUsername: that._username,
-                    active: that._active,
-                    message: that._message
+                    direction: this._dir,
+                    viewStamp: this._time,
+                    viewUsername: this.getUsername(),
+                    active: this._active,
+                    message: this._message
                 };
-            }
+            };
 
 
             LineView.prototype.getDirection = function() {
                 return this._dir;
             };
+
             LineView.prototype.appendMessage = function(jqObj, message) {
                 jqObj.append(message);
             };
