@@ -1,18 +1,38 @@
+//TODO this needs refactoring but not urgent
 $(document).ready(function() {
 
     require(['chatAjaxService'], function(chatAjaxService) {
 
-        console.log($('#signup-button'));
 
-        $('input[name=user_signup]').on('keyup', function(e) {
+        $('input[name=user_signup]').blur(function(e) {
             var validate = {
                 username: $('input[name=user_signup]').val(),
                 _csrf: $('input[name=_csrf]').val()
             };
 
             chatAjaxService.chatAjax('/signup_auth', 'POST', JSON.stringify(validate), function(data, Handlebars) {
-                $('.error-message').text(data);
+                var err = $('.error-message');
+                if(!data) {
+                    err.hide();
+                }
+                else {
+                    var para = err.find('p');
+                    para.text(data);
+                    err.show();
+                }
             });
+        });
+
+        $('input[name=password_signup]').blur(function(e) {
+            var err = $('.error-message');
+            if($(this).val().length < 6) {
+                var para = err.find('p');
+                para.text("Password should be at least 6 characters");
+                err.show();
+            }
+            else {
+                err.hide();
+            }
         });
 
         $('.user-login').submit(function(event) {
@@ -24,6 +44,7 @@ $(document).ready(function() {
                 _csrf: $('input[name=_csrf]').val()
             };
 
+
             chatAjaxService.chatAjax('/login', 'POST', JSON.stringify(validate), function(data, Handlebars) {
                 if(!data.login_error) {
                     window.location.replace('/home');
@@ -33,28 +54,5 @@ $(document).ready(function() {
                 }
             });
         });
-        //$('.signup-form').submit(function(event) {
-            //event.preventDefault();
-            //var validate = {
-                //first: $('input[name=firstname_signup]').val(),
-                //last: $('input[name=lastname_signup]').val(),
-                //username: $('input[name=user_signup]').val(),
-                //password: $('input[name=password_signup]').val(),
-                //_csrf: $('input[name=_csrf]').val()
-            //};
-
-            //if(validate.username.length < 4) {
-                //return;
-            //}
-            //chatAjaxService.chatAjax('/signup', 'POST', JSON.stringify(validate), function(data, Handlebars) {
-                //console.log(data.signup_error);
-                //if(!data.signup_error) {
-                    //window.location.replace('/home');
-                //}
-                //else {
-                    ////TODO some sort of error handling, right now do nothing
-                //}
-            //});
-        //});
     });
 });

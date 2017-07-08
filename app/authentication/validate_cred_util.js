@@ -1,10 +1,10 @@
+//this is some advanced security
 function validateUsername(username) {
     return username.length > 4;
 }
 
 function validatePassword(password) {
-    return password.length > 4;
-
+    return password.length > 6;
 }
 
 

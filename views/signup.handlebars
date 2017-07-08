@@ -36,18 +36,13 @@
 <body class="page-body login-page login-form-fall" data-url="http://neon.dev">
 
 
-<!-- This is needed when you send requests via Ajax -->
-<script type="text/javascript">
-var baseurl = '';
-</script>
-	
 <div class="login-container">
 	
 	<div class="login-header login-caret">
 		
 		<div class="login-content">
 			
-			<a href="index.html" class="logo">
+			<a href="/" class="logo">
 				<img src="stylesheets/assets/images/logo@2x.png" width="120" alt="" />
 			</a>
 			
@@ -91,7 +86,7 @@ var baseurl = '';
 									<i class="entypo-user"></i>
 								</div>
 								
-								<input type="text" class="form-control" name="firstname_signup" id="name" placeholder="First name" autocomplete="off" />
+								<input type="text" class="form-control" name="firstname_signup" id="name" placeholder="First name" autocomplete="off" required/>
 							</div>
 						</div>
 						
@@ -101,7 +96,7 @@ var baseurl = '';
 									<i class="entypo-user"></i>
 								</div>
 								
-								<input type="text" class="form-control" name="lastname_signup" id="name" placeholder="Last name" autocomplete="off" />
+								<input type="text" class="form-control" name="lastname_signup" id="name" placeholder="Last name" autocomplete="off" required/>
 							</div>
 						</div>
 						
@@ -129,6 +124,9 @@ var baseurl = '';
 					</div>
 					
 					<div class="step" id="step-2">
+                        <div class="error-message form-login-error" style="">
+                            <p>{{error_message}}</p>
+                        </div>
 					
 						<div class="form-group">
 							<div class="input-group">
@@ -136,7 +134,7 @@ var baseurl = '';
 									<i class="entypo-user-add"></i>
 								</div>
 								
-								<input type="text" class="form-control" name="user_signup" id="username" placeholder="Username" data-mask="[a-zA-Z0-1\.]+" data-is-regex="true" autocomplete="off" />
+								<input type="text" class="form-control" name="user_signup" id="username" placeholder="Username" data-mask="[a-zA-Z0-9\.$@_&]+" data-is-regex="true" autocomplete="off" />
 							</div>
 						</div>
 					
@@ -186,9 +184,10 @@ var baseurl = '';
 			
 			<div class="login-bottom-links">
 				
-				<a href="extra-login.html" class="link">
+                <span>Already have an account?</span>
+				<a href="/login" class="link">
 					<i class="entypo-lock"></i>
-					Return to Login Page
+                    Login
 				</a>
 				
 				<br />
@@ -222,6 +221,9 @@ var baseurl = '';
 
 	<!-- Demo Settings -->
 	<script src="stylesheets/assets/js/neon-demo.js"></script>
+        <script src="/javascripts/js/require.js"></script>
+        <script src="/javascripts/requireconfig.js"></script>
+    <script src="/javascripts/validate.js"></script>
 
 </body>
 </html>

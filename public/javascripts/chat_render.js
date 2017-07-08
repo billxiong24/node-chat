@@ -7,7 +7,7 @@ const handlebars = Handlebars;
 function parseID(url) {
     var str = url;
     if(str.charAt(str.length - 1) === '/') {
-        str = str.substring(0, str.length - 1);
+)       str = str.substring(0, str.length - 1);
     }
 
     return str.split("/")[2];

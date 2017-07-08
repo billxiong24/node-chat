@@ -32,6 +32,7 @@
     "gulp-uglify": "^3.0.0",
     "handlebars": "^4.0.10",
     "helmet": "https://registry.npmjs.org/helmet/-/helmet-3.6.1.tgz",
+    "http-proxy": "^1.16.2",
     "https": "^1.0.0",
     "jshint": "^2.9.4",
     "morgan": "~1.8.1",

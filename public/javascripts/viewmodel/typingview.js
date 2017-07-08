@@ -27,12 +27,15 @@ define(['socketview'], function(socketview) {
                 };
             }
 
-            TypingView.prototype.listenForTyping = function(gif) {
+            TypingView.prototype.listenForTyping = function() {
 
                 this._socketview.addListener('typing', function(data) {
-                    var userEl = $('img[target='+data.userid+']');
+                    var history = $('.chat-history-group');
+                    var userEl = history.find('ul');
+                    //var userEl = $('img[target='+data.userid+']');
                     if(data.isTyping) {
-                        userEl.attr('src', gif);
+                        $('#typing').show();
+                        history.scrollTop(history[0].scrollHeight);
                     }
                     else {
                         resetTyping(data.userid);
@@ -41,15 +44,13 @@ define(['socketview'], function(socketview) {
             };
 
             function resetTyping(userid) {
-                $('img[target='+userid+']').attr('src', "");
+                $('#typing').hide();
             }
 
-
             TypingView.prototype.keyUpEvent = function(element, timerClearOut) {
-
                 var that = this;
-                element.keyup(function() {
-                    if(!that._isTyping) {
+                element.keyup(function(event) {
+                    if(!that._isTyping && event.keyCode !== 13) {
                         that._isTyping = true;
                         that._socketview.send('typing', {
                             userid: that._userid,

@@ -1083,6 +1083,18 @@
       "from": "http-errors@https://registry.npmjs.org/http-errors/-/http-errors-1.6.1.tgz",
       "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-1.6.1.tgz"
     },
+    "http-proxy": {
+      "version": "1.16.2",
+      "from": "http-proxy@latest",
+      "resolved": "https://registry.npmjs.org/http-proxy/-/http-proxy-1.16.2.tgz",
+      "dependencies": {
+        "eventemitter3": {
+          "version": "1.2.0",
+          "from": "eventemitter3@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/eventemitter3/-/eventemitter3-1.2.0.tgz"
+        }
+      }
+    },
     "http-signature": {
       "version": "1.1.1",
       "from": "http-signature@https://registry.npmjs.org/http-signature/-/http-signature-1.1.1.tgz",
@@ -1745,6 +1757,11 @@
       "version": "2.3.3",
       "from": "requirejs@https://registry.npmjs.org/requirejs/-/requirejs-2.3.3.tgz",
       "resolved": "https://registry.npmjs.org/requirejs/-/requirejs-2.3.3.tgz"
+    },
+    "requires-port": {
+      "version": "1.0.0",
+      "from": "requires-port@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/requires-port/-/requires-port-1.0.0.tgz"
     },
     "resolve": {
       "version": "1.1.7",

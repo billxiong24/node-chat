@@ -30,7 +30,7 @@ define(function() {
 
             ChatViewModel.prototype.initTyping = function(typingview, socketview) {
                 var typeViewObj = new typingview.TypingView(this._userid, new socketview.SocketView(this._roomID, '/typing'));
-                typeViewObj.listenForTyping('/images/typing.gif');
+                typeViewObj.listenForTyping();
                 typeViewObj.keyUpEvent($('.submit-message'), 700);
             };
 
@@ -39,7 +39,7 @@ define(function() {
                 var chatViewObj = new chatview.ChatView(this._userid, new socketview.SocketView(this._roomID), notifViewObj);
                 var that = this;
                 chatViewObj.listenForOnlineUsers($('.chat-group'), $('.online-now'), function(username, userid) {
-                    return new onlineview.OnlineView(username, userid).renderTemplate(that._handlebars, 'online_user');
+                    return new onlineview.OnlineView(username, userid).renderTemplate(that._handlebars, 'onlinejuser');
                 });
                 chatViewObj.setReceiveListener(function(lineViewObj) {
                     var history = $('.chat-history-group');

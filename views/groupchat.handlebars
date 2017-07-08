@@ -38,7 +38,7 @@
     </head>
     <body class="page-body" data-url="http://neon.dev">
 
-        <div class="page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
+        <div class="chat-visible page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
 
             <div class="sidebar-menu">
 
@@ -1104,6 +1104,7 @@
                             <ul>
                             </ul>
 
+                            <img id="typing" src="/images/typing-indicator2.gif" style="display:none" alt="" class="pull-right"/>
                         </div> <!-- end chat-history -->
 
                         <form action="" class="submit-message">
@@ -1123,12 +1124,8 @@
 
                 </div> <!-- end container -->
 
-                {{>message_template}}
-                {{>chatinfo}}
-                {{>online_user}}
                 <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
                 <script src="/javascripts/js/handlebars.min.js"></script>
-                {{!-- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.js"></script> --}}
                 <script src='http://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js'></script>
 
                 <script src="/javascripts/js/index.js"></script>
