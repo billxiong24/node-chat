@@ -39,7 +39,10 @@ ChatSocket.prototype.init = function() {
             var id = parseID(url.pathname);
             Socket.prototype.getIO.call(that).to(id).emit('online', {
                 user: socket.request.session.user,
-                notifs: socket.request.session.members[id].notifs
+                notifs: socket.request.session.members[id].notifs,
+                //for use case when stupid user opens multiple tabs of same chat
+                term: data.term,
+                socketID: socket.id
             });
         });
 
@@ -69,7 +72,11 @@ ChatSocket.prototype.init = function() {
         socket.on('disconnect', function(data) {
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);
-            Socket.prototype.getIO.call(that).to(id).emit('disconnected', {user: socket.request.session.user});
+            console.log(socket.id);
+            Socket.prototype.getIO.call(that).to(id).emit('disconnected', {
+                socketID: socket.id,
+                user: socket.request.session.user
+            });
         });
     });
     

@@ -10,6 +10,9 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
 
                 this._socketview.joinRoom();
                 this._socketview.connect();
+                //to be determined
+                this._socketID = null; 
+                this._ownSocketIDs = {};
             }
 
             ChatView.prototype.listenForOnlineUsers = function(onlineList, numOnlineObj, renderList) {
@@ -18,14 +21,30 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 var numMessages = $('.numMessages');
 
                 this._socketview.addListener('online', function(data) {
+                    if(data.user.id === that._userid) {
+                        //if i connect, and new term is > -1, then another tab is connected
+                        console.log("sent by ", data.socketID);
+                        console.log("another term, own term", data.term, that._userSockets[data.user.id]);
+                    }
 
                     if(!(data.user.id in that._userSockets)) {
-                        that._userSockets[data.user.id] = data.user.username;
+                        //first request, socket id must be own
+                        that._socketID = data.socketID;
+
+                        that._userSockets[data.user.id] = 1;
                         onlineList.append(renderList(data.user.username, data.user.id));
                         updateNumOnlineUsers(Object.keys(that._userSockets).length, numOnlineObj);
                         //this._notifview.getNotif will have been set in "connected" event
                         numMessages.text(that._notifview.getNotif());
                     }
+                    else if(that._socketID !== data.socketID && !(data.socketID in that._ownSocketIDs)){ //some other tab has opened
+                        console.log("wait");
+                        that._ownSocketIDs[data.socketID] = null;
+                        that._userSockets[data.user.id]++;
+                    }
+
+                    //how many of same users are in the same chat
+                    console.log("own uesrs ", that._userSockets[data.user.id]);
                 });
 
                 this._socketview.addListener('connected', function(data) {
@@ -33,14 +52,23 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                     if(that._userid === data.user.id) {
                         that._notifview.setNotif(data.notifs);
                     }
-                    that._socketview.send('online', {});
+                    var term = (data.user.id in that._userSockets) ? that._userSockets[data.user.id] : -1;
+                    that._socketview.send('online', {
+                        term: term
+                    });
                 }); 
 
                 this._socketview.addListener('disconnected', function(data) {
-                    if(data.user.id in that._userSockets) { 
-                        delete that._userSockets[data.user.id];
+                    console.log("disconnecting, ", that._socketID, data.socketID);
+                    if(data.user.id in that._userSockets && that._socketID !== data.socketID) { 
+                        that._userSockets[data.user.id]--;
+                        console.log("own usersin loop: ", that._userSockets[data.user.id]);
+                        if(that._userSockets[data.user.id] === 0) {
+                            delete that._userSockets[data.user.id];
+                            $('#'+data.user.id).remove();
+                        }
                     }
-                    $('#'+data.user.id).remove();
+                    console.log("own users: ", that._userSockets[data.user.id]);
                     updateNumOnlineUsers(Object.keys(that._userSockets).length, numOnlineObj);
                 });
             };

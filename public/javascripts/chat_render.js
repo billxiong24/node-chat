@@ -47,7 +47,6 @@ $(document).ready(function() {
 });
 
 function initializeData(roomID, csrfTokenObj, dependencies) {
-
     require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, chatinfo, typingview, notifview, chatview, chatviewmodel) {
 
         chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
@@ -55,11 +54,13 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
             $('.chat').prepend(handlebars.templates.chatinfo(data));
             //zombie cookie
             if(!sessionStorage.getItem('userid')) {
+                console.log("userid not set");
                 chatAjaxService.chatAjax('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj), 
                     function(data, Handlebars) {
+                        //TODO compare against each other to see if user tampared, better than nothing
                         Cookies.set('userid', data.cookie);
                         sessionStorage.setItem('userid', data.cookie);
-                        setup($, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel);
+                        setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel);
                 });
             }
             else {
@@ -113,8 +114,4 @@ function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview,
     cvm.initChatNotifs(roomIDs, chatinfo, socketview);
     cvm.initTyping(typingview, socketview);
     cvm.initChat(socketview, chatview, notifview, onlineview);
-
-    //var typeViewObj = new typingview.TypingView(userid, new socketview.SocketView(roomID, '/typing'));
-    //typeViewObj.listenForTyping('/images/typing.gif');
-    //typeViewObj.keyUpEvent($('.submit-message'), 700);
 }
