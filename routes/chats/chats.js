@@ -14,6 +14,7 @@ if(!manager) {
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     /* TODO CACHE THIS SHIT*/
+    console.log(req.session.members);
     var cachedCB = function(members) {
         res.render('groupchat', members[req.params.chatID]);
     };

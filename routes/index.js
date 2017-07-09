@@ -4,7 +4,6 @@ var authenticator = require('../app/authentication/user-pass.js');
 var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
 var session_handler = require('../app/session/session_handler.js');
-var cache_functions = require('../app/cache/cache_functions.js');
 const crypto = require('crypto');
 
 
@@ -13,15 +12,17 @@ module.exports = function(app, passport) {
     app.use('/', router);
 
     router.get('/', authenticator.checkLoggedIn, function(req, res, next) {
+        console.log("rendering fromn proxy");
         res.render('index', {csrfToken: req.csrfToken()});
     });
 
     router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
+        console.log(req.csrfToken());
         res.render('login', {csrfToken: req.csrfToken(), error: req.flash('error')[0]});
     });
 
     router.post('/login', authenticator.checkLoggedIn, function(req, res, next) {
-        //for whatever reason, don't return next, no idea why
+        console.log("posting login redirected");
         authenticator.passportAuthCallback(passport, req, res, next);
     });
 

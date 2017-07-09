@@ -1,3 +1,6 @@
+const proxyServer = require('http-proxy');
+const server_config = require('./server_config.js');
+
 function ipHash(ip, numProcesses) {
     var num = "";
     for(var i = 0; i < ip.length; i++) {
@@ -32,7 +35,8 @@ module.exports = function(cluster, http, httpHiddenServer, PORT) {
             //key: fs.readFileSync(),
             //cert: fs.readFileSync()
         //};
-         http.createServer().on('connection', function(conn) {
+        
+        http.createServer().on('connection', function(conn) {
             conn.pause();
             if(conn.remoteAddress) {
                 var hashIndex = ipHash(conn.remoteAddress, numCPUs);

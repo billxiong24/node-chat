@@ -17,8 +17,8 @@ define(function() {
 
                 inf.listenForNotifications(function(data) {
                     var notif = $('#'+data.roomID + ' .badge');
-                    //previously seessionStorage
-                    if(data.userid !== this._userid) {
+                    //need session storage ripp
+                    if(data.userid !== sessionStorage.getItem('userid')) {
                         notif.text(inf.incrementGetNotif(data.roomID));
                     }
                     else {
@@ -38,8 +38,9 @@ define(function() {
                 var notifViewObj = new notifview.NotifView(new socketview.SocketView(this._roomID, '/notifications'));
                 var chatViewObj = new chatview.ChatView(this._userid, new socketview.SocketView(this._roomID), notifViewObj);
                 var that = this;
+                console.log(that._handlebars);
                 chatViewObj.listenForOnlineUsers($('.chat-group'), $('.online-now'), function(username, userid) {
-                    return new onlineview.OnlineView(username, userid).renderTemplate(that._handlebars, 'onlinejuser');
+                    return new onlineview.OnlineView(username, userid).renderTemplate(that._handlebars, 'online_user');
                 });
                 chatViewObj.setReceiveListener(function(lineViewObj) {
                     var history = $('.chat-history-group');

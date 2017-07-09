@@ -30,6 +30,7 @@ UserManager.prototype.authenticate = function(password, loginFailure, loginSucce
     var checkDB = user.read();
     var validate = function(rows) {
         if(rows.length === 0) {
+            console.log("login failed");
             return loginFailure();
         }
         password_util.retrievePassword(password, rows[0].password, function(err, result) {
@@ -41,6 +42,7 @@ UserManager.prototype.authenticate = function(password, loginFailure, loginSucce
                 delete rows[0].password;
                 return loginSuccess(rows[0]);
             }
+            console.log("username exists, login failed");
             return loginFailure();
         });
         console.log("releasing connection");

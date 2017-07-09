@@ -66,6 +66,7 @@ function passportSignupCallback(passport, req, res, next) {
 
 function passportAuthCallback(passport, req, res, next) {
     passport.authenticate('login', function(err, user, info) {
+        console.log(err, user, info);
         if(err) {
             console.log(err);
             return;
@@ -163,6 +164,7 @@ function passportAuth(passport) {
     ));
 
     passport.use('login', new LocalStrategy(params, function(req, username, password, done) {
+        console.log("reached login passport");
         var loginFailure = function() {
             return done(null, false, req.flash('error', 'Login error.'));
         };

@@ -25,6 +25,9 @@ ChatSocket.prototype.init = function() {
         socket = Socket.prototype.addJoinLeaveListener.call(that, socket);
 
         socket.on('connected', function(data) {
+            console.log("connected");
+            console.log(socket.request.session);
+
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);
 

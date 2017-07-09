@@ -18,7 +18,6 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 var numMessages = $('.numMessages');
 
                 this._socketview.addListener('online', function(data) {
-
                     if(!(data.user.id in that._userSockets)) {
                         that._userSockets[data.user.id] = data.user.username;
                         onlineList.append(renderList(data.user.username, data.user.id));

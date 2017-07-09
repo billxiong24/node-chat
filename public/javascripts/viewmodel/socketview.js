@@ -3,7 +3,8 @@ define(['socket.io-client/dist/socket.io'], function(io) {
         SocketView: (function() {
             function SocketView(roomID, namespace=null) {
                 this._roomID = roomID;
-                this._client = namespace === null ? new io() : new io(namespace);
+                console.log("Eyeyeye");
+                this._client = namespace === null ? new io('http://localhost:3001') : new io("http://localhost:3001/"+namespace);
             }
             
             SocketView.prototype.joinRoom = function() {
