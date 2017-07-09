@@ -13,6 +13,7 @@ var ChatSocket = function(io, namespace) {
     //lazy instantiation
     this._url = null;
     this._id = null;
+    this._userSockets = {};
 };
 
 ChatSocket.prototype = Object.create(Socket.prototype);
@@ -37,12 +38,15 @@ ChatSocket.prototype.init = function() {
         socket.on('online', function(data) {
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);
+
+            that._userSockets[socket.request.session.user.id] = data.socketID;
             Socket.prototype.getIO.call(that).to(id).emit('online', {
                 user: socket.request.session.user,
                 notifs: socket.request.session.members[id].notifs,
                 //for use case when stupid user opens multiple tabs of same chat
                 term: data.term,
-                socketID: socket.id
+                socketID: data.socketID,
+                nativeSocketID: socket.id
             });
         });
 
@@ -72,14 +76,12 @@ ChatSocket.prototype.init = function() {
         socket.on('disconnect', function(data) {
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);
-            console.log(socket.id);
             Socket.prototype.getIO.call(that).to(id).emit('disconnected', {
                 socketID: socket.id,
                 user: socket.request.session.user
             });
         });
     });
-    
 };
 
 function parseID(pathname) {

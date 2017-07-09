@@ -11,8 +11,11 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 this._socketview.joinRoom();
                 this._socketview.connect();
                 //to be determined
-                this._socketID = null; 
+                this._nativeSocketID = null;
+                this._socketID = generateID(); 
+                console.log(this._socketID, " socketID generated");
                 this._ownSocketIDs = {};
+                this._ownSocketIDs[this._socketID] = null;
             }
 
             ChatView.prototype.listenForOnlineUsers = function(onlineList, numOnlineObj, renderList) {
@@ -21,15 +24,19 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 var numMessages = $('.numMessages');
 
                 this._socketview.addListener('online', function(data) {
-                    if(data.user.id === that._userid) {
+                    //its my specific socket
+                    if(data.user.id === that._userid && that._socketID === data.socketID) {
                         //if i connect, and new term is > -1, then another tab is connected
-                        console.log("sent by ", data.socketID);
-                        console.log("another term, own term", data.term, that._userSockets[data.user.id]);
+                        that._nativeSocketID = data.nativeSocketID;
+                        console.log("set native socket id ", that._nativeSocketID);
                     }
+                    console.log("my socket vs. data.socketID", that._socketID, data.socketID);
 
                     if(!(data.user.id in that._userSockets)) {
                         //first request, socket id must be own
-                        that._socketID = data.socketID;
+                        console.log("setting own socket id");
+
+                        //that._socketID = data.socketID;
 
                         that._userSockets[data.user.id] = 1;
                         onlineList.append(renderList(data.user.username, data.user.id));
@@ -37,7 +44,7 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                         //this._notifview.getNotif will have been set in "connected" event
                         numMessages.text(that._notifview.getNotif());
                     }
-                    else if(that._socketID !== data.socketID && !(data.socketID in that._ownSocketIDs)){ //some other tab has opened
+                    if(!(data.socketID in that._ownSocketIDs)){ //some other tab has opened
                         console.log("wait");
                         that._ownSocketIDs[data.socketID] = null;
                         that._userSockets[data.user.id]++;
@@ -54,12 +61,13 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                     }
                     var term = (data.user.id in that._userSockets) ? that._userSockets[data.user.id] : -1;
                     that._socketview.send('online', {
+                        socketID: that._socketID,
                         term: term
                     });
                 }); 
 
                 this._socketview.addListener('disconnected', function(data) {
-                    console.log("disconnecting, ", that._socketID, data.socketID);
+                    console.log("disconnecting, ", that._nativeSocketID, data.socketID);
                     if(data.user.id in that._userSockets && that._socketID !== data.socketID) { 
                         that._userSockets[data.user.id]--;
                         console.log("own usersin loop: ", that._userSockets[data.user.id]);
@@ -145,6 +153,15 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
 
                 var message = displayLine(lineViewObj);
                 that._lastMessage = msg.cookie;
+            }
+
+            function generateID() {
+                var time = new Date().getTime();
+                return 'xxxyxyxyxyxyyyx4xxxyxxyyyxxyxyxx'.replace(/[xy]/g, function(match) {
+                        var r = (time + Math.random()*16)%16 | 0;
+                        time = Math.floor(time/16);
+                        return (match == 'x' ? r : (r&0x3|0x8)).toString(32);
+                    });
             }
 
             return ChatView;
