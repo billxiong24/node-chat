@@ -2,6 +2,7 @@ var cache_store = require('./cache_store.js');
 //const kue = require('kue');
 var ProcessQueue = require('../workers/process_queue.js');
 
+//should only be 1 instance of this? singleton?
 var pq = new ProcessQueue();
 
 //all callbacks take err, result as parameters
@@ -41,28 +42,27 @@ function addJSONElement(key, element, value, callback) {
 //err, reply
 function pushMessage(key, arr, callback) {
     var multi = cache_store.multi();
-    var count = 0;
     
     arr.forEach(function(element) {
-        count++;
         multi.lpush(key, element);
     });
 
-    //process_queue.create('flush_message', {
-        //chat_id: key,
-        //num_messages: Math.floor(count/2)
-    //}).priority('medium').attempts(3).save(function(err) {
-        //if(!err) {
-            //console.log("job saved");
-        //}
-    //});
-    //
-    pq.createJob('flush_message', {
-        chat_id: key,
-        num_messages: Math.floor(count/2)
-    }, function(err) {
-        if(err) { console.log(err); return; }
-    }, 5);
+    
+    //flush the cache if too many messages
+    retrieveArray(key, 0, -1, function(err, arr) {
+        console.log("number of messages: " + arr.length);
+        if(arr.length < 5) {
+            return;
+        }
+
+        pq.createJob('flush_message', {
+            chat_id: key,
+            num_messages: Math.floor(arr.length/2)
+        }, function(err) {
+            if(err) { console.log(err); return; }
+        }, 5);
+    });
+
 
     multi.exec(callback);
 }
