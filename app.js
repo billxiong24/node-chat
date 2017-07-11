@@ -32,6 +32,8 @@ if(process.env.NODE_ENV === "production") {
 function init(port) {
     app.use(compression());
     app.set('views', path.join(__dirname, '/views'));
+    //move this near the top??? idk
+    app.use(express.static(path.join(__dirname, 'public')));
 
     var handlebars = expressHandlebars.create({ 
         partialsDir  : [
@@ -53,7 +55,6 @@ function init(port) {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(cookieParser());
-    app.use(express.static(path.join(__dirname, 'public')));
 
     var sessionMiddleWare = session({
         secret: crypto.randomBytes(10).toString('hex'),

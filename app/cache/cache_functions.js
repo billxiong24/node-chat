@@ -1,4 +1,8 @@
 var cache_store = require('./cache_store.js');
+//const kue = require('kue');
+var ProcessQueue = require('../workers/process_queue.js');
+
+var pq = new ProcessQueue();
 
 //all callbacks take err, result as parameters
 function addValue(key, value, callback, expireTime = null) {
@@ -37,10 +41,28 @@ function addJSONElement(key, element, value, callback) {
 //err, reply
 function pushMessage(key, arr, callback) {
     var multi = cache_store.multi();
+    var count = 0;
     
     arr.forEach(function(element) {
+        count++;
         multi.lpush(key, element);
     });
+
+    //process_queue.create('flush_message', {
+        //chat_id: key,
+        //num_messages: Math.floor(count/2)
+    //}).priority('medium').attempts(3).save(function(err) {
+        //if(!err) {
+            //console.log("job saved");
+        //}
+    //});
+    //
+    pq.createJob('flush_message', {
+        chat_id: key,
+        num_messages: Math.floor(count/2)
+    }, function(err) {
+        if(err) { console.log(err); return; }
+    }, 5);
 
     multi.exec(callback);
 }
@@ -69,5 +91,6 @@ module.exports = {
     pushMessage,
     retrieveArray,
     popMessage,
-    deleteKey
+    deleteKey,
+    processQueue: pq
 };

@@ -5,9 +5,9 @@ var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
 var session_handler = require('../app/session/session_handler.js');
 var cache_functions = require('../app/cache/cache_functions.js');
+
+const timeout = require('connect-timeout');
 const crypto = require('crypto');
-
-
 
 module.exports = function(app, passport) {
     app.use('/', router);
@@ -16,7 +16,15 @@ module.exports = function(app, passport) {
         res.render('index', {csrfToken: req.csrfToken()});
     });
 
-    router.get('/login', authenticator.checkLoggedIn, function(req, res, next) {
+    router.get('/login', timeout('3s'), haltOnTimeout, authenticator.checkLoggedIn, function(req, res, next) {
+        //i dont think this works 
+        if(req.timedout) {
+            console.log("timedoutt");
+            //try again
+            res.redirect('/login');
+            return;
+        }
+
         res.render('login', {csrfToken: req.csrfToken(), error: req.flash('error')[0]});
     });
 
@@ -44,6 +52,15 @@ module.exports = function(app, passport) {
     /* GET home page. */
     router.use('/home', home);
     router.use('/chats', chats);
+
+
+    function haltOnTimeout(req, res, next) {
+        if(!req.timedout) {
+            return next();
+        }
+        console.log("timedout");
+        //return next();
+    }
 
     return router;
 
