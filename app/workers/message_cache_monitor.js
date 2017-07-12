@@ -1,28 +1,22 @@
-require('dotenv').config();
+//require('dotenv').config();
 const cache_functions = require('../cache/cache_functions.js');
 const pq = cache_functions.processQueue;
 var LineCache = require('../models/line_cache.js');
 
-//run as separate process
 //kue uses redis as a backing store
 
-
-//pq.createJob('flush_message', {
-    //chat_id: "test",
-    //num_messages: 3
-//}, function(err) {
-    //if(err) { console.log(err); return; }
-//}, 5);
-
 //this will wait for messages, and flush ALL jobs with same name
-pq.processJob('flush_message', function(job, done) {
-    console.log(job.data.chat_id, job.data.num_messages);
-    var lineCache = new LineCache(job.data.chat_id);
-    lineCache.flush(job.data.num_messages);
-    return done();
-}, 5);
+module.exports = function() {
 
+    pq.processJob('flush_message', function(job, done) {
+        console.log(job.data.chat_id, job.data.num_messages);
+        var lineCache = new LineCache(job.data.chat_id);
 
+        lineCache.flush(job.data.num_messages);
+        //only this process runs this, so no race conditionsm,
+        //unless we add clustering, but that is overkill for now
+        pq.removeCompletedJobs(3);
 
-
-module.exports = pq;
+        return done();
+    }, 5);
+};

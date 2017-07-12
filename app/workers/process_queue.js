@@ -18,18 +18,39 @@ function setGlobalQueueEvents() {
 
     }).on('job complete', function(id, result) {
         console.log("job completed");
-        //kue.Job.get(id, function(err, job) {
-            //if(err) {
-                //console.log(err);
-                //return err;
-            //}
-
-            //job.remove(function(err) {
-                //console.log("removed completed job");
-            //});
-        //});
+    });
+    this._processQueue.failedCount(function( err, total ) {
+        console.log("failed jobs: " + total);
+    });
+    this._processQueue.inactiveCount(function( err, total ) {
+          console.log("inactive jobs: " + total);
+    });
+    this._processQueue.delayedCount(function( err, total ) {
+          console.log("delayed jobs: " + total);
+    });
+    this._processQueue.completeCount(function( err, total ) {
+          console.log("completed jobs: " + total);
+    });
+    this._processQueue.delayedCount(function( err, total ) {
+          console.log("failjobs: " + total);
     });
 }
+
+
+ProcessQueue.prototype.removeCompletedJobs= function(max_completed) {
+    this._processQueue.completeCount(function(err, completed) {
+        console.log("completed jobs " + completed);
+        if(completed < max_completed) { return; }
+        
+        kue.Job.rangeByState('complete', 0, completed, 'asc', function(err, jobs) {
+            jobs.forEach(function(job) {
+                job.remove(function() {
+                    console.log("job removed " + job.id);
+                });
+            });
+        });
+    });
+};
 
 ProcessQueue.prototype.createJob = function(jobName, info, delay=100, attempts=3) {
     //fails if takes longer than 7 seconds 

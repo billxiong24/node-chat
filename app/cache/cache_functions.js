@@ -50,14 +50,15 @@ function pushMessage(key, arr, callback) {
     
     //flush the cache if too many messages
     retrieveArray(key, 0, -1, function(err, arr) {
+        console.log(arr);
         console.log("number of messages: " + arr.length);
-        if(arr.length < 5) {
+        if(arr.length < 21) {
             return;
         }
 
         pq.createJob('flush_message', {
             chat_id: key,
-            num_messages: Math.floor(arr.length/2)
+            num_messages: Math.floor((arr.length + 4) / 2)
         }, function(err) {
             if(err) { console.log(err); return; }
         }, 5);
