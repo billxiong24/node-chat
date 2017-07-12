@@ -59,7 +59,13 @@ ProcessQueue.prototype.createJob = function(jobName, info, delay=100, attempts=3
             if(err) {
                 console.log(err);
             }
+        }).on('failed', function(error) {
+        console.log("job failed: " + error);
+        //re enqueue failed job
+        newJob.state('inactive').save(function(err) {
+            console.log("error saving job", err);
         });
+    });
 };
 
 //TODO use reduce to take in an array of callbacks
