@@ -34,9 +34,14 @@ define(function() {
                 typeViewObj.keyUpEvent($('.submit-message'), 700);
             };
 
-            ChatViewModel.prototype.initChat = function(socketview, chatview, notifview, onlineview) {
+            ChatViewModel.prototype.initChat = function(socketview, chatview, notifview, onlineview, directChatView) {
+                neonChat.init(new socketview.SocketView(this._roomID));
+                var socketviewObj = new socketview.SocketView(this._roomID);
+
                 var notifViewObj = new notifview.NotifView(new socketview.SocketView(this._roomID, '/notifications'));
-                var chatViewObj = new chatview.ChatView(this._userid, new socketview.SocketView(this._roomID), notifViewObj);
+                var chatViewObj = new chatview.ChatView(this._userid, socketviewObj, notifViewObj);
+                chatViewObj.init();
+
                 var that = this;
                 chatViewObj.listenForOnlineUsers($('.chat-group'), $('.online-now'), function(username, userid) {
                     return new onlineview.OnlineView(username, userid).renderTemplate(that._handlebars, 'online_user');
@@ -51,10 +56,22 @@ define(function() {
                     else {
                         message = lineViewObj.renderTemplate(handlebars, 'message_response_template');
                     }
+
                     lineViewObj.appendMessage(list, message);
                     lineViewObj.scrollDown(history, history[0].scrollHeight);
                 });
+
                 chatViewObj.setSubmitListener($('#message-to-send'), $('.submit-message'));
+                //direct messaging
+                var directChatViewObj = new directChatView.DirectChatView(this._userid, socketviewObj, null);
+
+                var $chat = $("#chat"),
+                $conversation_window = $chat.find(".chat-conversation"),
+                $textarea = $conversation_window.find('.chat-textarea textarea');
+
+                chatViewObj.setDirectListener($textarea);
+                directChatViewObj.listenForDM($chat);
+
             };
 
             function displayLines(chatList, lines, display) {

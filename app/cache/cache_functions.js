@@ -50,8 +50,8 @@ function pushMessage(key, arr, callback) {
     
     //flush the cache if too many messages
     retrieveArray(key, 0, -1, function(err, arr) {
-        console.log(arr);
-        console.log("number of messages: " + arr.length);
+
+        //some randomass values
         if(arr.length < 21) {
             return;
         }

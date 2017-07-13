@@ -21,7 +21,8 @@ requirejs.config({
         chatAjaxService: 'service/chatAjaxService',
         url_changer: 'url_changer',
         viewrender: 'view/viewrender',
-        chatviewmodel: './chatViewModel'
+        chatviewmodel: './chatViewModel',
+        directChatView: './viewmodel/directChatView' 
     },
     waitSeconds: 3
 });

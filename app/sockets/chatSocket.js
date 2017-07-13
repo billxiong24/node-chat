@@ -73,6 +73,14 @@ ChatSocket.prototype.init = function() {
             notif.flush();
         });
 
+        //TODO refactor back into above method, quick hack
+        socket.on('direct_message', function(data) {
+            console.log("got a direct message");
+            console.log(data.socketID);
+            console.log(Socket.prototype.getIO.call(that).sockets.adapter.rooms);
+            socket.to(data.socketID).emit('direct_message', data);
+        });
+
         socket.on('disconnect', function(data) {
             var url = urlParser.parse(socket.handshake.headers.referer);
             var id = parseID(url.pathname);

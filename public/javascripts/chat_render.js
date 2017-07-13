@@ -41,13 +41,13 @@ $(document).ready(function() {
         _csrf: $('input[name=_csrf]').val()
     };
     var roomID = parseID(window.location.pathname);
-    var dependencies = ['jquery', 'chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 'typingview', 'notifview', 'chatview', 'chatviewmodel'];
+    var dependencies = ['jquery', 'chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 'typingview', 'notifview', 'chatview', 'chatviewmodel', 'directChatView'];
 
     initializeData(roomID, csrfTokenObj, dependencies);
 });
 
 function initializeData(roomID, csrfTokenObj, dependencies) {
-    require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, chatinfo, typingview, notifview, chatview, chatviewmodel) {
+    require(dependencies, function($, chatAjaxService, onlineview, lineview, socketview, chatinfo, typingview, notifview, chatview, chatviewmodel, directChatView) {
 
         chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
             $('.chat-header').remove();
@@ -60,11 +60,11 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                         //TODO compare against each other to see if user tampared, better than nothing
                         Cookies.set('userid', data.cookie);
                         sessionStorage.setItem('userid', data.cookie);
-                        setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel);
+                        setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView);
                 });
             }
             else {
-                setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel);
+                setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView);
             }
         });
 
@@ -107,11 +107,11 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
     });
 }
 
-function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel) {
+function setup(roomID, $, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView) {
     var userid = sessionStorage.getItem('userid');
 
     var cvm = new chatviewmodel.ChatViewModel(userid, roomID, handlebars);
     cvm.initChatNotifs(roomIDs, chatinfo, socketview);
     cvm.initTyping(typingview, socketview);
-    cvm.initChat(socketview, chatview, notifview, onlineview);
+    cvm.initChat(socketview, chatview, notifview, onlineview, directChatView);
 }

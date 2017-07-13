@@ -8,19 +8,37 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 this._socketview = socketview;
                 this._userSockets = userSockets;
 
-                this._socketview.joinRoom();
-                this._socketview.connect();
+                this._connectedSockets = {};
+
                 //to be determined
+                this._username = "";
                 this._nativeSocketID = null;
                 this._socketID = generateID(); 
-                console.log(this._socketID, " socketID generated");
                 this._ownSocketIDs = {};
                 this._ownSocketIDs[this._socketID] = null;
             }
 
-            ChatView.prototype.listenForOnlineUsers = function(onlineList, numOnlineObj, renderList) {
+            ChatView.prototype.init = function() {
+                this._socketview.joinRoom();
+                this._socketview.connect();
+            };
 
+            ChatView.prototype.getSocketView = function() {
+                return this._socketview;
+            };
+
+            ChatView.prototype.getConnectedSockets = function() {
+                return this._connectedSockets;
+            };
+
+            ChatView.prototype.getUserID = function() {
+                return this._userid;
+            };
+
+            ChatView.prototype.listenForOnlineUsers = function(onlineList, numOnlineObj, renderList) {
                 var that = this;
+
+
                 var numMessages = $('.numMessages');
 
                 this._socketview.addListener('online', function(data) {
@@ -28,15 +46,19 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                     if(data.user.id === that._userid && that._socketID === data.socketID) {
                         //if i connect, and new term is > -1, then another tab is connected
                         that._nativeSocketID = data.nativeSocketID;
+                        that._username = data.user.username;
                         console.log("set native socket id ", that._nativeSocketID);
                     }
-                    console.log("my socket vs. data.socketID", that._socketID, data.socketID);
 
                     if(!(data.user.id in that._userSockets)) {
                         //first request, socket id must be own
-                        console.log("setting own socket id");
+                        //that._socketview.joinTargetRoom(that._nativeSocketID + data.socketID);
 
                         //that._socketID = data.socketID;
+
+                        //TODO clean this up
+                        that._connectedSockets[data.user.id] = data.nativeSocketID;
+                        console.log(that._connectedSockets);
 
                         that._userSockets[data.user.id] = 1;
                         onlineList.append(renderList(data.user.username, data.user.id));
@@ -45,7 +67,6 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                         numMessages.text(that._notifview.getNotif());
                     }
                     if(!(data.socketID in that._ownSocketIDs)){ //some other tab has opened
-                        console.log("wait");
                         that._ownSocketIDs[data.socketID] = null;
                         that._userSockets[data.user.id]++;
                     }
@@ -53,6 +74,14 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                     //how many of same users are in the same chat
                     console.log("own uesrs ", that._userSockets[data.user.id]);
                 });
+
+                //this._socketview.addListener('direct_message', function(data) {
+                    //var msg = data.message;
+                    //neonChat.pushMessage(data.senderID, msg.replace( /<.*?>/g, '' ), $chat.data('current-user'), new Date());
+                    //neonChat.renderMessages(data.senderID);
+                    //console.log(data);
+                //});
+
 
                 this._socketview.addListener('connected', function(data) {
                     //if the socket response is you and not some other guy
@@ -90,6 +119,20 @@ define(['socketview', 'notifview', 'lineview'], function(socketview, notifview, 
                 });
             };
 
+
+            ChatView.prototype.setDirectListener = function($textarea) {
+                var that = this;
+                $textarea.keydown(function(e) {
+                    if(e.keyCode == 13 && !e.shiftKey) {
+                        e.preventDefault();
+                        neonChat.submitMessage(that._socketview, that._connectedSockets, that._username, that._userid);
+                        return false;
+                    }
+                    else if(e.keyCode == 27) {
+                        neonChat.close();
+                    }
+                });
+            };
             ChatView.prototype.setSubmitListener = function(textareaObj, submitForm) {
                 var that = this;
                 var textobj = textareaObj;

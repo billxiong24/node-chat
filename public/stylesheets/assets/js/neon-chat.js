@@ -35,7 +35,7 @@ var neonChat = neonChat || {
 
 	$.extend(neonChat, {
 
-		init: function()
+		init: function(socketViewObj)
 		{
 			// Implement Unique ID in case it doesn't exists
 			if( $.isFunction( $.fn.uniqueId ) == false ) {
@@ -79,20 +79,20 @@ var neonChat = neonChat || {
 
 
 			// Texarea
-			$textarea.keydown(function(e)
-			{
-				if(e.keyCode == 13 && !e.shiftKey)
-				{
-					e.preventDefault();
-					neonChat.submitMessage();
-					return false;
-				}
-				else
-				if(e.keyCode == 27)
-				{
-					neonChat.close();
-				}
-			});
+			//$textarea.keydown(function(e)
+			//{
+				//if(e.keyCode == 13 && !e.shiftKey)
+				//{
+					//e.preventDefault();
+					//neonChat.submitMessage(socketViewObj);
+					//return false;
+				//}
+				//else
+				//if(e.keyCode == 27)
+				//{
+					//neonChat.close();
+				//}
+			//});
 
 
 			$chat.on('click', '.chat-group a', function(ev)
@@ -251,18 +251,26 @@ var neonChat = neonChat || {
 
 		},
 
-		submitMessage: function() // Submit whats on textarea
+		submitMessage: function(socketViewObj, connectedSockets, username, senderID) // Submit whats on textarea
 		{
 			var msg = $.trim($textarea.val());
 
 			$textarea.val('');
 
-			if(this.isOpen && this.$current_user)
-			{
+			if(this.isOpen && this.$current_user) {
 				var id = this.$current_user.uniqueId().attr('id');
 
-				this.pushMessage(id, msg.replace( /<.*?>/g, '' ), $chat.data('current-user'), new Date());
+				this.pushMessage(id, msg.replace( /<.*?>/g, '' ), username, new Date());
 				this.renderMessages(id);
+                //socketViewObj.send
+                //TODO socket stuff goes here
+                socketViewObj.send('direct_message', {
+                    senderID: senderID, 
+                    socketID: connectedSockets[id], 
+                    userid: id, 
+                    username: username,
+                    message: msg
+                });
 			}
 		},
 
@@ -313,10 +321,10 @@ var neonChat = neonChat || {
 				var max_chat_history = this.getChatHistoryLength();
 
 
-				if(this.chat_history[id].messages.length >= max_chat_history)
-				{
-					this.chat_history[id].messages = this.chat_history[id].messages.reverse().slice(0, max_chat_history - 1).reverse();
-				}
+				//if(this.chat_history[id].messages.length >= max_chat_history)
+				//{
+					//this.chat_history[id].messages = this.chat_history[id].messages.reverse().slice(0, max_chat_history - 1).reverse();
+				//}
 
 				this.chat_history[id].messages.push({
 					message: msg,
@@ -328,7 +336,7 @@ var neonChat = neonChat || {
 
 				if(unread)
 				{
-					this.puffUnreadsAll();
+					//this.puffUnreadsAll();
 				}
 
 				this.puffUnreads();
@@ -891,6 +899,6 @@ var neonChat = neonChat || {
 
 
 	// Refresh Ids
-	neonChat.init();
+	//neonChat.init();
 
 })(jQuery, window);
