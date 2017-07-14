@@ -6,7 +6,6 @@ requirejs.config({
             exports: 'io'
         }
     },
-
     paths: {
         socketio:'socket.io-client/dist/socket.io',
         jquery: 'js/jquery-2.1.1',
