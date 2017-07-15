@@ -73,6 +73,13 @@ router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, nex
     manager.createChat(req.session.user.username, req.body.createChat, req.session.members, res);
 });
 
+routes.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
+    var userManager = new UserManager(new UserCache(req.session.user.username));
+    userManager.leaveChat(req.body.chatID, function(rows) {
+        res.status(200).send({deleted: true});
+    });
+});
+
 function chatRender(req, res, cachedCB, missCB) {
     var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.session.user.username, -1));
     if(req.params.chatID in req.session.members) {

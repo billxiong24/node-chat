@@ -41,4 +41,8 @@ UserCache.prototype.getKey = function() {
     return 'info:'+User.prototype.getUsername.call(this);
 };
 
+UserCache.prototype.leaveChat = function(chat_id, callback) {
+    User.prototype.leaveChat.call(this, chat_id, callback);
+};
+
 module.exports = UserCache;

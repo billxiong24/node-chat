@@ -7,6 +7,12 @@ var UserManager = function(userObj) {
     this._userObj = userObj;
 }; 
 
+UserManager.prototype.leave = function(chat_id, callback) {
+    this._userObj.leaveChat(chat_id, callback);
+};
+
+
+
 UserManager.prototype.signup = function(password, signupFailure, signupSuccess) {
     var that = this;
     password_util.storePassword(password, function(err, hash) {

@@ -73,11 +73,17 @@
                             <ul>
                                 {{#each list}}
                                     <li>
-                                        <a id="{{id}}" href="/chats/{{id}}">
-                                            <span class="title">{{chat_name}}</span>
-                                            {{!-- <span class="badge badge-success badge-roundless">{{num_notifications}}</span> --}}
-                                            <span class="badge badge-secondary">{{num_notifications}}</span>
-                                        </a>             
+                                        <div>
+                                            <a id="{{id}}" href="/chats/{{id}}">
+                                                <form action="" class="remove-user" style="display: inline">
+                                                    <button type="submit" style="background: transparent; border: none"><i class="entypo-cancel"></i></button>
+                                                </form>
+                                                <span class="title">{{chat_name}}</span>
+                                                {{!-- <span class="badge badge-success badge-roundless">{{num_notifications}}</span> --}}
+                                                <span class="badge badge-secondary">{{num_notifications}}</span>
+                                            </a>
+                                        </div>
+                                                     
                                     </li>
                                 {{/each}}
                             </ul>

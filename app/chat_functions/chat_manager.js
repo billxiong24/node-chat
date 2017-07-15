@@ -94,7 +94,7 @@ var ChatManager = (function() {
                 res.redirect('/home');
                 return null;
             }
-            lineResults = line_render(username, lineResults);
+            lineResults = line_render(username, lineResults).reverse();
             req.session.lastTimeStamp = lineResults.length > 0 ? lineResults[0].stamp : null;
             console.log(req.session.lastTimeStamp + " on load tmee");
             res.status(200).send({lines: lineResults});
@@ -127,10 +127,10 @@ var ChatManager = (function() {
     ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, req, res) {
         var line = new LineCache(chatID);
         line.readNext(req.session.lastTimeStamp, function(lineResults) {
-            lineResults = lineResults !== null ? line_render(username, lineResults, false) : null;
+            lineResults = lineResults !== null ? line_render(username, lineResults) : null;
 
             console.log(req.session.lastTimeStamp + " BEFORE");
-            req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[0].stamp : null;
+            req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[lineResults.length - 1].stamp : null;
             console.log(req.session.lastTimeStamp + "after");
 
             if(req.session.lastTimeStamp !== null) {

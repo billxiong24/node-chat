@@ -79,6 +79,14 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                 chat.scrollTop(chat[0].scrollHeight);
         });
 
+        $('.remove-user').submit(function(evt) {
+            console.log("Hey");
+            evt.preventDefault();
+
+        });
+
+        
+
         $('.chat-history-group').scroll(function() {
             if($(this).scrollTop() !== 0) { return; }
 
