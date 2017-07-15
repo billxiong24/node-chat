@@ -6,6 +6,8 @@ const Chat =  require('../../app/models/chat.js');
 const Notification = require('../../app/models/notification.js');
 const NotificationManager = require('../../app/chat_functions/notif_manager.js');
 const session_handler = require('../../app/session/session_handler.js');
+const UserManager = require('../../app/models/user_manager.js');
+const UserCache = require('../../app/models/user_cache.js');
 
 var manager;
 if(!manager) {
@@ -73,9 +75,9 @@ router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, nex
     manager.createChat(req.session.user.username, req.body.createChat, req.session.members, res);
 });
 
-routes.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
+router.post('/:chatID/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
     var userManager = new UserManager(new UserCache(req.session.user.username));
-    userManager.leaveChat(req.body.chatID, function(rows) {
+    userManager.leave(req.body.chatID, function(rows) {
         res.status(200).send({deleted: true});
     });
 });

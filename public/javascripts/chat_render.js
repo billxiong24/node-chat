@@ -80,8 +80,18 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
         });
 
         $('.remove-user').submit(function(evt) {
-            console.log("Hey");
             evt.preventDefault();
+            var chat_id = $(this).parent().attr('id');
+
+            var postObj = {
+                _csrf: csrfTokenObj._csrf,
+                chatID: chat_id 
+            };
+            chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/remove_user', 'POST', JSON.stringify(postObj), 
+                function(data, Handlebars) {
+                    console.log("completed");
+                    $('#' + chat_id).remove();
+            });
 
         });
 
