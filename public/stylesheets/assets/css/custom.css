@@ -6,6 +6,10 @@
      overflow: visible;
      height: 100%;
 }
+
+.chat-group {
+    height: 100%;
+}
 @import url(https://fonts.googleapis.com/css?family=Lato:400,700);
 *, *:before, *:after {
   box-sizing: border-box;
@@ -101,7 +105,7 @@ body {
   padding: 30px 30px 20px;
   border-bottom: 2px solid white;
   overflow-y: scroll;
-  height: 575px;
+  height: 300px;
 }
 .chat .chat-history-group .message-data {
   margin-bottom: 15px;

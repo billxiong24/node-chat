@@ -15,7 +15,7 @@ var dateMap = {
 
 
 var prevUser = null;
-function renderLines(username, lineInfo) {
+function renderLines(username, lineInfo, reverse=true) {
     if(lineInfo.length === 0) {
         return lineInfo;
     }
@@ -61,7 +61,7 @@ function renderLines(username, lineInfo) {
         prevUser = lineInfo[i].username;
      }
 
-    return lineInfo.reverse();
+    return reverse ? lineInfo.reverse() : lineInfo;
 }
 
 //hopefully no one sees this code

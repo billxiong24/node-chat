@@ -127,7 +127,7 @@ var ChatManager = (function() {
     ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, req, res) {
         var line = new LineCache(chatID);
         line.readNext(req.session.lastTimeStamp, function(lineResults) {
-            lineResults = lineResults !== null ? line_render(username, lineResults) : null;
+            lineResults = lineResults !== null ? line_render(username, lineResults, false) : null;
 
             console.log(req.session.lastTimeStamp + " BEFORE");
             req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[0].stamp : null;

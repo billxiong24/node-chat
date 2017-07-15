@@ -83,6 +83,8 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
             if($(this).scrollTop() !== 0) { return; }
 
             var firstMessage = $('.message-data:first');
+            var curScroll = firstMessage.offset().top - $(document).scrollTop();
+
             var dataObj = {
                 chatID: roomID,
                 _csrf: csrfTokenObj._csrf
@@ -100,7 +102,8 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                     });
 
                     //TODO dont hardcode this, okay for now
-                    //chatDiscussion.scrollTop(firstMessage.offset().top - 150);
+                    console.log(firstMessage.height());
+                    chat.scrollTop(firstMessage.offset().top - curScroll);
             });
         });
 

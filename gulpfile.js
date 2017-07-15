@@ -30,7 +30,6 @@ var neon_js_src = [
     'public/stylesheets/assets/js/joinable.js',
     'public/stylesheets/assets/js/resizeable.js',
     'public/stylesheets/assets/js/neon-api.js',
-    'public/javascripts/templates.js',
     'public/stylesheets/assets/js/neon-chat.js',
     'public/javascripts/js.cookie.js',
     'public/javascripts/js/require.js',
@@ -57,16 +56,17 @@ gulp.task('compress-neon-css', function() {
     .pipe(gulp.dest('public/stylesheets/style-build'));
 });
 
-var numSrc = 1;
-var numMin = 1;
 
 
 //use bash script, since that's easier than all the other stuff
 gulp.task('precompile-hbs', function() {
-    gulp_run('handlebars -m views/partials/ -f public/javascripts/templates.js').exec();
+    gulp_run('handlebars -m views/partials/ -f public/javascripts/templates/templates.js').exec();
 });
 
 gulp.task('compress-neon-js', function() {
+    var numSrc = 0;
+    var numMin = 0;
+
     gulp.src(neon_js_src)
         .on('data', function(data) {
         console.log("Preparing " + data.history[0] + " for jshint");
@@ -94,8 +94,21 @@ gulp.task('compress-home-css', function() {
 
 });
 
-gulp.task('start', function() {
+gulp.task('build', ['compress-neon-css', 'precompile-hbs', 'compress-neon-js']);
 
+gulp.task('start-cache-worker', function() {
+    gulp_nodemon({
+        script: './app/workers/cache_monitor.js',
+        ext: 'js',
+        env: {'PORT': 3001, 'NODE_ENV': 'development'}
+    });
+});
+gulp.task('start', function() {
+    gulp_nodemon({
+        script: 'app.js',
+        ext: 'js handlebars',
+        env: {'BLUEBIRD_WARNINGS':0, 'NODE_ENV': 'development'}
+    });
 });
 
 
@@ -113,13 +126,11 @@ gulp.task('start', function() {
     //.pipe(gulp.dest('public/javascripts/templates'));
 //});
 
-gulp.task('build', ['compress-neon-css', 'compress-neon-js', 'start']);
 
 gulp.task('watch', function() {
-    gulp.watch(handlebars_src, ['precompile-hbs', 'compress-neon-js']);
+    gulp.watch(handlebars_src, ['precompile-hbs']);
     gulp.watch(neon_js_src, ['compress-neon-js']);
     gulp.watch(neon_css_src, ['compress-neon-css']);
-
 });
 
 gulp.task('default', ['watch']);

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "redis": "sudo service redis restart",
-    "start": "node app",
+    "start": "gulp start",
     "build": "npm run redis && npm run start"
   },
   "dependencies": {

@@ -31,7 +31,6 @@
     <body class="page-body" data-url="http://neon.dev">
 
         <div class="chat-visible page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
-
             <div class="sidebar-menu">
 
                 <div class="sidebar-menu-inner">
@@ -927,11 +926,24 @@
 
         </div>
 
+        <script type="text/javascript" src="/javascripts/templates/templates.js"></script>
         <script type="text/javascript" src="/javascripts/js-build/neon.min.js"></script>
         <script>
             var roomIDs = JSON.parse(decodeURIComponent("{{{parseList}}}"));
         </script>
         <script src="/javascripts/chat_render.js"></script>
+        <script type="text/javascript" charset="utf-8">
+$(document).ready(function() {
+    
+    var height = $(window).height();
+    if(height > 700) {
+        $('.chat .chat-history-group').css('height', $(document).height()/2);
+    }
+    if(height < 690) {
+        $('.chat .chat-history-group').css('height', $(document).height()/2.5);
+    }
+});
+        </script>
 
     </body>
 </html>
