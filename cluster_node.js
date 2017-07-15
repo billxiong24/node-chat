@@ -45,9 +45,14 @@ module.exports = function(cluster, http, httpHiddenServer, PORT) {
 
         //listen for message from master process
         process.on('message', function(message, conn) {
-            if(message === 'sticky-session') {
+            if(message === 'sticky-session' && conn) {
+
                 httpHiddenServer.emit('connection', conn);
                 conn.resume();
+            }
+            else {
+                console.log("There was an error with connection");
+                
             }
         });
     }
