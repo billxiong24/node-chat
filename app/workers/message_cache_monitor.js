@@ -15,7 +15,7 @@ module.exports = function() {
         lineCache.flush(job.data.num_messages);
         //only this process runs this, so no race conditionsm,
         //unless we add clustering, but that is overkill for now
-        pq.removeCompletedJobs(3);
+        pq.removeCompletedJobs(1);
 
         return done();
     }, 5);

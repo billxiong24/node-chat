@@ -23,5 +23,5 @@ requirejs.config({
         chatviewmodel: './chatViewModel',
         directChatView: './viewmodel/directChatView' 
     },
-    waitSeconds: 3
+    waitSeconds: 150 
 });

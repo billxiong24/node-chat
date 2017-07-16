@@ -38,6 +38,19 @@ var neon_js_src = [
     'public/stylesheets/assets/js/neon-demo.js'
 ];
 
+var home_js_src = [
+    'public/stylesheets/assets/js/gsap/TweenMax.min.js',
+    'public/stylesheets/assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js',
+    'public/stylesheets/assets/js/bootstrap.js',
+    'public/stylesheets/assets/js/joinable.js',
+    'public/stylesheets/assets/js/resizeable.js',
+    'public/stylesheets/assets/js/neon-api.js',
+    'public/javascripts/js.cookie.js',
+    'public/javascripts/js/require.js',
+    'public/javascripts/requireconfig.js',
+    'public/stylesheets/assets/js/neon-custom.js'
+];
+
 var handlebars_src = [
     'views/partials/*.handlebars'
 ];
@@ -56,18 +69,24 @@ gulp.task('compress-neon-css', function() {
     .pipe(gulp.dest('public/stylesheets/style-build'));
 });
 
-
-
 //use bash script, since that's easier than all the other stuff
 gulp.task('precompile-hbs', function() {
     gulp_run('handlebars -m views/partials/ -f public/javascripts/templates/templates.js').exec();
 });
 
 gulp.task('compress-neon-js', function() {
+    compress_js(neon_js_src, 'neon.min.js');
+});
+gulp.task('compress-home-js', function() {
+    compress_js(home_js_src, 'home.min.js');
+});
+
+function compress_js(source, dest_name) {
+
     var numSrc = 0;
     var numMin = 0;
 
-    gulp.src(neon_js_src)
+    return gulp.src(source)
         .on('data', function(data) {
         console.log("Preparing " + data.history[0] + " for jshint");
         numSrc++;
@@ -76,19 +95,14 @@ gulp.task('compress-neon-js', function() {
         console.log("Minifying " + data.history[0]);
         numMin++;
     })
-    .pipe(concat('neon.min.js'))
+    .pipe(concat(dest_name))
     .pipe(gulp.dest('public/javascripts/js-build'))
     .on("finish", function() {
         console.log("-------------------------------------------------------------");
         console.log("Wrote minifed file to destination public/javascripts/js-build");
         console.log("Compressed " + numMin + " source files. Exiting with 0 status.");
     });
-
-});
-
-gulp.task('compress-home-js', function() {
-
-});
+}
 
 gulp.task('compress-home-css', function() {
 

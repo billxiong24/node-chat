@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    require(['jquery','socketview','chatinfo'], function($, socketview, chatinfo) {
+    require(['jquery','socketview','chatinfo', 'chatviewmodel'], function($, socketview, chatinfo, chatviewmodel) {
 
         $.ajax({
             type: 'POST',
@@ -14,7 +14,7 @@ $(document).ready(function() {
                 sessionStorage.setItem('userid', data.cookie);
                 //TODO set up other important information, such as chat lists
                 var userid = sessionStorage.getItem('userid');
-                setup(userid, $, chatinfo, socketview);
+                setup(userid, $, chatinfo, socketview, chatviewmodel);
             },
             error: function(error) {
                 console.log(error);
@@ -22,18 +22,8 @@ $(document).ready(function() {
         });
     });
 
-    function setup(userid, $, chatinfo, socketview) {
-        var inf = new chatinfo.ChatInfo(new socketview.SocketView(null, '/notifications'), roomIDs, userid);
-
-        inf.listenForNotifications(function(data) {
-            console.log("received");
-            if(data.userid !== sessionStorage.getItem('userid')) {
-                $('#'+data.roomID + ' span').text(inf.incrementGetNotif(data.roomID));
-            }
-            else {
-                inf.resetGetNotif(data.roomID);
-                $('#'+data.roomID + ' span').text(""); 
-            }
-        });
+    function setup(userid, $, chatinfo, socketview, chatviewmodel) {
+        var cvm = new chatviewmodel.ChatViewModel(userid, null, null);
+        cvm.initChatNotifs(roomIDs, chatinfo, socketview);
     }
 });

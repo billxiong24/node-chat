@@ -215,3 +215,34 @@ body {
   clear: both;
   height: 0;
 }
+
+.container .chat-style {
+    background-color: white; 
+    border: solid #CECECE 1px;
+    border-radius: 8px;
+}
+
+.submit-message .chat-message {
+    width: 100% !important;
+}
+.submit-message .chat-message .file-uploads {
+    text-align: center;
+    position: relative;
+    display: inline;
+}
+
+.submit-message #message-to-send {
+    width: 100%;
+    border-top : solid #CECECE 1px;
+}
+
+textarea, textarea:focus {
+    border: none;
+    overflow: auto;
+    outline: none;
+
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+
+}

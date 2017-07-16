@@ -52,7 +52,7 @@ function pushMessage(key, arr, callback) {
     retrieveArray(key, 0, -1, function(err, arr) {
 
         //some randomass values
-        if(arr.length < 21) {
+        if(arr.length < 9) {
             return;
         }
 

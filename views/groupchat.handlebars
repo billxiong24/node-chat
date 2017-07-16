@@ -824,9 +824,9 @@
                 </div>
 
                 <hr />
-                <div class="container clearfix">
+                <div class="container clearfix" style="background: transparent;">
 
-                    <div class="chat">
+                    <div class="chat chat-style">
                         <div class="chat-header clearfix">
 
                             <div class="chat-about">
@@ -845,14 +845,13 @@
 
                         <form action="" class="submit-message">
                             <div class="chat-message clearfix">
-                                <textarea name="message-to-send" id="message-to-send" placeholder ="Type your message" rows="3"></textarea>
+                                <textarea name="message-to-send" id="message-to-send" placeholder ="Type your message..." rows="1"></textarea>
                                 <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
-                                <i class="fa fa-file-o"></i>
-                                <i class="fa fa-file-image-o"></i>
-
-                                <button type="submit">Send</button>
-
+                                <div class="file-uploads">
+                                    <i class="fa fa-file-o"></i>
+                                    <i class="fa fa-file-image-o"></i>
+                                </div>
                             </div> <!-- end chat-message -->
                         </form>
 
@@ -909,27 +908,8 @@
                     <div class="chat-textarea">
                         <textarea class="form-control autogrow" placeholder="Type your messsage..."></textarea>
                     </div>
-
                 </div>
-
             </div>
-
-            <!-- Chat Histories -->
-            <ul class="chat-history" id="sample_history_2">
-                <li class="opponent unread">
-                    <span class="user">Daniel A. Pena</span>
-                    <p>I am going out.</p>
-                    <span class="time">08:21</span>
-                </li>
-
-                <li class="opponent unread">
-                    <span class="user">Daniel A. Pena</span>
-                    <p>Call me when you see this message.</p>
-                    <span class="time">08:27</span>
-                </li>
-            </ul>
-
-
         </div>
 
         <script type="text/javascript" src="/javascripts/templates/templates.js"></script>
@@ -948,6 +928,7 @@ $(document).ready(function() {
     if(height < 690) {
         $('.chat .chat-history-group').css('height', $(document).height()/2.5);
     }
+
 });
         </script>
 
