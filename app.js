@@ -11,7 +11,7 @@ const app = express();
 const passport = require('passport');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-var cache_store = require('./app/cache/cache_store.js');
+const cache_store = require('./app/cache/cache_store.js');
 const crypto = require('crypto');
 const connection = require('./app/database/config.js');
 const flash = require('connect-flash');
@@ -21,8 +21,8 @@ const cluster = require('cluster');
 const csrf = require('csurf');
 const compression = require('compression');
 
-var PORT = process.env.PORT || 3000;
-var HOST = process.env.HOST || 'localhost';
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || 'localhost';
 
 //if we in production, disable print statements...shouldn't be debugging in production
 if(process.env.NODE_ENV === "production") {
@@ -105,7 +105,6 @@ function init(port) {
 
     var httpServer = http.Server(app).listen(port, '0.0.0.0');
     var io = require(__dirname + '/app/sockets/socketServer.js')(httpServer, sessionMiddleWare);
-
     return httpServer;
 }
 

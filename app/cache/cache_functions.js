@@ -1,5 +1,4 @@
 var cache_store = require('./cache_store.js');
-//const kue = require('kue');
 var ProcessQueue = require('../workers/process_queue.js');
 
 //should only be 1 instance of this? singleton?
@@ -36,8 +35,17 @@ function retrieveJSONElement(key, element, callback) {
 }
 
 function addJSONElement(key, element, value, callback) {
+    //if key does not exist, redis will create it, then insert value
     cache_store.hset(key, element, value, callback);
 }
+
+//incr_by is any integer
+function incrementJSONElement(key, element, incr_by, callback) {
+    cache_store.hincrby(key, element, incr_by, function(result) {
+        callback(result);
+    });
+}
+
 
 //err, reply
 function pushMessage(key, arr, callback) {
@@ -50,7 +58,6 @@ function pushMessage(key, arr, callback) {
     
     //flush the cache if too many messages
     retrieveArray(key, 0, -1, function(err, arr) {
-
         //some randomass values
         if(arr.length < 9) {
             return;
@@ -63,8 +70,6 @@ function pushMessage(key, arr, callback) {
             if(err) { console.log(err); return; }
         }, 5);
     });
-
-
     multi.exec(callback);
 }
 
@@ -93,5 +98,6 @@ module.exports = {
     retrieveArray,
     popMessage,
     deleteKey,
+    incrementJSONElement,
     processQueue: pq
 };

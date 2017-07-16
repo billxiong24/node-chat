@@ -38,7 +38,7 @@ var neonChat = neonChat || {
 		init: function(socketViewObj)
 		{
 			// Implement Unique ID in case it doesn't exists
-			if( $.isFunction( $.fn.uniqueId ) == false ) {
+			if( $.isFunction( $.fn.uniqueId ) === false ) {
 									
 				jQuery.fn.extend({
 				
@@ -271,6 +271,7 @@ var neonChat = neonChat || {
                     username: username,
                     message: msg
                 });
+                $('#'+id).children('.badge').remove();
 			}
 		},
 
@@ -309,7 +310,6 @@ var neonChat = neonChat || {
 					};
 				}
 			});
-
 		},
 
 		pushMessage: function(id, msg, from, time, fromOpponent, unread)
@@ -319,10 +319,7 @@ var neonChat = neonChat || {
 				this.refreshUserIds();
 
 				var max_chat_history = this.getChatHistoryLength();
-
-
-				//if(this.chat_history[id].messages.length >= max_chat_history)
-				//{
+				//if(this.chat_history[id].messages.length >= max_chat_history) {
 					//this.chat_history[id].messages = this.chat_history[id].messages.reverse().slice(0, max_chat_history - 1).reverse();
 				//}
 
@@ -334,8 +331,7 @@ var neonChat = neonChat || {
 					unread: unread
 				});
 
-				if(unread)
-				{
+				if(unread) {
 					//this.puffUnreadsAll();
 				}
 
@@ -343,21 +339,17 @@ var neonChat = neonChat || {
 			}
 		},
 
-		renderMessages: function(id, slient)
-		{
-			if(typeof this.chat_history[id] != 'undefined')
-			{
+		renderMessages: function(id, slient) {
+			if(typeof this.chat_history[id] != 'undefined') {
 				$conversation_body.html('');
 
-				for(var i in this.chat_history[id].messages)
-				{
+				for(var i in this.chat_history[id].messages) {
 					var entry = this.chat_history[id].messages[i],
 						$entry = $('<li><span class="user"></span><p></p><span class="time"></span></li>'),
 						date = entry.time,
 						date_formated = date;
 
-					if(typeof date == 'object')
-					{
+					if(typeof date == 'object') {
 						var	hour = date.getHours(),
 							hour = (hour < 10 ? "0" : "") + hour,
 
@@ -376,13 +368,11 @@ var neonChat = neonChat || {
 					$entry.find('p').html(entry.message.replace(/\n/g, '<br>'));
 					$entry.find('.time').html(date_formated);
 
-					if(entry.fromOpponent)
-					{
+					if(entry.fromOpponent) {
 						$entry.addClass('odd');
 					}
 
-					if(entry.unread && typeof slient == 'undefined')
-					{
+					if(entry.unread && typeof slient == 'undefined') {
 						$entry.addClass('unread');
 						entry.unread = false;
 					}
@@ -501,7 +491,7 @@ var neonChat = neonChat || {
 							fromOpponent = $entry.hasClass('even') || $entry.hasClass('odd') || $entry.hasClass('opponent'),
 							unread = $entry.hasClass('unread');
 
-						neonChat.pushMessage(id, message, from, time, fromOpponent, unread)
+						neonChat.pushMessage(id, message, from, time, fromOpponent, unread);
 					});
 				}
 
@@ -551,20 +541,20 @@ var neonChat = neonChat || {
 
 		puffUnreads: function()
 		{
-			for(var i in this.chat_history)
-			{
-				var entry = neonChat.chat_history[i],
-					$badge = entry.$el.find('.badge');
+			//for(var i in this.chat_history)
+			//{
+				//var entry = neonChat.chat_history[i],
+					//$badge = entry.$el.find('.badge');
 
-				if(entry.unreads > 0)
-				{
-					$badge.html(entry.unreads).removeClass('is-hidden');
-				}
-				else
-				{
-					$badge.html(entry.unreads).addClass('is-hidden');
-				}
-			}
+				//if(entry.unreads > 0)
+				//{
+					//$badge.html(entry.unreads).removeClass('is-hidden');
+				//}
+				//else
+				//{
+					//$badge.html(entry.unreads).addClass('is-hidden');
+				//}
+			//}
 		},
 
 		puffUnreadsAll: function()
