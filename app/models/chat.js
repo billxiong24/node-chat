@@ -2,6 +2,8 @@ const connection = require('../database/config.js');
 var Line = require('./line.js');
 var LineCache = require('./line_cache.js');
 var Notification = require('./notification.js');
+var Vote = require('./vote.js');
+var VoteManager = require('../chat_functions/vote_manager.js');
 const cache_functions = require('../cache/cache_functions.js');
 
 var Chat = function Chat(id=null, name=null, code=null, stamp=null) {
@@ -130,6 +132,7 @@ Chat.prototype.load = function(user, transport) {
 
 Chat.prototype.retrieveLines = function(callback) {
     var chatLine = new LineCache(this._id);
+    var voteManager = new VoteManager(new Vote(this._id));
     var getLines = chatLine.read();
 
 
@@ -146,18 +149,26 @@ Chat.prototype.retrieveLines = function(callback) {
     var appendCacheLines = function(cacheResults) {
         return function(lineResults) {
             //TODO this is stupid, find a way around this
-            for(var i = 0; i < cacheResults.length; i++)   {
-                cacheResults[i] = JSON.parse(cacheResults[i]);
-            }
+            //for(var i = 0; i < cacheResults.length; i++)   {
+                //cacheResults[i] = JSON.parse(cacheResults[i]);
+            //}
 
             return cacheResults.length === 0 ? lineResults : cacheResults.concat(lineResults);
         };
     };
 
     cache_functions.retrieveArray(this._id, 0, -1, function(err, result) {
-        connection.executePoolTransaction([setConn, getLines, appendCacheLines(result), callback, releaseConn], function(err) {throw err;});
-    });
+        var lines = [];
+        voteManager.getVotes(function(votes) {
+            result.forEach(function(value) {
+                var line = JSON.parse(value);
+                line.num_votes = votes ? votes[line.line_id] : null;
+                lines.push(line);
+            });
+            connection.executePoolTransaction([setConn, getLines, appendCacheLines(lines), callback, releaseConn], function(err) {throw err;});
+        });
 
+    });
 };
 
 

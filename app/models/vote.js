@@ -1,7 +1,7 @@
 const connection = require('../database/config.js');
 const cache_functions = require('../cache/cache_functions.js');
 
-var Vote = function(chat_id, line_id) {
+var Vote = function(chat_id, line_id=null) {
     this._chat_id = chat_id;
     this._line_id = line_id;
 };
@@ -16,8 +16,20 @@ Vote.prototype.decrement = function() {
 
 Vote.prototype.read = function(callback) {
     cache_functions.retrieveJSONElement(getKey.call(this), this._line_id, function(err, reply) {
-        callback(err, reply);
+        var result = !reply ? 0 : reply;
+
+        callback(err, result);
     });
+};
+
+Vote.prototype.readAll = function(callback) {
+    cache_functions.retrieveJSON(getKey.call(this), function(err, reply) {
+        if(!reply) { 
+            console.log("no votes"); 
+        }
+        callback(err, JSON.parse(reply));
+    });
+    
 };
 
 Vote.prototype.flush = function() {

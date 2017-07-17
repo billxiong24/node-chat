@@ -108,9 +108,22 @@ body {
     height: 300px;
 }
 .chat .chat-history-group .message-data {
-    margin-bottom: 15px;
+    margin-bottom: 6px;
     text-align: center;
 }
+
+.chat .chat-history-group .message-data .message-data-name{
+    color: #ACACAC;
+}
+
+.pull-right {
+    margin-right: 12px;
+}
+
+.pull-left {
+    margin-left: 12px;
+}
+
 .chat .chat-history-group .message-data-time {
     color: #a8aab1;
     padding-left: 6px;
@@ -122,7 +135,24 @@ body {
     line-height: 26px;
     font-size: 16px;
     border-radius: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 12px;
+    max-width: 60%;
+    position: relative;
+    margin-top: -10px;
+}
+
+.chat .chat-history-group .consecutive-message-data {
+    margin-bottom: -3px;
+    text-align: center;
+}
+.chat .chat-history-group .consecutive-message{
+    color: white;
+    /* top, bottom and left,right*/
+    padding: 8px 15px;
+    line-height: 26px;
+    font-size: 16px;
+    border-radius: 20px;
+    margin-bottom: 0px;
     max-width: 60%;
     position: relative;
     margin-top: -10px;

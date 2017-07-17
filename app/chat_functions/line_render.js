@@ -27,8 +27,9 @@ function renderLines(username, lineInfo) {
         lineInfo[i].direction = username === lineInfo[i].username ? "right" : "left";
         lineInfo[i].active = username === lineInfo[i].username ? "active" : "";
         lineInfo[i].viewUsername = (!prevUser || lineInfo[i].username !== prevUser) ? lineInfo[i].username : "";
+        //lineInfo[i].consecutiveMessage = (lineInfo[i].viewUsername.length > 0) ? "message-data" : "consecutive-message-data";
         //temporary
-        lineInfo[i].viewUsername = lineInfo[i].username;
+        //lineInfo[i].viewUsername = lineInfo[i].username;
 
 
         var time_stamp = lineInfo[i].stamp;
