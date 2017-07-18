@@ -2,14 +2,24 @@
 //why the fuck is Handlebars.templates undefined
 define(['js/handlebars.min'], function(Handlebars) {
     return {
-        chatAjax: chatAjaxRequire(Handlebars)
+        chatAjax: chatAjaxRequire(Handlebars),
+        chatAjaxPromise: chatAjaxPromise
     };
 });
+
+function chatAjaxPromise(url, type, data) {
+    return $.ajax({
+        url: url,
+        type: type,
+        data: data,
+        contentType: 'application/json'
+    });
+}
 
 function chatAjaxRequire(Handlebars) {
     
     return function(url, type, data, callback) {
-        $.ajax({
+        return $.ajax({
             url: url,
             type: type,
             data: data,

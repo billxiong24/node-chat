@@ -63,36 +63,29 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
             $('.chat-header').remove();
             $('.chat').prepend(handlebars.templates.chatinfo(data));
             //zombie cookie
+
+
             if(!sessionStorage.getItem('userid')) {
                 console.log("userid not set");
-                chatAjaxService.chatAjax('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj), 
-                    function(data, Handlebars) {
-                        //TODO compare against each other to see if user tampared, better than nothing
-                        Cookies.set('userid', data.cookie);
-                        sessionStorage.setItem('userid', data.cookie);
-                        setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel);
+                chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
+                .then(function(data) {
+                    Cookies.set('userid', data.cookie);
+                    sessionStorage.setItem('userid', data.cookie);
+                })
+                .then(function(data) {
+                    return ajaxRenderLines(chatAjaxService, csrfTokenObj);
+
+                }).then(function(data) {
+                    renderLinesCB(data);
+                    setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel);
                 });
             }
             else {
-                setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel);
+                ajaxRenderLines(chatAjaxService, csrfTokenObj).then(function(data) {
+                    renderLinesCB(data);
+                    setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel);
+                });
             }
-        });
-
-        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/initLines', 'POST', JSON.stringify(csrfTokenObj), 
-            function(data, Handlebars) {
-                var chat = $('.chat-history-group');
-                var chatList = chat.find('ul');
-                //TODO precomile these templates
-                displayLines(chatList, handlebars, data.lines, function(line) {
-                    chatList.append(line);
-                });
-                chat.scrollTop(chat[0].scrollHeight);
-
-                $('.voting').click(function(event) {
-                    event.preventDefault();
-                    console.log("teat");
-
-                });
         });
 
         $('.remove-user').submit(function(evt) {
@@ -105,10 +98,8 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
             };
             chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/remove_user', 'POST', JSON.stringify(postObj), 
                 function(data, Handlebars) {
-                    console.log("completed");
                     $('#' + chat_id).remove();
             });
-
         });
 
         
@@ -140,7 +131,24 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                     chat.scrollTop(firstMessage.offset().top - curScroll);
             });
         });
+    });
+}
 
+function ajaxRenderLines(chatAjaxService, csrfTokenObj) {
+    return chatAjaxService.chatAjaxPromise(cutSlash(window.location.pathname)+'/initLines', 'POST', JSON.stringify(csrfTokenObj));
+}
+
+function renderLinesCB(data) {
+    var chat = $('.chat-history-group');
+    var chatList = chat.find('ul');
+    displayLines(chatList, handlebars, data.lines, function(line) {
+        chatList.append(line);
+    });
+    chat.scrollTop(chat[0].scrollHeight);
+
+    $('.voting').click(function(event) {
+        event.preventDefault();
+        console.log("teat");
     });
 }
 
