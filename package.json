@@ -25,6 +25,7 @@
     "express": "~4.15.2",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.2",
+    "fixme": "^0.4.3",
     "fs": "0.0.1-security",
     "grunt-cli": "^1.2.0",
     "gulp": "^3.9.1",

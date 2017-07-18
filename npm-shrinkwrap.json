@@ -317,6 +317,11 @@
       "from": "builtin-modules@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/builtin-modules/-/builtin-modules-1.1.1.tgz"
     },
+    "byline": {
+      "version": "5.0.0",
+      "from": "byline@5.0.0",
+      "resolved": "https://registry.npmjs.org/byline/-/byline-5.0.0.tgz"
+    },
     "bytes": {
       "version": "2.4.0",
       "from": "bytes@https://registry.npmjs.org/bytes/-/bytes-2.4.0.tgz",
@@ -1133,6 +1138,18 @@
       "version": "1.0.0",
       "from": "first-chunk-stream@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/first-chunk-stream/-/first-chunk-stream-1.0.0.tgz"
+    },
+    "fixme": {
+      "version": "0.4.3",
+      "from": "fixme@latest",
+      "resolved": "https://registry.npmjs.org/fixme/-/fixme-0.4.3.tgz",
+      "dependencies": {
+        "minimatch": {
+          "version": "3.0.3",
+          "from": "minimatch@3.0.3",
+          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz"
+        }
+      }
     },
     "flagged-respawn": {
       "version": "0.3.2",
@@ -2040,6 +2057,11 @@
       "version": "1.0.0",
       "from": "isarray@https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz",
       "resolved": "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz"
+    },
+    "isbinaryfile": {
+      "version": "3.0.1",
+      "from": "isbinaryfile@3.0.1",
+      "resolved": "https://registry.npmjs.org/isbinaryfile/-/isbinaryfile-3.0.1.tgz"
     },
     "isexe": {
       "version": "2.0.0",

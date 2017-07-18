@@ -54,19 +54,21 @@ ChatSocket.prototype.init = function() {
             //console.log(socket.handshake.headers);
             var url = urlParser.parse(socket.handshake.headers.referer);
 
+            var line_id = crypto.randomBytes(24).toString('hex');
+
             var message_info = {
                 message : message, 
                 username: socket.request.session.user.username,
                 /* cookie set should be same as userid */
-                cookie: socket.request.session.user.id
+                cookie: socket.request.session.user.id,
+                line_id: line_id
             };
 
             var id = parseID(url.pathname);
-
             Socket.prototype.getIO.call(that).to(id).emit('message', message_info);
 
-            //violates open close principle
-            var line = new LineCache(id, socket.request.session.user.username, message, crypto.randomBytes(24).toString('hex'));
+            //FIXME violates open close principle
+            var line = new LineCache(id, socket.request.session.user.username, message, line_id);
             line.insert();
             //TODO find a way to cache this
             var notif = new Notification(id, socket.request.session.user.username, -1);

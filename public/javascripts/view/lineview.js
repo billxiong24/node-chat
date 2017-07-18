@@ -1,13 +1,16 @@
 define(['js/handlebars.min', './viewrender'], function(Handlebars, viewrender) {
     return {
         LineView: (function() {
-            function LineView(dir, time, active, username, message) {
-                viewrender.ViewRender.call(this, username);
-                this._dir = dir;
-                this._time = time;
-                this._active = active;
+            function LineView(jsonObj) {
+                viewrender.ViewRender.call(this, jsonObj.viewUsername);
+
+                this._jsonObj = jsonObj;
+                this._dir = jsonObj.direction;
+                this._time = jsonObj.viewStamp;
+                this._active = jsonObj.active;
                 //this._username = username;
-                this._message = message;
+                this._message = jsonObj.message;
+                this._line_id = jsonObj.line_id;
             }
 
             LineView.prototype = Object.create(viewrender.ViewRender.prototype);
@@ -15,13 +18,7 @@ define(['js/handlebars.min', './viewrender'], function(Handlebars, viewrender) {
 
             //override
             LineView.prototype.toJSON = function() {
-                return {
-                    direction: this._dir,
-                    viewStamp: this._time,
-                    viewUsername: this.getUsername(),
-                    active: this._active,
-                    message: this._message
-                };
+                return this._jsonObj;
             };
 
 

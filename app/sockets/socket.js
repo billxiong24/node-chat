@@ -1,3 +1,5 @@
+const urlParser = require('url');
+
 var Socket = function(io, namespace=null) {
     this._io = (namespace === null) ? io : io.of(namespace);
 };
@@ -19,7 +21,24 @@ Socket.prototype.addJoinLeaveListener = function(socket) {
 };
 
 Socket.prototype.addOnConnectionListener = function(connectionCallBack) {
-    this._io.on('connection', connectionCallBack);
+    this._io.on('connection', function(socket) {
+        connectionCallBack(socket);
+    });
+};
+
+Socket.prototype.parseID = function(referer) {
+    var url = urlParser.parse(referer);
+    var pathname = url.pathname;
+
+    var str;
+    if(pathname.charAt(pathname.length - 1) === '/') {
+        pathname = pathname.substring(0, pathname.length - 1);
+        str = pathname.substring(pathname.lastIndexOf("/") + 1);
+    }
+    else {
+        str = pathname.substring(pathname.lastIndexOf("/") + 1);
+    }
+    return str;
 };
 
 //override method, "abstract method"

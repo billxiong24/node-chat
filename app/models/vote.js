@@ -24,10 +24,9 @@ Vote.prototype.read = function(callback) {
 
 Vote.prototype.readAll = function(callback) {
     cache_functions.retrieveJSON(getKey.call(this), function(err, reply) {
-        if(!reply) { 
-            console.log("no votes"); 
-        }
-        callback(err, JSON.parse(reply));
+        
+        var results = reply ? JSON.parse(reply) : null;
+        callback(err, results);
     });
     
 };
@@ -45,7 +44,5 @@ function changeVote(votes) {
 function getKey() {
     return 'votes:' + this._chat_id;
 }
-
-
 
 module.exports = Vote;

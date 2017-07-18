@@ -62,7 +62,7 @@ Line.prototype.read = function() {
         if(poolConnection === null) {
             return null;
         }
-        var query =  'SELECT username, message, DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") as stamp FROM ChatLines WHERE chat_id = ? ORDER BY DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") DESC LIMIT 7';
+        var query =  'SELECT line_id, username, message, DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") as stamp FROM ChatLines WHERE chat_id = ? ORDER BY DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") DESC LIMIT 7';
         //connection.release(poolConnection);
         return poolConnection.query(query, [chatID]);
     };
@@ -77,7 +77,7 @@ Line.prototype.readNext = function(latestStamp, callback) {
             return null;
         }
 
-        var query =  'SELECT username, message, DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") as stamp FROM ChatLines WHERE chat_id = ? AND stamp < DATE_FORMAT(?, "%Y-%m-%d %H:%i:%s:%f") ORDER BY stamp DESC LIMIT 15';
+        var query =  'SELECT line_id, username, message, DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") as stamp FROM ChatLines WHERE chat_id = ? AND stamp < DATE_FORMAT(?, "%Y-%m-%d %H:%i:%s:%f") ORDER BY stamp DESC LIMIT 15';
 
         connection.release(poolConnection);
         return poolConnection.query(query, [chatID, latestStamp]);

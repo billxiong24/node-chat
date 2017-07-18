@@ -165,6 +165,7 @@ Chat.prototype.retrieveLines = function(callback) {
                 line.num_votes = votes ? votes[line.line_id] : null;
                 lines.push(line);
             });
+
             connection.executePoolTransaction([setConn, getLines, appendCacheLines(lines), callback, releaseConn], function(err) {throw err;});
         });
 

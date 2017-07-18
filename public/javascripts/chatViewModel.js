@@ -14,7 +14,6 @@ define(function() {
 
             ChatViewModel.prototype.initChatNotifs = function(roomIDs, chatinfo, socketview) {
                 var inf = new chatinfo.ChatInfo(new socketview.SocketView(null, '/notifications'), roomIDs, this._userid);
-
                 inf.listenForNotifications(function(data) {
                     var notif = $('#'+data.roomID + ' .badge');
                     //previously seessionStorage
@@ -37,15 +36,15 @@ define(function() {
             ChatViewModel.prototype.initChat = function(socketview, chatview, notifview, onlineview, directChatView) {
                 neonChat.init(new socketview.SocketView(this._roomID));
                 var socketviewObj = new socketview.SocketView(this._roomID);
-
                 var notifViewObj = new notifview.NotifView(new socketview.SocketView(this._roomID, '/notifications'));
                 var chatViewObj = new chatview.ChatView(this._userid, socketviewObj, notifViewObj);
+                chatViewObj.initOnlineView($('.chat-group'), $('.online-now'), function(username, userid) {
+                    return new onlineview.OnlineView(username, userid).renderTemplate(that._handlebars, 'online_user');
+                });
                 chatViewObj.init();
 
                 var that = this;
-                chatViewObj.listenForOnlineUsers($('.chat-group'), $('.online-now'), function(username, userid) {
-                    return new onlineview.OnlineView(username, userid).renderTemplate(that._handlebars, 'online_user');
-                });
+
                 chatViewObj.setReceiveListener(function(lineViewObj) {
                     var history = $('.chat-history-group');
                     var list = history.find('ul');
@@ -64,10 +63,9 @@ define(function() {
                 chatViewObj.setSubmitListener($('#message-to-send'), $('.submit-message'));
                 //direct messaging
                 var directChatViewObj = new directChatView.DirectChatView(this._userid, socketviewObj, null);
-
                 var $chat = $("#chat"),
-                $conversation_window = $chat.find(".chat-conversation"),
-                $textarea = $conversation_window.find('.chat-textarea textarea');
+                    $conversation_window = $chat.find(".chat-conversation"),
+                    $textarea = $conversation_window.find('.chat-textarea textarea');
 
                 chatViewObj.setDirectListener($textarea);
                 directChatViewObj.listenForDM($chat);
@@ -87,26 +85,7 @@ define(function() {
                 }
             }
 
-            function parseID(url) {
-                var str = url;
-                if(str.charAt(str.length - 1) === '/') {
-                    str = str.substring(0, str.length - 1);
-                }
-
-                return str.split("/")[2];
-
-            }
-
-            function cutSlash(url) {
-                var str = url;
-                if(str.charAt(str.length - 1) === '/') {
-                    return str.substring(0, str.length - 1);
-                }
-                return str;
-            }
-
             return ChatViewModel;
-            
         })()
     };
 });

@@ -11,7 +11,6 @@ function parseID(url) {
     }
 
     return str.split("/")[2];
-
 }
 
 function cutSlash(url) {
@@ -42,7 +41,7 @@ $(document).ready(function() {
     };
     var roomID = parseID(window.location.pathname);
     var dependencies = ['chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 
-                    'typingview', 'notifview', 'chatview', 'chatviewmodel', 'directChatView'];
+                    'typingview', 'notifview', 'chatview', 'chatviewmodel', 'directChatView', 'onlineviewModel'];
 
     initializeData(roomID, csrfTokenObj, dependencies);
 });
@@ -57,7 +56,8 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                                     notifview, 
                                     chatview, 
                                     chatviewmodel, 
-                                    directChatView) {
+                                    directChatView,
+                                    onlineviewModel) {
 
         chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
             $('.chat-header').remove();
@@ -70,11 +70,11 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                         //TODO compare against each other to see if user tampared, better than nothing
                         Cookies.set('userid', data.cookie);
                         sessionStorage.setItem('userid', data.cookie);
-                        setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView);
+                        setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel);
                 });
             }
             else {
-                setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView);
+                setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel);
             }
         });
 
@@ -153,7 +153,8 @@ function setup(roomID,
                 lineview, 
                 onlineview, 
                 chatviewmodel, 
-                directChatView) {
+                directChatView,
+                onlineviewModel) {
 
     var userid = sessionStorage.getItem('userid');
 

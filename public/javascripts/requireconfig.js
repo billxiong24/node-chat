@@ -21,7 +21,8 @@ requirejs.config({
         url_changer: 'url_changer',
         viewrender: 'view/viewrender',
         chatviewmodel: './chatViewModel',
-        directChatView: './viewmodel/directChatView' 
+        directChatView: './viewmodel/directChatView',
+        onlineviewModel: 'viewmodel/onlineview'
     },
-    waitSeconds: 150 
+    waitSeconds: 930 
 });
