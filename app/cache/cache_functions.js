@@ -82,8 +82,13 @@ function popMessage(key, numMessages, callback) {
     multi.exec(callback);
 }
 
-function retrieveArray(key, start, end, callback) {
-    cache_store.lrange(key, start, end, callback);
+function retrieveArray(key, start, end, callback, async=false) {
+    if(!async) {
+        cache_store.lrange(key, start, end, callback);
+    }
+    else {
+        return cache_store.lrangeAsync(key, start, end);
+    }
 }
 
 

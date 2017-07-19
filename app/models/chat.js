@@ -133,42 +133,42 @@ Chat.prototype.load = function(user, transport) {
 Chat.prototype.retrieveLines = function(callback) {
     var chatLine = new LineCache(this._id);
     var voteManager = new VoteManager(new Vote(this._id));
-    var getLines = chatLine.read();
 
+    var that = this;
 
     var conn = null;
+    var sqlLines = null;
+    
     var setConn = function(connect) {
         conn = connect;
         return connect;
+    };
+
+    var getLines = chatLine.read();
+
+    var setLines = function(lineResults) {
+        sqlLines = lineResults;
+        return lineResults;
+    };
+
+    var retrieveCacheLines = function(lineResults) {
+        return cache_functions.retrieveArray(that._id, 0, -1, null, true);
+    };
+    var appendCacheLines = function(cacheResults) {
+        for(var i = 0; i < cacheResults.length; i++)   {
+            cacheResults[i] = JSON.parse(cacheResults[i]);
+        }
+        return cacheResults.concat(sqlLines);
     };
 
     var releaseConn = function(connect) {
         console.log("releasing connection");
         connection.release(conn);
     };
-    var appendCacheLines = function(cacheResults) {
-        return function(lineResults) {
-            //TODO this is stupid, find a way around this
-            //for(var i = 0; i < cacheResults.length; i++)   {
-                //cacheResults[i] = JSON.parse(cacheResults[i]);
-            //}
-
-            return cacheResults.length === 0 ? lineResults : cacheResults.concat(lineResults);
-        };
-    };
-
-    cache_functions.retrieveArray(this._id, 0, -1, function(err, result) {
-        var lines = [];
-        voteManager.getVotes(function(votes) {
-            result.forEach(function(value) {
-                var line = JSON.parse(value);
-                line.num_votes = votes ? votes[line.line_id] : null;
-                lines.push(line);
-            });
-
-            connection.executePoolTransaction([setConn, getLines, appendCacheLines(lines), callback, releaseConn], function(err) {throw err;});
-        });
-
+    var promises = [setConn, getLines, setLines, retrieveCacheLines, appendCacheLines, callback, releaseConn];
+    connection.executePoolTransaction(promises, function(err) {
+        console.log(err);
+        throw err;
     });
 };
 
