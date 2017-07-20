@@ -36,24 +36,9 @@ define(function() {
             ChatViewModel.prototype.initVoting = function(socketview, votingview) {
                 var socketViewObj = new socketview.SocketView(this._roomID, '/vote');
                 var votingViewObj = new votingview.VotingView(this._userid, socketViewObj);
-                var voteObj = $('li.clearfix.group-message');
-
-                voteObj.each(function(ind, obj) {
-                    votingViewObj.setSubmitListener($(obj).find('.voting'), $(this).attr('id'));
-                });
-
-                votingViewObj.setReceiveListener(function(data) {
-                    var numVotesObj = $('#'+data.line_id).children('.voting').children('.numVotes');
-                    var numVotes = parseInt(numVotesObj.text());
-                    //FIXME quick hack, since no viewmodel currently holds votes
-                    if(isNaN(numVotes)) {
-                        numVotesObj.text(1);
-                    }
-                    else {
-                        numVotesObj.text(numVotes + 1);
-                    }
-                });
+                attachVotingListener(votingViewObj);
             };
+
 
             ChatViewModel.prototype.initChat = function(socketview, chatview, notifview, onlineview, directChatView) {
                 neonChat.init(new socketview.SocketView(this._roomID));
@@ -94,6 +79,22 @@ define(function() {
 
             };
 
+            function attachVotingListener(votingViewObj) {
+                var divParent = $('.chat-history-group ul');
+                votingViewObj.setSubmitListener(divParent, '.voting', null);
+
+                votingViewObj.setReceiveListener(function(data) {
+                    var numVotesObj = $('#'+data.line_id).children('.voting').children('.numVotes');
+                    var numVotes = parseInt(numVotesObj.text());
+                    //FIXME quick hack, since no viewmodel currently holds votes
+                    if(isNaN(numVotes)) {
+                        numVotesObj.text(1);
+                    }
+                    else {
+                        numVotesObj.text(numVotes + 1);
+                    }
+                });
+            }
             function displayLines(chatList, lines, display) {
                 for(var i = 0; i < lines.length; i++) {
                     var html, template;

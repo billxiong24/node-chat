@@ -1,4 +1,6 @@
 const connection = require('../database/config.js');
+const Vote = require('./vote.js');
+const VoteManager = require('../chat_functions/vote_manager.js');
 
 var Line = function Line(chat_id=null, username=undefined, message=undefined, line_id=undefined) {
     this._chat_id = chat_id; 
@@ -68,9 +70,13 @@ Line.prototype.read = function() {
     };
 };
 
+//FIXME duplicated code here but im too lazy
 Line.prototype.readNext = function(latestStamp, callback) {
     var chatID = this._chat_id;
+    var voteManager = new VoteManager(new Vote(chatID));
 
+
+    var lineResults = null;
     var quer = function(poolConnection) {
         if(poolConnection === null || latestStamp === null) {
             connection.release(poolConnection);
@@ -82,8 +88,21 @@ Line.prototype.readNext = function(latestStamp, callback) {
         connection.release(poolConnection);
         return poolConnection.query(query, [chatID, latestStamp]);
     };
+    var setLines = function(lines) {
+        lineResults = lines;
+        return lines;
+    };
+    var getVotes = function(results) {
+        return voteManager.getAllVotes();
+    };
 
-    connection.executePoolTransaction([quer, callback], function(err) {console.log(err);});
+    var attachVotes = function(voteResults) {
+        for(var i = 0; i < lineResults.length; i++) {
+            lineResults[i].num_votes = voteResults[lineResults[i].line_id];
+        }
+        return lineResults;
+    };
+    connection.executePoolTransaction([quer, setLines, getVotes, attachVotes, callback], function(err) {console.log(err);});
 };
 
 module.exports = Line;

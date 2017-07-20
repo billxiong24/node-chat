@@ -73,6 +73,12 @@ define(['socketview', 'notifview'], function(socketview, notifview) {
 
                 this._socketview.addListener('disconnected', function(data) {
                     console.log("disconnecting, ", that._nativeSocketID, data.socketID);
+                    //FIXME sometimes socket drops connection for whatever fukcing reason
+                    if(!data.user) {
+                        console.log("error with data.user.id");
+                        console.log(data);
+                        return;
+                    }
                     if(data.user.id in that._userSockets && that._socketID !== data.socketID) { 
                         that._userSockets[data.user.id]--;
                         console.log("own usersin loop: ", that._userSockets[data.user.id]);

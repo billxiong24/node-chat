@@ -94,7 +94,6 @@ var ChatManager = (function() {
                 res.redirect('/home');
                 return null;
             }
-            console.log(lineResults);
             lineResults = line_render(username, lineResults).reverse();
             req.session.lastTimeStamp = lineResults.length > 0 ? lineResults[0].stamp : null;
             console.log(req.session.lastTimeStamp + " on load tmee");

@@ -16,10 +16,13 @@ define(['socketview'], function(socketview) {
                 });
             };
 
-            VotingView.prototype.setSubmitListener = function(voteElement, line_id) {
+            VotingView.prototype.setSubmitListener = function(voteElement, selector) {
                 var that = this;
+                console.log(selector);
 
-                voteElement.click(function(event) {
+                voteElement.on('click', selector, function(event) {
+                    //FIXME this is ratchet as fuck omg
+                    var line_id = $(event.target).parent().parent().attr('lineid');
                     event.preventDefault();
 
                     that._socketview.send('vote', {

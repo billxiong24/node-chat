@@ -49,6 +49,7 @@ $(document).ready(function() {
 });
 
 function initializeData(roomID, csrfTokenObj, dependencies) {
+    console.log("reached init data func");
     require(dependencies, function(chatAjaxService, 
                                     onlineview, 
                                     lineview, 
@@ -62,7 +63,8 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                                     onlineviewModel, 
                                     votingview) {
 
-        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
+        console.log("inside require function");
+        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data) {
             $('.chat-header').remove();
             $('.chat').prepend(handlebars.templates.chatinfo(data));
             //zombie cookie
@@ -102,7 +104,7 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                 chatID: chat_id 
             };
             chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/remove_user', 'POST', JSON.stringify(postObj), 
-                function(data, Handlebars) {
+                function(data) {
                     $('#' + chat_id).remove();
             });
         });
@@ -120,7 +122,7 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                 _csrf: csrfTokenObj._csrf
             };
             chatAjaxService.chatAjax('/chats/loadLines', 'POST', JSON.stringify(dataObj), 
-                function(data, Handlebars) {
+                function(data) {
                     if(data.lines === null) {return;}
 
                     var chat = $('.chat-history-group');
