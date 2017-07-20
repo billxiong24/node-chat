@@ -33,6 +33,28 @@ define(function() {
                 typeViewObj.keyUpEvent($('.submit-message'), 700);
             };
 
+            ChatViewModel.prototype.initVoting = function(socketview, votingview) {
+                var socketViewObj = new socketview.SocketView(this._roomID, '/vote');
+                var votingViewObj = new votingview.VotingView(this._userid, socketViewObj);
+                var voteObj = $('li.clearfix.group-message');
+
+                voteObj.each(function(ind, obj) {
+                    votingViewObj.setSubmitListener($(obj).find('.voting'), $(this).attr('id'));
+                });
+
+                votingViewObj.setReceiveListener(function(data) {
+                    var numVotesObj = $('#'+data.line_id).children('.voting').children('.numVotes');
+                    var numVotes = parseInt(numVotesObj.text());
+                    //FIXME quick hack, since no viewmodel currently holds votes
+                    if(isNaN(numVotes)) {
+                        numVotesObj.text(1);
+                    }
+                    else {
+                        numVotesObj.text(numVotes + 1);
+                    }
+                });
+            };
+
             ChatViewModel.prototype.initChat = function(socketview, chatview, notifview, onlineview, directChatView) {
                 neonChat.init(new socketview.SocketView(this._roomID));
                 var socketviewObj = new socketview.SocketView(this._roomID);

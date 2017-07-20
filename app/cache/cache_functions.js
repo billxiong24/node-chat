@@ -26,24 +26,44 @@ function addJSON(key, obj, callback) {
     cache_store.hmset(key, obj, callback);
 }
 
-function retrieveJSON(key, callback) {
-    cache_store.hgetall(key, callback);
+function retrieveJSON(key, callback, async=false) {
+    if(!async) {
+        cache_store.hgetall(key, callback);
+    }
+    else {
+        return cache_store.hgetallAsync(key);
+    }
 }
 
-function retrieveJSONElement(key, element, callback) {
-    cache_store.hget(key, element, callback);
+function retrieveJSONElement(key, element, callback, async=false) {
+    if(!async) {
+        cache_store.hget(key, element, callback);
+    }
+    else {
+        return cache_store.hgetAsync(key, element);
+    }
 }
 
-function addJSONElement(key, element, value, callback) {
+function addJSONElement(key, element, value, callback, async=false) {
     //if key does not exist, redis will create it, then insert value
-    cache_store.hset(key, element, value, callback);
+    if(!async) {
+        cache_store.hset(key, element, value, callback);
+    }
+    else {
+        return cache_store.hsetAsync(key, element, value);
+    }
 }
 
 //incr_by is any integer
-function incrementJSONElement(key, element, incr_by, callback) {
-    cache_store.hincrby(key, element, incr_by, function(result) {
-        callback(result);
-    });
+function incrementJSONElement(key, element, incr_by, callback, async=false) {
+    if(!async) {
+        cache_store.hincrby(key, element, incr_by, function(err, result) {
+            callback(err, result);
+        });
+    }
+    else {
+        return cache_store.hincrbyAsync(key, element, incr_by);
+    }
 }
 
 

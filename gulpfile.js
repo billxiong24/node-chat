@@ -120,7 +120,7 @@ gulp.task('start-cache-worker', function() {
 gulp.task('start', function() {
     gulp_nodemon({
         script: 'app.js',
-        ext: 'js handlebars',
+        ext: 'js',
         env: {'BLUEBIRD_WARNINGS':0, 'NODE_ENV': 'development'}
     });
 });

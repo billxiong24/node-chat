@@ -1,5 +1,7 @@
 var Socket = require('./socket.js');
 const urlParser = require('url');
+const VoteManager = require('../chat_functions/vote_manager.js');
+const Vote= require('../models/vote.js');
 
 var VoteSocket = function(io, namespace=null) {
     Socket.call(this, io, namespace);
@@ -13,15 +15,27 @@ VoteSocket.prototype.init = function() {
 
     this.addOnConnectionListener(function(socket) {
         socket = Socket.prototype.addJoinLeaveListener.call(that, socket);
+
+        socket.on('vote', function(data) {
+            var chat_id = Socket.prototype.parseID.call(that, socket.handshake.headers.referer);
+
+            //TODO fix check if user voted already
+            var voted = false;
+
+            var voteManager = new VoteManager(new Vote(chat_id, data.line_id));
+            voteManager.incrementVote(data.line_id, function(err, newVote) {
+                data.voted = voted;
+                data.num_votes = newVote;
+                Socket.prototype.getIO.call(that).to(chat_id).emit('vote', data);
+            });
+            
+
+            //TODO update vote value in redis if user did not vote yet
+
+
+        });
     });
 
-    socket.on('vote', function(data) {
-        var chat_id = Socket.prototype.parseID.call(that, socket.handshake.headers.referer);
-        
-        
-        Socket.prototype.getIO.call(that).to(chat_id).emit('vote', data);
-        //TODO update vote value in redis
-    });
     
 };
 

@@ -1,6 +1,7 @@
 var TypingSocket = require('./typingSocket.js');
 var NotifSocket = require('./notifSocket.js');
 var ChatSocket = require('./chatSocket.js');
+var VoteSocket = require('./voteSocket.js');
 var Socket = require('./socket.js');
 var socketio_redis = require('socket.io-redis');
 
@@ -26,6 +27,11 @@ module.exports = function(http, sessionMiddleWare) {
 
     var chatSocketObj = new ChatSocket(io);
     chatSocketObj.init();
+
+    var voteSocketObj = new VoteSocket(io, '/vote');
+    voteSocketObj.init();
+
+
 
     return io;
 };

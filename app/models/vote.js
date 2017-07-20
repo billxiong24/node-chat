@@ -6,12 +6,20 @@ var Vote = function(chat_id, line_id=null) {
     this._line_id = line_id;
 };
 
-Vote.prototype.increment = function() {
-    changeVote.call(this, 1);
+Vote.prototype.getLineID = function() {
+    return this._line_id;
+};
+Vote.prototype.setLineID = function(line_id) {
+    this._line_id = line_id;
+    return this;
 };
 
-Vote.prototype.decrement = function() {
-    changeVote.call(this, -1);
+Vote.prototype.increment = function(callback) {
+    changeVote.call(this, 1, callback);
+};
+
+Vote.prototype.decrement = function(callback) {
+    changeVote.call(this, -1, callback);
 };
 
 Vote.prototype.read = function(callback) {
@@ -22,22 +30,17 @@ Vote.prototype.read = function(callback) {
     });
 };
 
-Vote.prototype.readAll = function(callback) {
-    cache_functions.retrieveJSON(getKey.call(this), function(err, reply) {
-        
-        var results = reply ? JSON.parse(reply) : null;
-        callback(err, results);
-    });
-    
+Vote.prototype.readAll = function() {
+    return cache_functions.retrieveJSON(getKey.call(this), null, true);
 };
 
 Vote.prototype.flush = function() {
     
 };
 
-function changeVote(votes) {
+function changeVote(votes, callback) {
     cache_functions.incrementJSONElement(getKey.call(this), this._line_id, votes, function(err, reply) {
-        console.log("added a vote", reply);
+        callback(err, reply);
     });
 }
 

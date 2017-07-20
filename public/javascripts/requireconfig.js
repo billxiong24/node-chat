@@ -8,6 +8,7 @@ requirejs.config({
     },
     paths: {
         socketio:'socket.io-client/dist/socket.io',
+        //TODO upgrade jquery version
         jquery: 'js/jquery-2.1.1',
         socketview: 'viewmodel/socketview',
         chatinfo: 'viewmodel/chatinfo',
@@ -22,7 +23,8 @@ requirejs.config({
         viewrender: 'view/viewrender',
         chatviewmodel: './chatViewModel',
         directChatView: './viewmodel/directChatView',
-        onlineviewModel: 'viewmodel/onlineview'
+        onlineviewModel: 'viewmodel/onlineview',
+        votingview: 'viewmodel/votingview'
     },
     waitSeconds: 930 
 });

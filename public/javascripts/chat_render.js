@@ -41,8 +41,10 @@ $(document).ready(function() {
     };
     var roomID = parseID(window.location.pathname);
     var dependencies = ['chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 
-                    'typingview', 'notifview', 'chatview', 'chatviewmodel', 'directChatView', 'onlineviewModel'];
+                    'typingview', 'notifview', 'chatview', 'chatviewmodel', 
+                    'directChatView', 'onlineviewModel', 'votingview'];
 
+    console.log("document is ready");
     initializeData(roomID, csrfTokenObj, dependencies);
 });
 
@@ -57,18 +59,20 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                                     chatview, 
                                     chatviewmodel, 
                                     directChatView,
-                                    onlineviewModel) {
+                                    onlineviewModel, 
+                                    votingview) {
 
         chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data, Handlebars) {
             $('.chat-header').remove();
             $('.chat').prepend(handlebars.templates.chatinfo(data));
             //zombie cookie
-
+            console.log("entered userid check");
 
             if(!sessionStorage.getItem('userid')) {
                 console.log("userid not set");
                 chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
                 .then(function(data) {
+                    console.log("fetch_home post success");
                     Cookies.set('userid', data.cookie);
                     sessionStorage.setItem('userid', data.cookie);
                 })
@@ -76,14 +80,15 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                     return ajaxRenderLines(chatAjaxService, csrfTokenObj);
 
                 }).then(function(data) {
+                    console.log("initLines post successful");
                     renderLinesCB(data);
-                    setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel);
+                    setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel, votingview);
                 });
             }
             else {
                 ajaxRenderLines(chatAjaxService, csrfTokenObj).then(function(data) {
                     renderLinesCB(data);
-                    setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel);
+                    setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel, votingview);
                 });
             }
         });
@@ -145,11 +150,6 @@ function renderLinesCB(data) {
         chatList.append(line);
     });
     chat.scrollTop(chat[0].scrollHeight);
-
-    $('.voting').click(function(event) {
-        event.preventDefault();
-        console.log("teat");
-    });
 }
 
 function setup(roomID, 
@@ -162,7 +162,8 @@ function setup(roomID,
                 onlineview, 
                 chatviewmodel, 
                 directChatView,
-                onlineviewModel) {
+                onlineviewModel,
+                votingview) {
 
     var userid = sessionStorage.getItem('userid');
 
@@ -170,4 +171,5 @@ function setup(roomID,
     cvm.initChatNotifs(roomIDs, chatinfo, socketview);
     cvm.initTyping(typingview, socketview);
     cvm.initChat(socketview, chatview, notifview, onlineview, directChatView);
+    cvm.initVoting(socketview, votingview);
 }

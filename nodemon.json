@@ -1,0 +1,3 @@
+{
+    "ignore":["public/javascripts/**/*", "public/stylesheets/assets/js/*"]
+}

@@ -5,13 +5,21 @@ var VoteManager = function(voteObj) {
     this._voteObj = voteObj;
 };
 
-VoteManager.prototype.getVotes = function(callback) {
-    this._voteObj.readAll(function(err, voteResults) {
-        if(!voteResults) {
-            console.log("no votes");
-        }
+VoteManager.prototype.getAllVotes = function() {
+    return this._voteObj.readAll().then(function(data) { 
+        return data;
+    });
+};
 
-        callback(voteResults);
+VoteManager.prototype.incrementVote = function(line_id, callback) {
+    this._voteObj.setLineID(line_id).increment(function(err, newVote) {
+        callback(err, newVote);
+    });
+};
+
+VoteManager.prototype.decrementVote = function(line_id, callback) {
+    this._voteObj.setLineID(line_id).decrement(function(err, newVote) {
+        callback(err, newVote);
     });
 };
 

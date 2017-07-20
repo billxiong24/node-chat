@@ -10,6 +10,7 @@ define(['socketview', 'notifview', 'lineview', 'onlineviewModel'], function(sock
             }
 
             ChatView.prototype.init = function() {
+                //TODO refactor joinRoom in chatview to a super class or something
                 this._socketview.joinRoom();
                 this._socketview.connect();
             };
@@ -77,7 +78,6 @@ define(['socketview', 'notifview', 'lineview', 'onlineviewModel'], function(sock
                     }
                 });
             };
-
             
             //this message is cancerous
             function displayMessage(msg, userid, displayLine) {

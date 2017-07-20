@@ -158,14 +158,26 @@ Chat.prototype.retrieveLines = function(callback) {
         for(var i = 0; i < cacheResults.length; i++)   {
             cacheResults[i] = JSON.parse(cacheResults[i]);
         }
-        return cacheResults.concat(sqlLines);
+        sqlLines = cacheResults.concat(sqlLines);
+        return sqlLines;
+    };
+    
+    var getVotes = function(lineResults) {
+        return voteManager.getAllVotes();
+    };
+    var attachVotes = function(voteResults) {
+        if(!voteResults) { return sqlLines; }
+        for(var i = 0; i < sqlLines.length; i++) {
+            sqlLines[i].num_votes = voteResults[sqlLines[i].line_id];
+        }
+        return sqlLines;
     };
 
     var releaseConn = function(connect) {
         console.log("releasing connection");
         connection.release(conn);
     };
-    var promises = [setConn, getLines, setLines, retrieveCacheLines, appendCacheLines, callback, releaseConn];
+    var promises = [setConn, getLines, setLines, retrieveCacheLines, appendCacheLines, getVotes, attachVotes, callback, releaseConn];
     connection.executePoolTransaction(promises, function(err) {
         console.log(err);
         throw err;
