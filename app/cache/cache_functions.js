@@ -44,6 +44,17 @@ function retrieveJSONElement(key, element, callback, async=false) {
     }
 }
 
+function removeJSONElement(key, element, callback, async=false) {
+    if(!async) {
+        cache_store.hdel(key, element, function(err, reply) {
+            callback(err, reply);
+        });
+    }
+    else {
+        return cache_store.hdelAsync(key, element);
+    }
+}
+
 function addJSONElement(key, element, value, callback, async=false) {
     //if key does not exist, redis will create it, then insert value
     if(!async) {
@@ -124,5 +135,6 @@ module.exports = {
     popMessage,
     deleteKey,
     incrementJSONElement,
+    removeJSONElement,
     processQueue: pq
 };

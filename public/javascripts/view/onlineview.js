@@ -1,4 +1,4 @@
-define(['js/handlebars.min', './viewrender'], function(Handlebars, viewrender) {
+define(['./viewrender'], function(viewrender) {
     return {
         OnlineView: (function() {
             function OnlineView(username, userid) {

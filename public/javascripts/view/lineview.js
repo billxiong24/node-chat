@@ -1,4 +1,4 @@
-define(['js/handlebars.min', './viewrender'], function(Handlebars, viewrender) {
+define(['./viewrender'], function(viewrender) {
     return {
         LineView: (function() {
             function LineView(jsonObj) {
@@ -20,7 +20,6 @@ define(['js/handlebars.min', './viewrender'], function(Handlebars, viewrender) {
             LineView.prototype.toJSON = function() {
                 return this._jsonObj;
             };
-
 
             LineView.prototype.getDirection = function() {
                 return this._dir;

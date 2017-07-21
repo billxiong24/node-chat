@@ -14,8 +14,26 @@ Vote.prototype.setLineID = function(line_id) {
     return this;
 };
 
-Vote.prototype.increment = function(callback) {
-    changeVote.call(this, 1, callback);
+Vote.prototype.increment = function(userid, callback) {
+    var checkVoted = cache_functions.addJSONElement(getUserVotesKey.call(this), 
+        getUserVotesElementKey(userid, this._line_id), this._line_id, null, true);
+    
+    var that = this;
+    checkVoted.then(function(reply) {
+        //user has not voted before
+        if(reply === 1) {
+            changeVote.call(that , 1, callback);
+        }
+        else {
+            changeVote.call(that, -1, callback);
+        }
+        return reply;
+    }).then(function(reply) {
+        if(reply === 0) {
+            return cache_functions.removeJSONElement(getUserVotesKey.call(that), getUserVotesElementKey(userid, that._line_id), null, true);
+        }
+        return null;
+    });
 };
 
 Vote.prototype.decrement = function(callback) {
@@ -46,6 +64,14 @@ function changeVote(votes, callback) {
 
 function getKey() {
     return 'votes:' + this._chat_id;
+}
+
+function getUserVotesKey() {
+    return 'uservotes:'+this._chat_id;
+}
+
+function getUserVotesElementKey(userid, line_id) {
+    return userid + "||" + line_id;
 }
 
 module.exports = Vote;

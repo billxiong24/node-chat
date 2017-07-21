@@ -11,8 +11,8 @@ VoteManager.prototype.getAllVotes = function() {
     });
 };
 
-VoteManager.prototype.incrementVote = function(line_id, callback) {
-    this._voteObj.setLineID(line_id).increment(function(err, newVote) {
+VoteManager.prototype.incrementVote = function(userid, line_id, callback) {
+    this._voteObj.setLineID(line_id).increment(userid, function(err, newVote) {
         callback(err, newVote);
     });
 };

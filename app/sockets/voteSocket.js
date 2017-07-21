@@ -23,7 +23,7 @@ VoteSocket.prototype.init = function() {
             var voted = false;
 
             var voteManager = new VoteManager(new Vote(chat_id, data.line_id));
-            voteManager.incrementVote(data.line_id, function(err, newVote) {
+            voteManager.incrementVote(data.userid, data.line_id, function(err, newVote) {
                 data.voted = voted;
                 data.num_votes = newVote;
                 Socket.prototype.getIO.call(that).to(chat_id).emit('vote', data);

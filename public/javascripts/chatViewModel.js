@@ -81,18 +81,13 @@ define(function() {
 
             function attachVotingListener(votingViewObj) {
                 var divParent = $('.chat-history-group ul');
-                votingViewObj.setSubmitListener(divParent, '.voting', null);
+                votingViewObj.setSubmitListener(divParent, '.voting');
 
                 votingViewObj.setReceiveListener(function(data) {
                     var numVotesObj = $('#'+data.line_id).children('.voting').children('.numVotes');
                     var numVotes = parseInt(numVotesObj.text());
                     //FIXME quick hack, since no viewmodel currently holds votes
-                    if(isNaN(numVotes)) {
-                        numVotesObj.text(1);
-                    }
-                    else {
-                        numVotesObj.text(numVotes + 1);
-                    }
+                    numVotesObj.text(data.num_votes);
                 });
             }
             function displayLines(chatList, lines, display) {
