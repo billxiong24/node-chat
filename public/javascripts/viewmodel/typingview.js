@@ -50,6 +50,12 @@ define(['socketview'], function(socketview) {
             TypingView.prototype.keyUpEvent = function(element, timerClearOut) {
                 var that = this;
                 element.keyup(function(event) {
+                    event.preventDefault();
+                    var code = event.which;
+                    if(code == 9 || code === 0) {
+                        console.log("dont want to trigger typing event with 0 and 9");
+                        return;
+                    }
                     if(!that._isTyping && event.keyCode !== 13) {
                         that._isTyping = true;
                         that._socketview.send('typing', {

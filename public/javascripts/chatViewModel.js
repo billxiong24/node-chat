@@ -85,9 +85,13 @@ define(function() {
 
                 votingViewObj.setReceiveListener(function(data) {
                     var numVotesObj = $('#'+data.line_id).children('.voting').children('.numVotes');
-                    var numVotes = parseInt(numVotesObj.text());
                     //FIXME quick hack, since no viewmodel currently holds votes
-                    numVotesObj.text(data.num_votes);
+                    if(data.num_votes === 0) {
+                        numVotesObj.text("");
+                    }
+                    else {
+                        numVotesObj.text(data.num_votes);
+                    }
                 });
             }
             function displayLines(chatList, lines, display) {

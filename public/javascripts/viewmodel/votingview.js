@@ -22,7 +22,8 @@ define(['socketview'], function(socketview) {
 
                 voteElement.on('click', selector, function(event) {
                     //FIXME this is ratchet as fuck omg
-                    var line_id = $(event.target).parent().parent().attr('lineid');
+                    var line_id = $(event.target).closest('.voting').attr('lineid');
+                    console.log(line_id + " voting with lineid");
                     event.preventDefault();
 
                     that._socketview.send('vote', {

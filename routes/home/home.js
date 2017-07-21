@@ -16,7 +16,7 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
     res.cookie('userid', req.session.user.id, {
         httpOnly: true,
         secure: true
-    }); 
+    });
     manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON) {
         res.render('home', userJSON);
     });

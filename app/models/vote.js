@@ -52,11 +52,13 @@ Vote.prototype.readAll = function() {
     return cache_functions.retrieveJSON(getKey.call(this), null, true);
 };
 
+//i dont think we need to flush votes? just store in redis
 Vote.prototype.flush = function() {
     
 };
 
 function changeVote(votes, callback) {
+    console.log(getKey.call(this), this._line_id, " inserting vote into redis");
     cache_functions.incrementJSONElement(getKey.call(this), this._line_id, votes, function(err, reply) {
         callback(err, reply);
     });

@@ -110,7 +110,12 @@ function init(port) {
 
 
 //to disable clustering and ip hashing, comment below line and just call init(3000);
-require('./cluster_node.js')(cluster, http, init(0), PORT);
+if(process.env.NODE_ENV === "test") {
+    init(3000);
+}
+else {
+    require('./cluster_node.js')(cluster, http, init(0), PORT);
+}
 
 //LOAD TESTING
 if(process.env.NODE_ENV === "loadtest") {
