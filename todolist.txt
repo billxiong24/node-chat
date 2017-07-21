@@ -1,0 +1,119 @@
+[01:30:03] Using gulpfile ~/chat/gulpfile.js
+[01:30:03] Starting 'todo'...
+[01:30:03] Finished 'todo' after 5.91 ms
+
+* app.js [1 message]:
+  [Line  32]  ✗ XXX: sometimes rendering static files hangs, even though the GET request completes, maybe issue with middleware. Needs fixing
+
+* gulpfile.js [1 message]:
+  [Line  19]  ✓ TODO: precompile handlebars,
+
+* app/authentication/user-pass.js [3 messages]:
+  [Line 122]  ✓ TODO: cache this shit, so we dont hit db on every request
+  [Line 144]  ✓ TODO: add password checker
+  [Line 146]  ✓ TODO: less lazy error message lmao
+
+* app/chat_functions/chat_manager.js [6 messages]:
+  [Line  12]  ✓ TODO: use async library to make things more asynchronous
+  [Line  22]  ✓ TODO: error checking
+  [Line  54]  ✓ TODO: error message
+  [Line  58]  ✓ TODO: FIX THIS SHIT
+  [Line  60]  ✓ TODO: WTF IS THIS how did i not see this
+  [Line  72]  ✓ TODO: add error message here
+
+* app/models/chat.js [1 message]:
+  [Line  87]  ✄ HACK: [[no message to display]]
+
+* app/models/line.js [1 message]:
+  [Line  73]  ☠ FIXME: duplicated code here but im too lazy
+
+* app/models/line_cache.js [3 messages]:
+  [Line 15]  ✓ TODO: should write to disk at some point, for now just write cache
+  [Line 16]  ✓ TODO: handle timestamp
+  [Line 28]  ✓ TODO: test this method, it most likely does not work
+
+* app/sockets/chatSocket.js [3 messages]:
+  [Line  70]  ☠ FIXME: violates open close principle
+  [Line  73]  ✓ TODO: find a way to cache this
+  [Line  78]  ✓ TODO: refactor back into above method, quick hack
+
+* app/sockets/notifSocket.js [1 message]:
+  [Line 24]  ✓ TODO: add this data to cache- contains {userid, notif, roomID}
+
+* app/sockets/voteSocket.js [2 messages]:
+  [Line 22]  ✓ TODO: fix check if user voted already
+  [Line 33]  ✓ TODO: update vote value in redis if user did not vote yet
+
+* app/workers/process_queue.js [1 message]:
+  [Line 71]  ✓ TODO: use reduce to take in an array of callbacks
+
+* public/javascripts/chatViewModel.js [2 messages]:
+  [Line   1]  ✓ TODO: organize this using some frontend framework
+  [Line  88]  ☠ FIXME: quick hack, since no viewmodel currently holds votes
+
+* public/javascripts/chat_render.js [2 messages]:
+  [Line  38]  ✓ TODO: organize ajax calls
+  [Line 136]  ✓ TODO: dont hardcode this, okay for now
+
+* public/javascripts/requireconfig.js [1 message]:
+  [Line 11]  ✓ TODO: upgrade jquery version
+
+* public/javascripts/templates.js [1 message]:
+  [Line 1]  ⚠ SKIPPING CHECK: Fixme is skipping this line because its length is greater than the maximum line-length of 1000.
+
+* public/javascripts/validate.js [2 messages]:
+  [Line  1]  ✓ TODO: this needs refactoring but not urgent
+  [Line 40]  ✓ TODO: sanitize input
+
+* routes/chats/chats.js [3 messages]:
+  [Line  18]  ✓ TODO: CACHE THIS SHIT*/
+  [Line  26]  ✓ TODO: create utility hold common elements in response object, such as csrfToken
+  [Line  40]  ✄ HACK: [[no message to display]]
+
+* public/javascripts/templates/templates.js [1 message]:
+  [Line 1]  ⚠ SKIPPING CHECK: Fixme is skipping this line because its length is greater than the maximum line-length of 1000.
+
+* public/javascripts/viewmodel/chatview.js [2 messages]:
+  [Line  13]  ✓ TODO: refactor joinRoom in chatview to a super class or something
+  [Line 108]  ✓ TODO: fix dis timestamp
+
+* public/javascripts/viewmodel/onlineview.js [3 messages]:
+  [Line  31]  ✓ TODO: numMessages should be extracted from here
+  [Line  43]  ✓ TODO: clean this up
+  [Line  76]  ☠ FIXME: sometimes socket drops connection for whatever fukcing reason
+
+* public/javascripts/viewmodel/votingview.js [2 messages]:
+  [Line  8]  ✓ TODO: refactor joinRoom in voteview to a super class or something
+  [Line 24]  ☠ FIXME: this is ratchet as fuck omg
+
+* public/javascripts/socket.io-client/dist/socket.io.js [2 messages]:
+  [Line 1]  ⚠ SKIPPING CHECK: Fixme is skipping this line because its length is greater than the maximum line-length of 1000.
+  [Line 2]  ⚠ SKIPPING CHECK: Fixme is skipping this line because its length is greater than the maximum line-length of 1000.
+
+* public/javascripts/socket.io-client/dist/socket.io.slim.js [2 messages]:
+  [Line 1]  ⚠ SKIPPING CHECK: Fixme is skipping this line because its length is greater than the maximum line-length of 1000.
+  [Line 2]  ⚠ SKIPPING CHECK: Fixme is skipping this line because its length is greater than the maximum line-length of 1000.
+
+* public/javascripts/socket.io-adapter/node_modules/debug/node.js [4 messages]:
+  [Line 152]  ✐ NOTE: stream._type is used for test-module-load-list.js
+  [Line 159]  ✄ HACK: to have stream not keep the event loop alive.
+  [Line 181]  ☠ FIXME: Should probably have an option in net.Socket to create a
+  [Line 189]  ☠ FIXME: Hack to have stream not keep the event loop alive.
+
+* public/javascripts/socket.io/node_modules/debug/src/node.js [4 messages]:
+  [Line 169]  ✐ NOTE: stream._type is used for test-module-load-list.js
+  [Line 176]  ✄ HACK: to have stream not keep the event loop alive.
+  [Line 198]  ☠ FIXME: Should probably have an option in net.Socket to create a
+  [Line 206]  ☠ FIXME: Hack to have stream not keep the event loop alive.
+
+* public/javascripts/socket.io-client/node_modules/debug/src/node.js [4 messages]:
+  [Line 169]  ✐ NOTE: stream._type is used for test-module-load-list.js
+  [Line 176]  ✄ HACK: to have stream not keep the event loop alive.
+  [Line 198]  ☠ FIXME: Should probably have an option in net.Socket to create a
+  [Line 206]  ☠ FIXME: Hack to have stream not keep the event loop alive.
+
+* public/javascripts/socket.io-parser/node_modules/debug/src/node.js [4 messages]:
+  [Line 169]  ✐ NOTE: stream._type is used for test-module-load-list.js
+  [Line 176]  ✄ HACK: to have stream not keep the event loop alive.
+  [Line 198]  ☠ FIXME: Should probably have an option in net.Socket to create a
+  [Line 206]  ☠ FIXME: Hack to have stream not keep the event loop alive.

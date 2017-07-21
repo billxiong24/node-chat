@@ -15,6 +15,7 @@ var gulp_run = require('gulp-run');
 var gulp_nodemon = require('gulp-nodemon');
 var clean_css = require('gulp-clean-css');
 
+var fixme = require('fixme');
 //TODO precompile handlebars,
 //minify, concat css
 //run jshint,
@@ -117,6 +118,24 @@ gulp.task('start-cache-worker', function() {
         env: {'PORT': 3001, 'NODE_ENV': 'development'}
     });
 });
+
+gulp.task('todo', function() {
+    fixme({
+        path: process.cwd(),
+        ignored_directories: ['public/javascripts/js/**', 
+            'public/javascripts/js-build/*', 
+            'bower_components/**/*', 
+            'node_modules/**', 
+            '.git/**', 
+            '.hg/**', 
+            'public/stylesheets/assets/js/**/*'],
+        file_patterns: ['**/*.js', '**/*.sh'],
+        file_encoding: 'utf8',
+        line_length_limit: 1000
+    });
+});
+
+
 gulp.task('start', function() {
     gulp_nodemon({
         script: 'app.js',

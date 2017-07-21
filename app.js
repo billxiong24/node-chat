@@ -29,6 +29,8 @@ if(process.env.NODE_ENV === "production") {
     console.log = function(input) {};
 }
 
+//XXX sometimes rendering static files hangs, even though the GET request completes, maybe issue with middleware. Needs fixing
+
 function init(port) {
     app.use(compression());
     app.set('views', path.join(__dirname, '/views'));
@@ -107,6 +109,8 @@ function init(port) {
     var io = require(__dirname + '/app/sockets/socketServer.js')(httpServer, sessionMiddleWare);
     return httpServer;
 }
+
+
 
 
 //to disable clustering and ip hashing, comment below line and just call init(3000);
