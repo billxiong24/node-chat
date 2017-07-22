@@ -1,17 +1,12 @@
-[01:30:03] Using gulpfile ~/chat/gulpfile.js
-[01:30:03] Starting 'todo'...
-[01:30:03] Finished 'todo' after 5.91 ms
+[00:05:20] Using gulpfile ~/chat/gulpfile.js
+[00:05:20] Starting 'todo'...
+[00:05:20] Finished 'todo' after 5.38 ms
 
 * app.js [1 message]:
   [Line  32]  ✗ XXX: sometimes rendering static files hangs, even though the GET request completes, maybe issue with middleware. Needs fixing
 
 * gulpfile.js [1 message]:
   [Line  19]  ✓ TODO: precompile handlebars,
-
-* app/authentication/user-pass.js [3 messages]:
-  [Line 122]  ✓ TODO: cache this shit, so we dont hit db on every request
-  [Line 144]  ✓ TODO: add password checker
-  [Line 146]  ✓ TODO: less lazy error message lmao
 
 * app/chat_functions/chat_manager.js [6 messages]:
   [Line  12]  ✓ TODO: use async library to make things more asynchronous
@@ -20,6 +15,11 @@
   [Line  58]  ✓ TODO: FIX THIS SHIT
   [Line  60]  ✓ TODO: WTF IS THIS how did i not see this
   [Line  72]  ✓ TODO: add error message here
+
+* app/authentication/user-pass.js [3 messages]:
+  [Line 122]  ✓ TODO: cache this shit, so we dont hit db on every request
+  [Line 144]  ✓ TODO: add password checker
+  [Line 146]  ✓ TODO: less lazy error message lmao
 
 * app/models/chat.js [1 message]:
   [Line  87]  ✄ HACK: [[no message to display]]
@@ -51,9 +51,11 @@
   [Line   1]  ✓ TODO: organize this using some frontend framework
   [Line  88]  ☠ FIXME: quick hack, since no viewmodel currently holds votes
 
-* public/javascripts/chat_render.js [2 messages]:
-  [Line  38]  ✓ TODO: organize ajax calls
-  [Line 136]  ✓ TODO: dont hardcode this, okay for now
+* public/javascripts/chat_render.js [4 messages]:
+  [Line  39]  ✗ XXX: this is code is garbage and im sorry to anyone who has to read this
+  [Line  43]  ✓ TODO: organize ajax calls
+  [Line  55]  ✄ HACK: for some reason, require doesnt get called sometimes, so refresh the page if that's the case
+  [Line 157]  ✓ TODO: dont hardcode this, okay for now
 
 * public/javascripts/requireconfig.js [1 message]:
   [Line 11]  ✓ TODO: upgrade jquery version

@@ -37,131 +37,134 @@ function displayLines(chatList, handlebars, lines, display) {
 
 
 //XXX this is code is garbage and im sorry to anyone who has to read this 
-var reached = false;
+(function() {
+    var reached = false;
 
-$(document).ready(function() {
-    //TODO organize ajax calls
-    var csrfTokenObj = {
-        _csrf: $('input[name=_csrf]').val()
-    };
-    var roomID = parseID(window.location.pathname);
-    var dependencies = ['chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 
-                    'typingview', 'notifview', 'chatview', 'chatviewmodel', 
-                    'directChatView', 'onlineviewModel', 'votingview'];
+    $(document).ready(function() {
+        //TODO organize ajax calls
+        var csrfTokenObj = {
+            _csrf: $('input[name=_csrf]').val()
+        };
+        var roomID = parseID(window.location.pathname);
+        var dependencies = ['chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 
+                        'typingview', 'notifview', 'chatview', 'chatviewmodel', 
+                        'directChatView', 'onlineviewModel', 'votingview'];
 
-    console.log("document is ready");
-    initializeData(roomID, csrfTokenObj, dependencies);
+        console.log("document is ready");
+        initializeData(roomID, csrfTokenObj, dependencies);
 
-    //HACK for some reason, require doesnt get called sometimes, so refresh the page if that's the case
-    loopRequire();
-});
+        //HACK for some reason, require doesnt get called sometimes, so refresh the page if that's the case
+        loopRequire();
+    });
 
-function loopRequire() {
-    var counter = 0;
-    var timer = setInterval(function() {
-        console.log("timing");
-        if(++counter && !reached) {
-            location.reload();
-        }
-        else if(reached) {
-            clearInterval(timer);
-        }
-    }, 300);
-}
-
-function initializeData(roomID, csrfTokenObj, dependencies) {
-    console.log("reached init data func");
-    require(dependencies, function(chatAjaxService, 
-                                    onlineview, 
-                                    lineview, 
-                                    socketview, 
-                                    chatinfo, 
-                                    typingview, 
-                                    notifview, 
-                                    chatview, 
-                                    chatviewmodel, 
-                                    directChatView,
-                                    onlineviewModel, 
-                                    votingview) {
-        console.log("inside require function");
-        reached = true;
-        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data) {
-            $('.chat-header').remove();
-            $('.chat').prepend(handlebars.templates.chatinfo(data));
-            //zombie cookie
-            console.log("entered userid check");
-
-            if(!sessionStorage.getItem('userid')) {
-                console.log("userid not set");
-                chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
-                .then(function(data) {
-                    console.log("fetch_home post success");
-                    Cookies.set('userid', data.cookie);
-                    sessionStorage.setItem('userid', data.cookie);
-                })
-                .then(function(data) {
-                    return ajaxRenderLines(chatAjaxService, csrfTokenObj);
-
-                }).then(function(data) {
-                    console.log("initLines post successful");
-                    renderLinesCB(data);
-                    setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel, votingview);
-                });
+    function loopRequire() {
+        var counter = 0;
+        var timer = setInterval(function() {
+            console.log("timing");
+            if(++counter && !reached) {
+                location.reload();
             }
-            else {
-                ajaxRenderLines(chatAjaxService, csrfTokenObj).then(function(data) {
-                    renderLinesCB(data);
-                    setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel, votingview);
-                });
+            else if(reached) {
+                clearInterval(timer);
             }
-        });
+        }, 300);
+    }
 
-        $('.remove-user').submit(function(evt) {
-            evt.preventDefault();
-            var chat_id = $(this).parent().attr('id');
+    function initializeData(roomID, csrfTokenObj, dependencies) {
+        console.log("reached init data func");
+        require(dependencies, function(chatAjaxService, 
+                                        onlineview, 
+                                        lineview, 
+                                        socketview, 
+                                        chatinfo, 
+                                        typingview, 
+                                        notifview, 
+                                        chatview, 
+                                        chatviewmodel, 
+                                        directChatView,
+                                        onlineviewModel, 
+                                        votingview) {
+            console.log("inside require function");
+            reached = true;
+            chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data) {
+                $('.chat-header').remove();
+                $('.chat').prepend(handlebars.templates.chatinfo(data));
+                //zombie cookie
+                console.log("entered userid check");
 
-            var postObj = {
-                _csrf: csrfTokenObj._csrf,
-                chatID: chat_id 
-            };
-            chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/remove_user', 'POST', JSON.stringify(postObj), 
-                function(data) {
-                    $('#' + chat_id).remove();
-            });
-        });
+                if(!sessionStorage.getItem('userid')) {
+                    console.log("userid not set");
+                    chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
+                    .then(function(data) {
+                        console.log("fetch_home post success");
+                        Cookies.set('userid', data.cookie);
+                        sessionStorage.setItem('userid', data.cookie);
+                    })
+                    .then(function(data) {
+                        return ajaxRenderLines(chatAjaxService, csrfTokenObj);
 
-        
-
-        $('.chat-history-group').scroll(function() {
-            if($(this).scrollTop() !== 0) { return; }
-
-            var firstMessage = $('.message-data:first');
-            var curScroll = firstMessage.offset().top - $(document).scrollTop();
-
-            var dataObj = {
-                chatID: roomID,
-                _csrf: csrfTokenObj._csrf
-            };
-            chatAjaxService.chatAjax('/chats/loadLines', 'POST', JSON.stringify(dataObj), 
-                function(data) {
-                    if(data.lines === null) {return;}
-
-                    var chat = $('.chat-history-group');
-                    var chatList = chat.find('ul');
-
-                    //we want to prepend to beginning of list, since scrolling up
-                    displayLines(chatList, handlebars, data.lines, function(line) {
-                        chatList.prepend(line);
+                    }).then(function(data) {
+                        console.log("initLines post successful");
+                        renderLinesCB(data);
+                        setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel, votingview);
                     });
-
-                    //TODO dont hardcode this, okay for now
-                    console.log(firstMessage.height());
-                    chat.scrollTop(firstMessage.offset().top - curScroll);
+                }
+                else {
+                    ajaxRenderLines(chatAjaxService, csrfTokenObj).then(function(data) {
+                        renderLinesCB(data);
+                        setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel, votingview);
+                    });
+                }
+                setUpEvents(chatAjaxService, roomID, csrfTokenObj);
             });
+
+        });
+        console.log("end of require function");
+    }
+
+})();
+
+function setUpEvents(chatAjaxService, roomID, csrfTokenObj) {
+    $('.remove-user').submit(function(evt) {
+        evt.preventDefault();
+        var chat_id = $(this).parent().attr('id');
+
+        var postObj = {
+            _csrf: csrfTokenObj._csrf,
+            chatID: chat_id 
+        };
+        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/remove_user', 'POST', JSON.stringify(postObj), 
+            function(data) {
+                $('#' + chat_id).remove();
         });
     });
 
-    console.log("end of require function");
+    $('.chat-history-group').scroll(function() {
+        if($(this).scrollTop() !== 0) { return; }
+
+        var firstMessage = $('.message-data:first');
+        var curScroll = firstMessage.offset().top - $(document).scrollTop();
+
+        var dataObj = {
+            chatID: roomID,
+            _csrf: csrfTokenObj._csrf
+        };
+        chatAjaxService.chatAjax('/chats/loadLines', 'POST', JSON.stringify(dataObj), 
+            function(data) {
+                if(data.lines === null) {return;}
+
+                var chat = $('.chat-history-group');
+                var chatList = chat.find('ul');
+
+                //we want to prepend to beginning of list, since scrolling up
+                displayLines(chatList, handlebars, data.lines, function(line) {
+                    chatList.prepend(line);
+                });
+
+                //TODO dont hardcode this, okay for now
+                chat.scrollTop(firstMessage.offset().top - curScroll);
+        });
+    });
 }
 
 function ajaxRenderLines(chatAjaxService, csrfTokenObj) {
