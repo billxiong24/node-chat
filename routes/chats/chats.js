@@ -16,12 +16,12 @@ if(!manager) {
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     /* TODO CACHE THIS SHIT*/
-    var cachedCB = function(members) {
-        res.render('groupchat', members[req.params.chatID]);
-    };
-    var missCB = function(deepCopy) {
-        res.render('groupchat', deepCopy);
-    };
+    //var cachedCB = function(members) {
+        //res.render('groupchat', members[req.params.chatID]);
+    //};
+    //var missCB = function(deepCopy) {
+        //res.render('groupchat', deepCopy);
+    //};
 
     //TODO create utility hold common elements in response object, such as csrfToken
     //rest of info will be filled in by renderInfo and initLines (clientside rendering)

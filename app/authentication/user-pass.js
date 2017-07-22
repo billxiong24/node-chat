@@ -152,7 +152,6 @@ function passportAuth(passport) {
                 return done(null, false, req.flash('signup_error', 'There was an error signing up'));
             };
             var signupSuccess = function(userObj) {
-                console.log(userObj);
                 req.session.user = userObj; 
                 req.session.members = {};
                 return done(null, info);
@@ -163,20 +162,18 @@ function passportAuth(passport) {
     ));
 
     passport.use('login', new LocalStrategy(params, function(req, username, password, done) {
-        var loginFailure = function() {
-            return done(null, false, req.flash('error', 'Login error.'));
-        };
-        var loginSuccess = function(user) {
+        var loginResult = function(user) {
+            if(!user) {return done(null, false, req.flash('error', 'Login error.')); }
+
             req.session.user = user;
-            req.session.rooms = [];
+            //req.session.rooms = [];
             req.session.members = {};
             return done(null, user);
         };
 
         var user_manager = new UserManager(new UserCache(username));
-        user_manager.authenticate(password, loginFailure, loginSuccess);
-        }
-    ));
+        user_manager.authenticate(password, loginResult);
+    }));
 }
 
 module.exports = {logOut, checkLoggedOut, checkLoggedIn, passportSignupCallback, checkExistingUser, passportAuth, passportAuthCallback};

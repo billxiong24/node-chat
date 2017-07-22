@@ -27,10 +27,8 @@ UserCache.prototype.addToCache = function(jsonObj = null) {
     cache_functions.addJSON(this.getKey(), userObj, function(err, reply) {});
 };
 
-UserCache.prototype.retrieveFromCache = function(callback) {
-    cache_functions.retrieveJSON(this.getKey(), function(err, result) {
-        callback(err, result);
-    });
+UserCache.prototype.retrieveFromCache = function() {
+    return cache_functions.retrieveJSON(this.getKey(), null, true);
 };
 
 UserCache.prototype.flush = function() {

@@ -1,5 +1,13 @@
 var bluebird = require('bluebird');
-var redis = require('redis');
+var redis;
+
+if(process.env.NODE_ENV === 'test') {
+    redis = require('fakeredis');
+}
+else {
+    redis = require('redis');
+}
+
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 

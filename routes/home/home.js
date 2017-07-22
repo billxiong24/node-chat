@@ -18,7 +18,13 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
         secure: true
     });
     manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON) {
-        res.render('home', userJSON);
+        if(process.env.NODE_ENV=== 'test') {
+            console.log(userJSON);
+            res.status(200).json(userJSON);
+        }
+        else {
+            res.render('home', userJSON);
+        }
     });
 });
 

@@ -11,6 +11,8 @@ UserManager.prototype.leave = function(chat_id, callback) {
     this._userObj.leaveChat(chat_id, callback);
 };
 
+//FIXME refactor this to use redis promises (bluebird) 
+
 UserManager.prototype.signup = function(password, signupFailure, signupSuccess) {
     var that = this;
     password_util.storePassword(password, function(err, hash) {
@@ -19,38 +21,47 @@ UserManager.prototype.signup = function(password, signupFailure, signupSuccess) 
             var jsonObj = that._userObj.toJSON();
             delete jsonObj.password;
             return signupSuccess(jsonObj);
-        }, 
+        },
         function(err) {
             return signupFailure();
         });
     });
 };
 
-UserManager.prototype.authenticate = function(password, loginFailure, loginSuccess) {
+UserManager.prototype.authenticate = function(password, loginResult) {
     var conn = null;
     var inCache = false;
     var user = this._userObj;
     var setConn = function(poolConnection) { conn = poolConnection; return poolConnection; };
     var checkDB = user.read();
+
+    var sqlUser = null;
     var validate = function(rows) {
         if(rows.length === 0) {
-            return loginFailure();
+            return null;
         }
-        password_util.retrievePassword(password, rows[0].password, function(err, result) {
-            if(result) {
-                if(!inCache) { 
-                    console.log("user login cache miss");
-                    user.addToCache(rows[0]);
-                }
-                delete rows[0].password;
-                return loginSuccess(rows[0]);
-            }
-            return loginFailure();
-        });
+        sqlUser = rows[0];
+        return rows[0];
+    };
+    var retrievePassword = function(result) {
+        if(!result) { return null; }
+        return password_util.retrievePassword(password, result.password, null, true);
+    };
+
+    var loginValidate = function(result) {
         console.log("releasing connection");
         connection.release(conn);
+
+        if(!result) { return null; }
+        if(!inCache) { 
+            console.log("user login cache miss");
+            user.addToCache(sqlUser);
+        }
+        delete sqlUser.password;
+        return sqlUser;
     };
-    user.retrieveFromCache(function(err, result) {
+    
+    user.retrieveFromCache().then(function(result) {
         if(result) {
             console.log("found user cache when logging in");
             checkDB = function(poolConnection) {
@@ -58,7 +69,7 @@ UserManager.prototype.authenticate = function(password, loginFailure, loginSucce
                 return [result]; 
             };
         }
-        connection.executePoolTransaction([setConn, checkDB, validate], function(err) {console.log(err);});
+        connection.executePoolTransaction([setConn, checkDB, validate, retrievePassword, loginValidate, loginResult], function(err) {console.log(err);});
     });
 };
 

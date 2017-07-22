@@ -858,13 +858,9 @@
 
                 </div> <!-- end container -->
 
-                
                 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js'></script>
-                
                 <script src="/javascripts/js/handlebars.min.js"></script>
                 <script src='http://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js'></script>
-
-
 
                 <!--<footer class="main">-->
 
@@ -920,17 +916,17 @@
         </script>
         <script src="/javascripts/chat_render.js"></script>
         <script type="text/javascript" charset="utf-8">
-$(document).ready(function() {
-    
-    var height = $(window).height();
-    if(height > 700) {
-        $('.chat .chat-history-group').css('height', $(document).height()/2);
-    }
-    if(height < 690) {
-        $('.chat .chat-history-group').css('height', $(document).height()/2.5);
-    }
+            $(document).ready(function() {
+                
+                var height = $(window).height();
+                if(height > 700) {
+                    $('.chat .chat-history-group').css('height', $(document).height()/2);
+                }
+                if(height < 690 && height > 300) {
+                    $('.chat .chat-history-group').css('height', $(document).height()/2.5);
+                }
 
-});
+            });
         </script>
 
     </body>

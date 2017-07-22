@@ -21,7 +21,7 @@ var ChatManager = (function() {
     ChatManager.prototype.loadChatLists = function (csrfToken, userObj, members, res, callback) {
         //TODO error checking
         var chatobj = new Chat();
-        var user = new User(userObj.username, undefined, undefined, userObj.first, userObj.last);
+        var user = new User(userObj.username, userObj.id, undefined, userObj.first, userObj.last);
         chatobj.loadLists(user, function(rows) {
             var userJSON = user.toJSON();
             //this is used for view rendering, will switch to clientside rendering soon
