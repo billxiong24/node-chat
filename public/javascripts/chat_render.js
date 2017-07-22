@@ -34,6 +34,11 @@ function displayLines(chatList, handlebars, lines, display) {
     }
 }
 
+
+
+//XXX this is code is garbage and im sorry to anyone who has to read this 
+var reached = false;
+
 $(document).ready(function() {
     //TODO organize ajax calls
     var csrfTokenObj = {
@@ -46,7 +51,23 @@ $(document).ready(function() {
 
     console.log("document is ready");
     initializeData(roomID, csrfTokenObj, dependencies);
+
+    //HACK for some reason, require doesnt get called sometimes, so refresh the page if that's the case
+    loopRequire();
 });
+
+function loopRequire() {
+    var counter = 0;
+    var timer = setInterval(function() {
+        console.log("timing");
+        if(++counter && !reached) {
+            location.reload();
+        }
+        else if(reached) {
+            clearInterval(timer);
+        }
+    }, 300);
+}
 
 function initializeData(roomID, csrfTokenObj, dependencies) {
     console.log("reached init data func");
@@ -62,8 +83,8 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
                                     directChatView,
                                     onlineviewModel, 
                                     votingview) {
-
         console.log("inside require function");
+        reached = true;
         chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data) {
             $('.chat-header').remove();
             $('.chat').prepend(handlebars.templates.chatinfo(data));
@@ -139,6 +160,8 @@ function initializeData(roomID, csrfTokenObj, dependencies) {
             });
         });
     });
+
+    console.log("end of require function");
 }
 
 function ajaxRenderLines(chatAjaxService, csrfTokenObj) {

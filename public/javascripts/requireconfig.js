@@ -26,5 +26,5 @@ requirejs.config({
         onlineviewModel: 'viewmodel/onlineview',
         votingview: 'viewmodel/votingview'
     },
-    waitSeconds: 930 
+    waitSeconds: 30 
 });
