@@ -168,6 +168,7 @@ it('POST /create_chat should insert chat into db and redirect to the chat', func
         return agent.post('/chats/create_chat')
             .send({'_csrf': result.body.csrfToken, 'createChat': 'chatnametest'})
             .then(function(result) {
+                expect(releaseSpy.calledOnce).to.equal(true);
                 result.should.have.status(200);
                 //result.should.be.json;
                 //result.body.should.have.property('id');
@@ -183,6 +184,7 @@ it('POST /join_chat should add user to memberof table, since code is correct', f
         return agent.post('/chats/join_chat')
             .send({'_csrf': result.body.csrfToken, 'joinChat': '7abade'})
             .then(function(result) {
+                expect(releaseSpy.calledOnce).to.equal(true);
                 result.should.have.status(200);
                 expect(result).to.redirect;
                 //result.should.be.json;
@@ -201,7 +203,38 @@ it('POST /join_chat should send error, since code is wrong', function(done) {
             .send({'_csrf': result.body.csrfToken, 'joinChat': 'aekrluybaafkgb'})
             .then(function(result) {
                 //FIXME should redirect home, but don't know how to tell if home is reached
+                expect(releaseSpy.calledOnce).to.equal(true);
                 expect(Object.keys(result.body).length > 0).to.equal(true);
+                return done();
+        });
+    });
+});
+
+it('POST /remove_user should not remove anyone since chatid doesnt exist', function(done) {
+    agent.get('/home').then(function(result) {
+        return agent.post('/chats/remove_user')
+            //sending wrong code
+            .send({'_csrf': result.body.csrfToken, 'chatID': 'aekrluybaafkgb'})
+            .then(function(result) {
+                result.should.have.status(200);
+                result.body.should.have.property('deleted');
+                //didnt delete anyone, since chat id doesnt exist
+                result.body.deleted.should.equal(0);
+                return done();
+        });
+    });
+});
+
+it('POST /remove_user remove a user from chat, since user exists', function(done) {
+    agent.get('/home').then(function(result) {
+        return agent.post('/chats/remove_user')
+            //sending wrong code
+            .send({'_csrf': result.body.csrfToken, 'chatID': '1848e02805a2d142'})
+            .then(function(result) {
+                result.should.have.status(200);
+                result.body.should.have.property('deleted');
+                //user should have been removed from chat, so 1 row should be deleted
+                result.body.deleted.should.equal(1);
                 return done();
         });
     });

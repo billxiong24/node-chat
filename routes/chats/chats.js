@@ -89,10 +89,10 @@ router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, nex
     manager.createChat(req.session.user.username, req.body.createChat, req.session.members, res);
 });
 
-router.post('/:chatID/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
+router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
     var userManager = new UserManager(new UserCache(req.session.user.username));
     userManager.leave(req.body.chatID, function(rows) {
-        res.status(200).send({deleted: true});
+        res.status(200).send({deleted: rows.affectedRows});
     });
 });
 

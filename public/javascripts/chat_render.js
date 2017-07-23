@@ -133,7 +133,7 @@ function setUpEvents(chatAjaxService, roomID, csrfTokenObj) {
             _csrf: csrfTokenObj._csrf,
             chatID: chat_id 
         };
-        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/remove_user', 'POST', JSON.stringify(postObj), 
+        chatAjaxService.chatAjax('/chats/remove_user', 'POST', JSON.stringify(postObj), 
             function(data) {
                 $('#' + chat_id).remove();
         });
