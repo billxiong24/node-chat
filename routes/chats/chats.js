@@ -27,7 +27,12 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     //rest of info will be filled in by renderInfo and initLines (clientside rendering)
     //this shit needs to be cached
     manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON) {
-        res.render('groupchat', userJSON);
+        if(process.env.NODE_ENV === 'test') {
+            res.status(200).send(userJSON);
+        }
+        else {
+            res.render('groupchat', userJSON);
+        }
     });
     //res.render('chat', {csrfToken: req.csrfToken()});
 });
@@ -39,10 +44,10 @@ router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next)
 router.post('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, res, next) {
     //hack
     var cachedCB = function(members) {
-        res.send(members[req.params.chatID]);
+        res.status(200).send(members[req.params.chatID]);
     };
     var missCB = function(deepCopy) {
-        res.send(deepCopy);
+        res.status(200).send(deepCopy);
     };
     chatRender(req, res, cachedCB, missCB);
 });
@@ -52,12 +57,10 @@ router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req,
 });
 
 router.post('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
-
     manager.loadLines(req.session.user.username, req.params.chatID, req, res);
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
-
     for(var key in req.session.members) {
         //chat code was found 
         if(req.session.members[key].code === req.body.joinChat) {
@@ -67,8 +70,19 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         }
     } 
     //chat was not found
-    manager.joinChat(req.session.user.username, req.body.joinChat, req.session.members, res);
-
+    var failure = function() { 
+        if(process.env.NODE_ENV === 'test') {
+            return res.json({error: 'wrong password'});
+        }
+        //TODO include error message to pass to view
+        return res.redirect('/home'); 
+    };
+    var success = function(id, chatJSON) {
+        req.session.members[chatJSON.id] = chatJSON;
+        //TODO WTF IS THIS how did i not see this
+        res.redirect('/chats/' + id);
+    };
+    manager.joinChat(req.session.user.username, req.body.joinChat, failure, success);
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {

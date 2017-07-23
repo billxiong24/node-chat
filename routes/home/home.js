@@ -17,9 +17,9 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
         httpOnly: true,
         secure: true
     });
+
     manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON) {
         if(process.env.NODE_ENV=== 'test') {
-            console.log(userJSON);
             res.status(200).json(userJSON);
         }
         else {
@@ -31,7 +31,7 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
 /* POST request for fetching all data needed for home page */
 router.post('/fetch_home', authenticator.checkLoggedOut, function(req, res, next) {
     /* send all relevant data here */
-    res.send({cookie: req.session.user.id});
+    res.status(200).json({cookie: req.session.user.id});
 });
 
 module.exports = router;

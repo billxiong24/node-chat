@@ -43,7 +43,7 @@ var ChatManager = (function() {
         });
     };
 
-    ChatManager.prototype.joinChat = function(username, chatCode, members, res) {
+    ChatManager.prototype.joinChat = function(username, chatCode, failure, success) {
         var chatobj = new Chat();
         //fake builder pattern again
         chatobj.setCode(chatCode);
@@ -52,13 +52,11 @@ var ChatManager = (function() {
             return function(result) {
                 if(result === null) {
                     //TODO error message
-                    res.redirect('/home');
+                    //res.redirect('/home');
+                    failure();
                     return null;
                 }
-                //TODO FIX THIS SHIT
-                members[chatobj.getID()] = chatobj.toJSON(username, 0, null);
-                //TODO WTF IS THIS how did i not see this
-                res.redirect('/chats/' + chatobj.getID());
+               success(chatobj.getID(), chatobj.toJSON(username, 0, null));
             };
         };
         chatobj.join(new User(username), sessionStore);
@@ -118,6 +116,7 @@ var ChatManager = (function() {
             var info = chat.toJSON(username, 0, null);
 
             members[chat.getID()] = info;
+            res.status(200);
             res.redirect('/chats/' + chat.getID());
         });
 
@@ -146,6 +145,5 @@ var ChatManager = (function() {
 
     return ChatManager;
 })();
-
 
 module.exports = ChatManager;

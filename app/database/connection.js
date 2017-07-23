@@ -7,12 +7,12 @@ const promise_sql = require('promise-mysql');
 
 var pool = null;
 
-function getPool(host, user, password, connectionLim) {
+function getPool(host, user, password, database, connectionLim) {
     pool = promise_sql.createPool({
         host: host,
         user: user,
         password: password,
-        database: "chatdb",
+        database: database,
         connectionLimit: connectionLim
     });
     return pool;
@@ -21,7 +21,7 @@ function getPool(host, user, password, connectionLim) {
 function execute(query, info=null, callback=function(result) {}, error=function(err) {console.log(err);}) {
     pool.getConnection().then(function(connection) {
         var result = connection.query(query, info);
-        pool.releaseConnection(connection);
+        release(connection);
         return result;
     }).then(callback).catch(error);
 }
