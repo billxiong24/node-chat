@@ -1,25 +1,36 @@
-[00:05:20] Using gulpfile ~/chat/gulpfile.js
-[00:05:20] Starting 'todo'...
-[00:05:20] Finished 'todo' after 5.38 ms
+[03:08:35] Using gulpfile ~/chat/gulpfile.js
+[03:08:35] Starting 'todo'...
+[03:08:35] Finished 'todo' after 4.9 ms
 
 * app.js [1 message]:
   [Line  32]  ✗ XXX: sometimes rendering static files hangs, even though the GET request completes, maybe issue with middleware. Needs fixing
 
-* gulpfile.js [1 message]:
-  [Line  19]  ✓ TODO: precompile handlebars,
+* gulpfile.js [2 messages]:
+  [Line  20]  ✓ TODO: precompile handlebars,
+  [Line 149]  ☠ FIXME: local host password shouldnot be here, but o well
 
-* app/chat_functions/chat_manager.js [6 messages]:
-  [Line  12]  ✓ TODO: use async library to make things more asynchronous
-  [Line  22]  ✓ TODO: error checking
-  [Line  54]  ✓ TODO: error message
-  [Line  58]  ✓ TODO: FIX THIS SHIT
-  [Line  60]  ✓ TODO: WTF IS THIS how did i not see this
-  [Line  72]  ✓ TODO: add error message here
+* test/models.js [2 messages]:
+  [Line 17]  ✓ TODO: mock fakeredis so we can test messages properly
+  [Line 18]  ✓ TODO: create testing database environment
+
+* test/testfile.js [6 messages]:
+  [Line  22]  ✓ TODO: mock fakeredis so we can test messages properly
+  [Line  23]  ✓ TODO: create testing database environment
+  [Line  90]  ✓ TODO: check for accuracy, too lazy rn
+  [Line  99]  ✐ NOTE: we use agent here too persist cookies from 1 request to another
+  [Line 115]  ✓ TODO: test 1 with memberof, and one without
+  [Line 205]  ☠ FIXME: should redirect home, but don't know how to tell if home is reached
 
 * app/authentication/user-pass.js [3 messages]:
   [Line 122]  ✓ TODO: cache this shit, so we dont hit db on every request
   [Line 144]  ✓ TODO: add password checker
   [Line 146]  ✓ TODO: less lazy error message lmao
+
+* app/chat_functions/chat_manager.js [4 messages]:
+  [Line  12]  ✓ TODO: use async library to make things more asynchronous
+  [Line  22]  ✓ TODO: error checking
+  [Line  54]  ✓ TODO: error message
+  [Line  70]  ✓ TODO: add error message here
 
 * app/models/chat.js [1 message]:
   [Line  87]  ✄ HACK: [[no message to display]]
@@ -31,6 +42,9 @@
   [Line 15]  ✓ TODO: should write to disk at some point, for now just write cache
   [Line 16]  ✓ TODO: handle timestamp
   [Line 28]  ✓ TODO: test this method, it most likely does not work
+
+* app/models/user_manager.js [1 message]:
+  [Line 14]  ☠ FIXME: refactor this to use redis promises (bluebird)
 
 * app/sockets/chatSocket.js [3 messages]:
   [Line  70]  ☠ FIXME: violates open close principle
@@ -53,9 +67,9 @@
 
 * public/javascripts/chat_render.js [4 messages]:
   [Line  39]  ✗ XXX: this is code is garbage and im sorry to anyone who has to read this
-  [Line  43]  ✓ TODO: organize ajax calls
-  [Line  55]  ✄ HACK: for some reason, require doesnt get called sometimes, so refresh the page if that's the case
-  [Line 157]  ✓ TODO: dont hardcode this, okay for now
+  [Line  44]  ✓ TODO: organize ajax calls
+  [Line  56]  ✄ HACK: for some reason, require doesnt get called sometimes, so refresh the page if that's the case
+  [Line 164]  ✓ TODO: dont hardcode this, okay for now
 
 * public/javascripts/requireconfig.js [1 message]:
   [Line 11]  ✓ TODO: upgrade jquery version
@@ -67,10 +81,12 @@
   [Line  1]  ✓ TODO: this needs refactoring but not urgent
   [Line 40]  ✓ TODO: sanitize input
 
-* routes/chats/chats.js [3 messages]:
+* routes/chats/chats.js [5 messages]:
   [Line  18]  ✓ TODO: CACHE THIS SHIT*/
   [Line  26]  ✓ TODO: create utility hold common elements in response object, such as csrfToken
-  [Line  40]  ✄ HACK: [[no message to display]]
+  [Line  45]  ✄ HACK: [[no message to display]]
+  [Line  77]  ✓ TODO: include error message to pass to view
+  [Line  82]  ✓ TODO: WTF IS THIS how did i not see this
 
 * public/javascripts/templates/templates.js [1 message]:
   [Line 1]  ⚠ SKIPPING CHECK: Fixme is skipping this line because its length is greater than the maximum line-length of 1000.

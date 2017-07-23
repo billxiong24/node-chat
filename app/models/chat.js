@@ -265,10 +265,11 @@ Chat.prototype.join = function(user, callback) {
 
     var commit = function(result) {
         if(result === null) {
+            connection.release(connect);
             return null;
         }
         connect.query('COMMIT');
-        console.log("releasing connection");
+        console.log("releasing connection in join chat");
         connection.release(connect);
         return result;
     };

@@ -39,6 +39,7 @@
     "gulp-handlebars": "^4.0.0",
     "gulp-jshint": "^2.0.4",
     "gulp-minify-css": "^1.2.4",
+    "gulp-mocha": "^4.3.1",
     "gulp-newer": "^1.3.0",
     "gulp-nodemon": "^2.2.1",
     "gulp-precompile-handlebars": "^2.0.5",

@@ -16,6 +16,7 @@ var gulp_nodemon = require('gulp-nodemon');
 var clean_css = require('gulp-clean-css');
 
 var fixme = require('fixme');
+var gulp_mocha = require('gulp-mocha');
 //TODO precompile handlebars,
 //minify, concat css
 //run jshint,
@@ -144,6 +145,19 @@ gulp.task('start', function() {
     });
 });
 
+gulp.task('test', function() {
+    //FIXME local host password shouldnot be here, but o well
+    gulp_run('mysql -u root --password=Chem1313# < ./app/database/test/clean.sql').exec(function(err) {
+        gulp_run('mysql -u root --password=Chem1313# chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
+
+            gulp.src('./test/*.js', {read: true}).pipe(gulp_mocha({
+                reporter: 'nyan'
+            })).on('error', function() {
+                process.exit(1);
+            });
+        });
+    });
+});
 
 //gulp.task('precompile-handlebars', function() {
     //gulp.src('views/partials/*.handlebars')
