@@ -145,6 +145,11 @@ gulp.task('start', function() {
     });
 });
 
+gulp.task('clean', function() {
+    gulp_run('mysql -u root --password=Chem1313# < ./app/database/test/clean.sql').exec(function(err) {
+        gulp_run('mysql -u root --password=Chem1313# chatdbtest < ./app/database/test/mockdata.sql').exec();
+    });
+});
 gulp.task('test', function() {
     //FIXME local host password shouldnot be here, but o well
     gulp_run('mysql -u root --password=Chem1313# < ./app/database/test/clean.sql').exec(function(err) {

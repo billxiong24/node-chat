@@ -61,6 +61,7 @@ router.post('/:chatID/initLines', authenticator.checkLoggedOut, function(req, re
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
+    //TODO find a way to test this, since we are resetting members every time in the test
     for(var key in req.session.members) {
         //chat code was found 
         if(req.session.members[key].code === req.body.joinChat) {
@@ -79,7 +80,7 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
     };
     var success = function(id, chatJSON) {
         req.session.members[chatJSON.id] = chatJSON;
-        //TODO WTF IS THIS how did i not see this
+        //when redirected, the chat info will be cached
         res.redirect('/chats/' + id);
     };
     manager.joinChat(req.session.user.username, req.body.joinChat, failure, success);
@@ -92,6 +93,8 @@ router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, nex
 router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
     var userManager = new UserManager(new UserCache(req.session.user.username));
     userManager.leave(req.body.chatID, function(rows) {
+        //this was a huge bug, and why we need unit tests
+        delete req.session.members[req.body.chatID];
         res.status(200).send({deleted: rows.affectedRows});
     });
 });

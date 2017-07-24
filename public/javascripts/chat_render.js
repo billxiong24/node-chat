@@ -136,6 +136,9 @@ function setUpEvents(chatAjaxService, roomID, csrfTokenObj) {
         chatAjaxService.chatAjax('/chats/remove_user', 'POST', JSON.stringify(postObj), 
             function(data) {
                 $('#' + chat_id).remove();
+                if(parseID(window.location.pathname) === chat_id) {
+                    window.location.replace('/home');
+                }
         });
     });
 

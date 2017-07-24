@@ -19,8 +19,6 @@ var connection = require('../app/database/config.js');
 chai.use(chaiHttp);
 var authenticator;
 
-//TODO mock fakeredis so we can test messages properly
-//TODO create testing database environment
 beforeEach(function() {
     var auth = require('../app/authentication/user-pass.js');
 
@@ -44,8 +42,6 @@ beforeEach(function() {
     //monitor that every db request releases its connection 
     releaseSpy = sinon.spy(connection, 'release');
     //loadLists = sinon.spy(Chat.prototype, 'loadLists');
-    
-    //connection.release = releaseSpy;
     
     authenticator = auth;
     server = require('../app.js');
@@ -225,6 +221,7 @@ it('POST /remove_user should not remove anyone since chatid doesnt exist', funct
     });
 });
 
+//BUG ?? removing from database doesnt actually affect database, but works??
 it('POST /remove_user remove a user from chat, since user exists', function(done) {
     agent.get('/home').then(function(result) {
         return agent.post('/chats/remove_user')
@@ -236,6 +233,34 @@ it('POST /remove_user remove a user from chat, since user exists', function(done
                 //user should have been removed from chat, so 1 row should be deleted
                 result.body.deleted.should.equal(1);
                 return done();
+        });
+    });
+});
+
+it('POST /chats/loadLines should more lines if there are more lines', function(done) {
+    agent.get('/home').then(function(result) {
+        return agent.post('/chats/loadLines')
+        .send({'_csrf': result.body.csrfToken, chatID: '019274b44a472600'})
+        .then(function(result) {
+            result.body.should.have.property('lines');
+            expect(result.body.lines).to.not.equal('null');
+            result.should.have.status(200);
+            result.should.be.json;
+            return done();
+        });
+    });
+});
+
+it('POST /chats/loadLines should return null since there are no more lines', function(done) {
+    agent.get('/home').then(function(result) {
+        return agent.post('/chats/loadLines')
+        .send({'_csrf': result.body.csrfToken, chatID: '0c8beba0e895fe71eedc2794fa294fd6'})
+        .then(function(result) {
+            result.body.should.have.property('lines');
+            expect(result.body.lines).to.equal(null);
+            result.should.have.status(200);
+            result.should.be.json;
+            return done();
         });
     });
 });

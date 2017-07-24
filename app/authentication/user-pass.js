@@ -39,20 +39,20 @@ function checkLoggedIn(req, res, next) {
 function passportSignupCallback(passport, req, res, next) {
     passport.authenticate('signup', function(err, user, info) {
         if(err) {
+            console.log("there is an error");
             console.log(err);
             return;
         }
 
         if(!user) {
             res.render('signup', {
-                csrfToken:req.csrfToken(),
+                csrfToken: req.csrfToken(),
                 signup_error: "There was an error. Please try again.",
                 //for css class to display error
                 visible: 'visible'
             });
             return;
         }
-
         req.login(user, function(err) {
             if(err) {
                 console.log(err);

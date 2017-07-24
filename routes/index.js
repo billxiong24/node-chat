@@ -25,6 +25,9 @@ module.exports = function(app, passport) {
             return;
         }
 
+        if(process.env.NODE_ENV === 'test') {
+            return res.status(200).send({csrfToken: req.csrfToken(), error: req.flash('error')[0]});
+        }
         res.render('login', {csrfToken: req.csrfToken(), error: req.flash('error')[0]});
     });
 
@@ -34,6 +37,9 @@ module.exports = function(app, passport) {
     });
 
     router.get('/signup', authenticator.checkLoggedIn, function(req, res, next) {
+        if(process.env.NODE_ENV === 'test') {
+            return res.status(200).send({csrfToken: req.csrfToken()});
+        }
         res.render('signup', {csrfToken: req.csrfToken()});
     });
 

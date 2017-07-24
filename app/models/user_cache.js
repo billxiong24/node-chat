@@ -1,6 +1,9 @@
 var User = require('./user.js');
 const connection = require('../database/config.js');
 const cache_functions = require('../cache/cache_functions.js');
+function defaultErrorCB(err) {
+    console.log(err);
+}
 
 var UserCache = function (username, id=undefined, password=undefined, first=undefined, last=undefined) {
     User.call(this, username, id, password, first, last);
@@ -14,12 +17,15 @@ UserCache.prototype.read = function() {
     return User.prototype.read.call(this);
 };
 
-UserCache.prototype.insert = function(callback = function(rows) {}) {
+UserCache.prototype.insert = function(callback = function(rows) {}, errorCallback=defaultErrorCB) {
     var userObj = User.prototype.toJSON.call(this);
+    var that = this;
     //write through
-    cache_functions.addJSON('info:'+User.prototype.getUsername.call(this), userObj, function(err, reply) {});
-
-    connection.execute('INSERT INTO User SET ? ', userObj, callback); 
+    connection.execute('INSERT INTO User SET ? ', userObj, function(rows) {
+        //only add to cache if no database errors, otherwise we have invalid data in cache
+        that.addToCache();
+        callback(rows);
+    }, errorCallback); 
 };
 
 UserCache.prototype.addToCache = function(jsonObj = null) {

@@ -95,8 +95,12 @@ Line.prototype.readNext = function(latestStamp, callback) {
     var getVotes = function(results) {
         return voteManager.getAllVotes();
     };
-
     var attachVotes = function(voteResults) {
+        //NOTE yet another bug found, really need unit tests
+        if(!voteResults) {
+            return lineResults;
+        }
+
         for(var i = 0; i < lineResults.length; i++) {
             lineResults[i].num_votes = voteResults[lineResults[i].line_id];
         }
