@@ -21,6 +21,7 @@ chai.use(chaiHttp);
 var authenticator;
 var releaseSpy;
 var addToCacheSpy;
+var userCacheInsertSpy;
 
 beforeEach(function() {
     
@@ -28,11 +29,13 @@ beforeEach(function() {
     agent = chai.request.agent(server);
     releaseSpy = sinon.spy(connection, 'release');
     addToCacheSpy = sinon.spy(UserCache.prototype, 'addToCache');
+    userCacheInsertSpy = sinon.spy(UserCache.prototype, 'insert');
 });
 
 afterEach(function() {
     connection.release.restore();
     UserCache.prototype.addToCache.restore();
+    UserCache.prototype.insert.restore();
 });
 
 authenticateTest('/POST should authenticate user and add to cache', '/login', {
@@ -71,16 +74,76 @@ signupTest('/POST signup should work because meets all criteria, should add user
     firstname_signup: 'Firstname',
     lastname_signup: 'Lastname'
 }, function(result) {
-    expect(addToCacheSpy.calledOnce).to.equal(true);
+    expect(userCacheInsertSpy.calledOnce).to.equal(true);
+
 });
 
 signupTest('/POST signup should not work bc username is taken', '/signup', {
-    user_signup: 'jj45  ',
+    user_signup: 'jj45',
     password_signup: 'doesntmatter',
     firstname_signup: 'firstdoesnt',
     lastname_signup: 'lastdoesnt'
 }, function(result) {
     expect(addToCacheSpy.calledOnce).to.equal(false);
+});
+
+it('/POST signup_auth should return some error since username too short', function(done) {
+    agent.get('/signup').then(function(result) {
+        result.body.should.have.property('csrfToken');
+
+        return agent.post('/signup_auth')
+        .send({
+            _csrf: result.body.csrfToken,
+            username: "d"
+        })
+        .then(function(result) {
+            //wtf is this mess
+            expect(result.res.client._httpMessage.res.text.length > 0).to.equal(true);
+            return done();
+        });
+    });
+});
+
+it('/POST signup_auth should return some error since username exists', function(done) {
+    agent.get('/signup').then(function(result) {
+        result.body.should.have.property('csrfToken');
+
+        return agent.post('/signup_auth')
+        .send({
+            _csrf: result.body.csrfToken,
+            username: "marquis"
+        })
+        .then(function(result) {
+            //wtf is this mess
+            expect(result.res.client._httpMessage.res.text.length > 0).to.equal(true);
+            return done();
+        });
+    });
+});
+
+signupTest('/POST signup should not work bc password doesnt qualify', '/signup', {
+    user_signup: 'jj45',
+    password_signup: 'a',
+    firstname_signup: 'firstdoesnt',
+    lastname_signup: 'lastdoesnt'
+}, function(result) {
+
+});
+
+it('POST /logout should redirect to login page', function(done) {
+    agent.get('/login').then(function(result) {
+        result.body.should.have.property('csrfToken');
+
+        return agent.post('/logout')
+        .send({
+            _csrf: result.body.csrfToken,
+        })
+        .then(function(result) {
+            //wtf is this mess
+            expect(result).to.redirect;
+            return done();
+        });
+    });
 });
 
 function signupTest(message, route, data, callback) {

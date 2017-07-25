@@ -16,6 +16,7 @@ LineCache.prototype.insert = function() {
     //TODO handle timestamp
     var that = this;
     var lineObj = Line.prototype.toJSON.call(this);
+    
     //need another way to get microsecond time accuracy
     connection.execute('SELECT DATE_FORMAT(NOW(6), "%Y-%m-%d %H:%i:%s:%f") as stamp', [], function(row) {
         lineObj.stamp = row[0].stamp;

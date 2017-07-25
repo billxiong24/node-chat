@@ -45,12 +45,7 @@ function passportSignupCallback(passport, req, res, next) {
         }
 
         if(!user) {
-            res.render('signup', {
-                csrfToken: req.csrfToken(),
-                signup_error: "There was an error. Please try again.",
-                //for css class to display error
-                visible: 'visible'
-            });
+            res.status(200).json({signup_error : true});
             return;
         }
         req.login(user, function(err) {
@@ -59,7 +54,7 @@ function passportSignupCallback(passport, req, res, next) {
                 return;
             }
             req.session.user = user;
-            res.redirect('/home');
+            res.status(200).json({signup_error : false});
         });
     })(req, res, next);
 }
@@ -148,6 +143,9 @@ function passportAuth(passport) {
             }
 
             var user_manager = new UserManager(new UserCache(user_signup, info.id, info.password, info.first, info.last));
+        
+
+            //NOTE this failure signup might not be called, since everything else is validated above
             var signupFailure = function() {
                 return done(null, false, req.flash('signup_error', 'There was an error signing up'));
             };
