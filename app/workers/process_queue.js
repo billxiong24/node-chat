@@ -96,7 +96,6 @@ ProcessQueue.prototype.addJobEventHandler = function(job, event, cb) {
 
 ProcessQueue.prototype.processJob = function(jobName, cb, concurrency=10) {
     this._processQueue.process(jobName, concurrency, function(job, done) {
-        console.log(job);
         if(!job) {
             console.log("job does not exist");
             return;

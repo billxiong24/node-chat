@@ -12,14 +12,7 @@ VoteManager.prototype.getAllVotes = function() {
 };
 
 VoteManager.prototype.incrementVote = function(userid, line_id, callback) {
-    console.log("lineid entering incrementVote is", line_id);
     this._voteObj.setLineID(line_id).increment(userid, function(err, newVote) {
-        callback(err, newVote);
-    });
-};
-
-VoteManager.prototype.decrementVote = function(line_id, callback) {
-    this._voteObj.setLineID(line_id).decrement(function(err, newVote) {
         callback(err, newVote);
     });
 };

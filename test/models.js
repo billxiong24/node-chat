@@ -18,6 +18,8 @@ var cache_functions = require('../app/cache/cache_functions.js');
 var connection = require('../app/database/config.js');
 var Notification = require('../app/models/notification.js');
 var NotifManager = require('../app/chat_functions/notif_manager.js');
+var Vote = require('../app/models/vote.js');
+var VoteManager = require('../app/chat_functions/vote_manager.js');
 
 var ProcessQueue = require('../app/workers/process_queue.js');
 
@@ -187,6 +189,7 @@ describe('testing notifcation model', function() {
         });
           
     });
+
     it('should increment other notifs, reset your own', function(done) {
         var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
         var notif = new Notification(chatid, 'jj45', -1);
@@ -216,4 +219,72 @@ describe('testing notifcation model', function() {
 
 describe('testing voting model', function() {
 
+    var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
+    var lineid = '66911c1e2d91aa707bb613a63085d2052b759ca18a9aa1b9';
+    var userid = 'ed48da0ecc35ed771bee';
+    it('should correctly increment vote for user in chat', function(done) {
+        var vote = new Vote(chatid);
+        vote.setLineID(lineid).increment(userid, function(err, reply) {
+            expect(reply).to.equal(1);
+            return done();
+        });
+    });
+
+    it('should decrement vote for user in chat', function(done) {
+        var vote = new Vote(chatid);
+        vote.setLineID(lineid).increment(userid, function(err, reply) {
+            expect(reply).to.equal(0);
+            return done();
+        });
+
+    });
+
+    it('should read correct vote for user in chat', function(done) {
+        var vote = new Vote(chatid);
+        vote.setLineID(lineid).read(function(err, result) {
+            expect(result).to.equal(0);
+            return done();
+        });
+    });
+
+    it('should read correct vote for bogus line id', function(done) {
+        var vote = new Vote(chatid);
+        vote.setLineID('adfkhaerakerkyer').read(function(err, result) {
+            expect(result).to.equal(0);
+            return done();
+        });
+    });
+
+    it('should read correct vote for bogus line id and chat id', function(done) {
+        var vote = new Vote('yujl;5tou');
+        vote.setLineID('adfkhaerakerkyer').read(function(err, result) {
+            expect(result).to.equal(0);
+            return done();
+        });
+    });
+
+    it('should read all votes correctly for a chat', function(done) {
+        var vote = new Vote(chatid);
+        var useridTemp = '4a0d226b7e15cd3';
+        var lineidTemp = '0847098fc901b0ab27cfd8e72cae62e51735d20ff1b306d6';
+
+        vote.setLineID(lineidTemp)
+        .increment(useridTemp, function(err, reply) {
+            vote.readAll().then(function(result) {
+
+                expect(result).to.have.property(lineidTemp);
+                expect(result).to.have.property(lineid);
+
+                expect(result[lineidTemp]).to.equal('1');
+                expect(result[lineid]).to.equal('0');
+
+                return done();
+            });
+        });
+
+    });
+});
+
+describe('quick cache test, since its just a thin wrapper over redis', function() {
+    
 });

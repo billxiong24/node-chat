@@ -36,10 +36,6 @@ Vote.prototype.increment = function(userid, callback) {
     });
 };
 
-Vote.prototype.decrement = function(callback) {
-    changeVote.call(this, -1, callback);
-};
-
 Vote.prototype.read = function(callback) {
     cache_functions.retrieveJSONElement(getKey.call(this), this._line_id, function(err, reply) {
         var result = !reply ? 0 : reply;
