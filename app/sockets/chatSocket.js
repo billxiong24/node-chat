@@ -3,7 +3,6 @@ const crypto = require('crypto');
 //const Line = require('../models/line.js');
 const LineCache = require('../models/line_cache.js');
 const Notification = require('../models/notification.js');
-const session_handler = require('../session/session_handler.js');
 
 var Socket = require('./socket.js');
 

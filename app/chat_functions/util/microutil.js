@@ -1,18 +1,5 @@
 var micro = require('microtime');
 var now = micro.now();
-for (var i = 0; i < 100; i++) {
-    var time = micro.now();
-    var date = new Date(time/1000);
-
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    var day = date.getDate();
-    var hour = date.getHours();
-    var minutes = date.getMinutes();
-    var seconds = date.getSeconds();
-    var microseconds = time % 1000000;
-    console.log(composeStamp(year, month, day, hour, minutes, seconds, microseconds));
-}
 
 function composeStampNow() {
     var time = micro.now();

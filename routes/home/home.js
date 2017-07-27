@@ -3,7 +3,6 @@ var router = express.Router();
 var authenticator = require('../../app/authentication/user-pass.js');
 const Manager = require('../../app/chat_functions/chat_manager.js');
 const Chat =  require('../../app/models/chat.js');
-const session_handler = require('../../app/session/session_handler.js');
 
 var manager;
 if(!manager) {

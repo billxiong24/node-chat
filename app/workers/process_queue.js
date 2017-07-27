@@ -1,5 +1,8 @@
 const kue = require('kue');
-
+/**
+ * If we get an error job doesn't exist, its ok, it removes bad job and moves on,
+ * dont get scared
+ */
 var ProcessQueue = function(options = {
     prefix: 'q',
     redis: {
@@ -34,8 +37,18 @@ function setGlobalQueueEvents() {
     this._processQueue.delayedCount(function( err, total ) {
           console.log("failjobs: " + total);
     });
+    this._processQueue.on('error', function(err) {
+        console.log("there was an error");
+        return;
+
+    });
 }
 
+
+ProcessQueue.prototype.monitorStuck = function() {
+    this._processQueue.watchStuckJobs(2000);
+    
+};
 
 ProcessQueue.prototype.removeCompletedJobs= function(max_completed) {
     this._processQueue.completeCount(function(err, completed) {
@@ -43,7 +56,15 @@ ProcessQueue.prototype.removeCompletedJobs= function(max_completed) {
         if(completed < max_completed) { return; }
         
         kue.Job.rangeByState('complete', 0, completed, 'asc', function(err, jobs) {
+            if(err) {
+                console.log("tjere was an error");
+                return;
+            }
             jobs.forEach(function(job) {
+                if(!job || !job.id) {
+                    console.log("job doesn't exist anymore removing");
+                    return;
+                }
                 job.remove(function() {
                     console.log("job removed " + job.id);
                 });
@@ -75,10 +96,13 @@ ProcessQueue.prototype.addJobEventHandler = function(job, event, cb) {
 
 ProcessQueue.prototype.processJob = function(jobName, cb, concurrency=10) {
     this._processQueue.process(jobName, concurrency, function(job, done) {
+        console.log(job);
+        if(!job) {
+            console.log("job does not exist");
+            return;
+        }
         cb(job, done);
     });
 };
-
-
 
 module.exports = ProcessQueue;

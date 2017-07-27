@@ -90,7 +90,7 @@ function pushMessage(key, arr, callback) {
     //flush the cache if too many messages
     retrieveArray(key, 0, -1, function(err, arr) {
         //some randomass values
-        if(arr.length < 9) {
+        if(arr.length < 8) {
             return;
         }
 
@@ -110,7 +110,9 @@ function popMessage(key, numMessages, callback) {
         multi.rpop(key);
     } 
 
-    multi.exec(callback);
+    multi.exec(function(err, message) {
+        callback(err, message);
+    });
 }
 
 function retrieveArray(key, start, end, callback, async=false) {

@@ -115,6 +115,7 @@ function init(port) {
 
 //to disable clustering and ip hashing, comment below line and just call init(3000);
 if(process.env.NODE_ENV === "test") {
+    console.log("testing environment...");
     init(3000);
 }
 else {

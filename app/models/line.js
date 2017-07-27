@@ -57,16 +57,16 @@ Line.prototype.insert = function() {
     });
 };
 
-Line.prototype.read = function() {
+Line.prototype.read = function(numLines=5) {
     var chatID = this._chat_id;
 
     return function(poolConnection) {
         if(poolConnection === null) {
             return null;
         }
-        var query =  'SELECT line_id, username, message, DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") as stamp FROM ChatLines WHERE chat_id = ? ORDER BY DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") DESC LIMIT 7';
+        var query =  'SELECT line_id, username, message, DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") as stamp FROM ChatLines WHERE chat_id = ? ORDER BY DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") DESC LIMIT ?';
         //connection.release(poolConnection);
-        return poolConnection.query(query, [chatID]);
+        return poolConnection.query(query, [chatID, numLines]);
     };
 };
 

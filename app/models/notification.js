@@ -46,24 +46,15 @@ Notification.prototype.load = function() {
     };
 };
 
-Notification.prototype.flush = function() {
-    connection.execute("UPDATE Notifications SET num_notifications = num_notifications + 1 WHERE Notifications.chat_id = ? AND Notifications.username <> ?", [this._chatID, this._username]);
+Notification.prototype.flush = function(callback = function(result) {}) {
+    //connection.execute("UPDATE Notifications SET num_notifications = num_notifications + 1 WHERE Notifications.chat_id = ? AND Notifications.username <> ?", [this._chatID, this._username], callback);
     
-    connection.execute("UPDATE Notifications SET num_notifications = 0 WHERE Notifications.chat_id = ? AND Notifications.username = ?", [this._chatID, this._username]);
-        
-};
-Notification.prototype.write = function() {
-    var info = {
-        chat_id: this._chatID,
-        username: this._username,
-        num_notifications: this._num_notifications 
-    };
-    connection.execute('INSERT INTO Notifications SET ?', info);
-};
+    //connection.execute("UPDATE Notifications SET num_notifications = 0 WHERE Notifications.chat_id = ? AND Notifications.username = ?", [this._chatID, this._username], callback);
+    var query =  "UPDATE Notifications SET num_notifications = IF (username=?, 0, num_notifications+1) WHERE Notifications.chat_id = ? ";
 
-Notification.prototype.reset = function() {
-    this.setNumNotifications(0);
-    connection.execute('UPDATE Notifications SET num_notifications = ?', [0]);
+    connection.execute(query, [this._username, this._chatID], function(result) {
+        callback(result);
+    });
 };
 
 module.exports = Notification;

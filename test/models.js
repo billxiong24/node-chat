@@ -1,6 +1,7 @@
 /* jshint expr: true */
-require('dotenv').config();
 process.env.NODE_ENV = "test";
+require('dotenv').config();
+
 var chai = require('chai');
 var sinon = require('sinon');
 var server; 
@@ -11,12 +12,208 @@ var should = chai.should();
 var expect = chai.expect;
 var agent;
 
+var LineCache = require('../app/models/line_cache.js');
+var Line = require('../app/models/line.js');
+var cache_functions = require('../app/cache/cache_functions.js');
+var connection = require('../app/database/config.js');
+var Notification = require('../app/models/notification.js');
+var NotifManager = require('../app/chat_functions/notif_manager.js');
+
+var ProcessQueue = require('../app/workers/process_queue.js');
+
 chai.use(chaiHttp);
 var authenticator;
 
 //TODO mock fakeredis so we can test messages properly
 //TODO create testing database environment
 
-it('test new file', function(done) {
-    return done();
+describe('testing line model', function() {
+    var createJobSpy;
+    before(function() {
+        createJobSpy = sinon.spy(ProcessQueue.prototype, "createJob");
+    });
+    after(function() {
+        ProcessQueue.prototype.createJob.restore();
+    });
+
+    it('should insert line into redis cache', function(done) {
+        var lineCache = new LineCache('0115411bc0ca11ec36b3730da5e50fbd', 'jj45', 'test message', 'id123');
+        lineCache.insert();
+        //TODO check cache to see exists
+        cache_functions.popMessage('0115411bc0ca11ec36b3730da5e50fbd', 1, function(err, message) {
+            var messageJSON = JSON.parse(message);
+            expect(messageJSON).to.have.property('chat_id');
+            expect(messageJSON).to.have.property('message');
+            expect(messageJSON).to.have.property('line_id');
+            expect(messageJSON).to.have.property('stamp');
+            expect(messageJSON).to.have.property('username');
+
+            expect(messageJSON.chat_id).to.equal('0115411bc0ca11ec36b3730da5e50fbd');
+            expect(messageJSON.message).to.equal('test message');
+            expect(messageJSON.line_id).to.equal('id123');
+            expect(messageJSON.username).to.equal('jj45');
+            return done();
+        });
+    });
+    it('should not insert line into redis cache, since bad info', function(done) {
+        var lineCache = new LineCache(null, null, 'test message', 'id123');
+        lineCache.insert();
+        //TODO check cache to see exists
+        cache_functions.popMessage('0115411bc0ca11ec36b3730da5e50fbd', 1, function(err, message) {
+            for(var i = 0; i < message.length; i++) {
+                expect(message[i]).to.equal(null);
+            }
+            return done();
+        });
+    });
+
+    it('should ensure reading lines from sql produces correct results', function(done) {
+        var lineCache = new LineCache('0043e138f3a1daf9ccfbf718fc9acd48');
+        var read = lineCache.read();
+        var result = function(lineResults) {
+            for(var i = 0; i < lineResults.length; i++) {
+                expect(lineResults[i]).to.have.property('message');
+                expect(lineResults[i]).to.have.property('line_id');
+                expect(lineResults[i]).to.have.property('stamp');
+                expect(lineResults[i]).to.have.property('username');
+            }
+            return done();
+        };
+        connection.executePoolTransaction([read, result], function(err) {
+            throw err;
+        });
+    });
+
+    it('should ensure that no lines are retrieve since doesnt exist', function(done) {
+        var lineCache = new LineCache('adflkjanat');
+        var read = lineCache.read();
+        var result = function(lineResults) {
+            expect(lineResults.length).to.equal(0);
+            return done();
+        };
+        connection.executePoolTransaction([read, result], function(err) {
+            throw err;
+        });
+    });
+    
+    it('should insert lines into redis cache', function(done) {
+        var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
+        var counter = 0;
+        var cb = function(err, result) {
+            ++counter;
+        };
+        for(var i = 0; i < 5; i++) {
+            var lineCache = new LineCache(chatid, 'jj45', 'test message', 'id'+i);
+            lineCache.insert(cb);
+        }
+
+        var interval = setInterval(function() {
+            if(counter >= 5) {
+                clearInterval(interval);
+                return cache_functions.retrieveArray(chatid, 0, -1, function(err, arr) {
+                    expect(arr.length).to.equal(5);
+                    return done();
+                });
+            }
+        }, 100);
+    });
+
+    it('should flush lines to db, only if they exist, and only if user is member', function(done) {
+
+        var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
+        var lineCache = new LineCache(chatid);
+        lineCache.flush(5, function(result) {
+            //should have inserted 5 new rows
+            expect(result.affectedRows).to.equal(5);
+            return done();
+        });
+    });
+
+    it('read lines from database, should be the same', function(done) {
+        var lineCache = new LineCache('0043e138f3a1daf9ccfbf718fc9acd48');
+        var read = lineCache.read();
+        var result = function(lineResults) {
+            for(var i = 0; i < 5; i++) {
+                expect(lineResults[i]).to.have.property('message');
+                expect(lineResults[i]).to.have.property('username');
+                expect(lineResults[i]).to.have.property('line_id');
+
+                expect(lineResults[i].message).to.equal('test message');
+                expect(lineResults[i].username).to.equal('jj45');
+                expect(lineResults[i].line_id).to.equal('id'+(4-i));
+            }
+            return done();
+        };
+        connection.executePoolTransaction([read, result], function(err) {
+            throw err;
+        });
+    });
+
+    it('should trigger process queue to enqueue a process', function(done) {
+        var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
+        var counter = 0;
+        var cb = function(err, result) {
+            ++counter;
+        };
+        for(var i = 0; i < 60; i++) {
+            var lineCache = new LineCache(chatid, 'jj45', 'queue message', 'idqueue'+i);
+            lineCache.insert(cb);
+        }
+
+        var interval = setInterval(function() {
+            if(counter >= 60) {
+                clearInterval(interval);
+                expect(createJobSpy.called).to.equal(true);
+            }
+            return done();
+        }, 1500);
+
+    });
+});
+
+describe('testing notifcation model', function() {
+
+    it('should test reading notifications works', function(done) {
+        var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
+        var notif = new Notification(chatid, 'jj45', -1);
+        
+        var end = function(result) {
+            expect(result[0].num_notifications).to.equal(32);
+            return done();
+        };
+
+        connection.executePoolTransaction([notif.load(), end], function(err)  {
+            throw err;
+        });
+          
+    });
+    it('should increment other notifs, reset your own', function(done) {
+        var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
+        var notif = new Notification(chatid, 'jj45', -1);
+
+        var switched = false;
+        notif.flush(function(result) {
+            expect(result.affectedRows).to.equal(9);
+            switched = true;
+            return done();
+        });
+    });
+
+    it('should test notif manager and load notifications', function(done) {
+
+        var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
+        var notif = new Notification(chatid, 'js12', -1);
+        var notif_manager = new NotifManager(notif);
+
+        var switched = false;
+        notif_manager.loadNotifications(function(result) {
+            expect(result).to.equal(8);
+            switched = true;
+            return done();
+        });
+    });
+});
+
+describe('testing voting model', function() {
+
 });

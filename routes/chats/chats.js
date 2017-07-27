@@ -5,7 +5,6 @@ const Manager = require('../../app/chat_functions/chat_manager.js');
 const Chat =  require('../../app/models/chat.js');
 const Notification = require('../../app/models/notification.js');
 const NotificationManager = require('../../app/chat_functions/notif_manager.js');
-const session_handler = require('../../app/session/session_handler.js');
 const UserManager = require('../../app/models/user_manager.js');
 const UserCache = require('../../app/models/user_cache.js');
 
@@ -15,26 +14,20 @@ if(!manager) {
 }
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    /* TODO CACHE THIS SHIT*/
-    //var cachedCB = function(members) {
-        //res.render('groupchat', members[req.params.chatID]);
-    //};
-    //var missCB = function(deepCopy) {
-        //res.render('groupchat', deepCopy);
-    //};
-
-    //TODO create utility hold common elements in response object, such as csrfToken
-    //rest of info will be filled in by renderInfo and initLines (clientside rendering)
-    //this shit needs to be cached
-    manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON) {
+    manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON, inChat) {
         if(process.env.NODE_ENV === 'test') {
+            if(!inChat) {
+                return res.redirect('/home');
+            }
             res.status(200).send(userJSON);
         }
         else {
+            if(!inChat) {
+                return res.redirect('/home');
+            }
             res.render('groupchat', userJSON);
         }
-    });
-    //res.render('chat', {csrfToken: req.csrfToken()});
+    }, req.params.chatID);
 });
 
 router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {

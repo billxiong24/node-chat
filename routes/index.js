@@ -3,7 +3,6 @@ var router = express.Router();
 var authenticator = require('../app/authentication/user-pass.js');
 var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
-var session_handler = require('../app/session/session_handler.js');
 var cache_functions = require('../app/cache/cache_functions.js');
 
 const timeout = require('connect-timeout');

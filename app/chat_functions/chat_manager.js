@@ -18,7 +18,7 @@ var ChatManager = (function() {
         this.chat_obj = chatobj;
     }
 
-    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, members, res, callback) {
+    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, members, res, callback, chatID=null) {
         //TODO error checking
         var chatobj = new Chat();
         var user = new User(userObj.username, userObj.id, undefined, userObj.first, userObj.last);
@@ -32,13 +32,17 @@ var ChatManager = (function() {
             userJSON.csrfToken = csrfToken;
 
             var list = rows;
+            var inSpecificChat = false;
             //cache all chats in members
             for(var i = 0; i < list.length; i++) {
+                if(chatID === list[i].id) {
+                    inSpecificChat = true;
+                }
                 members[list[i].id] = new Chat(list[i].id, list[i].chat_name, list[i].code)
                     .toJSON(list[i].username, list[i].num_notifications, null);
             }
 
-            callback(userJSON);
+            callback(userJSON, inSpecificChat);
             //res.render('home', userJSON);
         });
     };
@@ -102,6 +106,7 @@ var ChatManager = (function() {
     };
 
     
+    //TODO Pass in callback here
     ChatManager.prototype.createChat = function(username, chatName, members, res) {
         var chatInfo = {
             id: crypto.randomBytes(8).toString('hex'),
