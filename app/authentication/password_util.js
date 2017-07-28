@@ -1,10 +1,15 @@
 const bluebird = require('bluebird');
 const bcrypt = bluebird.promisifyAll(require('bcrypt-nodejs'));
 
-function storePassword(password, callback) {
-    bcrypt.hash(password, null, null, function(err, hash) {
-        callback(err, hash);
-    });
+function storePassword(password, callback, async=false) {
+    if(!async) {
+        bcrypt.hash(password, null, null, function(err, hash) {
+            callback(err, hash);
+        });
+    }
+    else {
+        return bcrypt.hashAsync(password, null, function() {});
+    }
 }
 
 function retrievePassword(password, hash, callback, async=false) {
@@ -22,3 +27,4 @@ module.exports = {
     storePassword,
     retrievePassword
 };
+

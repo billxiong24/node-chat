@@ -397,7 +397,6 @@ describe('authentication routes', function() {
             });
         });
     });
-
 });
 
 function signupTest(message, route, data, callback) {
