@@ -22,8 +22,13 @@ function retrieveValue(key, callback) {
     cache_store.get(key, callback);
 }
 
-function addJSON(key, obj, callback) {
-    cache_store.hmset(key, obj, callback);
+function addJSON(key, obj, callback, async=false) {
+    if(!async) {
+        cache_store.hmset(key, obj, callback);
+    }
+    else {
+        return cache_store.hmsetAsync(key, obj);
+    }
 }
 
 function retrieveJSON(key, callback, async=false) {

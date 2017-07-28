@@ -52,7 +52,7 @@ UserCache.prototype.leaveChat = function(chat_id, callback) {
 };
 
 
-//FIXME this function probably does not work, but i wanna go to the gym now
+//TODO function works, add user back to cache if not in
 UserCache.prototype.confirmPassword = function(password, callback) {
     //first check cache for user, then check database, then compare password hashes
     //this is surprising complicated
@@ -69,9 +69,9 @@ UserCache.prototype.confirmPassword = function(password, callback) {
         if(result) {
            return password_util.retrievePassword(password, result.password, null, true);
         }
-        return 'not in cache';
+        return 'not cache';
     }).then(function(result) {
-        if(result !== 'not in cache') {
+        if(result !== 'not cache') {
             callback(result);
             return true;
         }
@@ -80,8 +80,6 @@ UserCache.prototype.confirmPassword = function(password, callback) {
         if(result) {
             return null;
         }
-
-        console.log("hitting the database");
         var end = function(res) {
             return password_util.retrievePassword(password, res[0].password, null, true).then(callback);
         };
