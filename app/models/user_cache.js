@@ -7,8 +7,8 @@ function defaultErrorCB(err) {
     console.log(err);
 }
 
-var UserCache = function (username, id=undefined, password=undefined, first=undefined, last=undefined) {
-    User.call(this, username, id, password, first, last);
+var UserCache = function (username, id=undefined, password=undefined, first=undefined, last=undefined, email=undefined) {
+    User.call(this, username, id, password, first, last, email);
 };
 
 UserCache.prototype = Object.create(User.prototype);
@@ -54,39 +54,48 @@ UserCache.prototype.leaveChat = function(chat_id, callback) {
 
 //TODO function works, add user back to cache if not in
 UserCache.prototype.confirmPassword = function(password, callback) {
-    //first check cache for user, then check database, then compare password hashes
-    //this is surprising complicated
     var that = this;
-    var inCache = false;
-    cache_functions.retrieveJSON(this.getKey(), null , true)
-    .then(function(result) {
-        if(!result) {
-            return inCache;
-        }
-        inCache = true;
+    cache_functions.retrieveJSON(this.getKey(), null , true).then(function(result) {
         return result;
     }).then(function(result) {
-        if(result) {
-           return password_util.retrievePassword(password, result.password, null, true);
-        }
-        return 'not cache';
+        //if result, user found in cache
+        return result ? password_util.retrievePassword(password, result.password, null, true) : 'not cache';
     }).then(function(result) {
         if(result !== 'not cache') {
             callback(result);
-            return true;
         }
-        return null;
+        return result !== 'not cache';
     }).then(function(result) {
         if(result) {
             return null;
         }
-        var end = function(res) {
-            return password_util.retrievePassword(password, res[0].password, null, true).then(callback);
+        //hitting db, since user was not in cache
+        var conn;
+        var setConn = function(poolConnection) {
+            conn = poolConnection;
+            return conn;
         };
-        return connection.executePoolTransaction([that.read(), end], function(err) {
+        var end = function(res) {
+            return password_util.retrievePassword(password, res[0].password, null, true).then(function(result) {
+                console.log("releasing connection");
+                connection.release(conn);
+                callback(result);
+            });
+        };
+        return connection.executePoolTransaction([setConn, that.read(), end], function(err) {
             return console.log(err);
         });
     });
 };
+
+UserCache.prototype.updateSettings = function(newPass, newEmail, callback=function(rows) {}) {
+    var query = 'UPDATE User SET password = ?, email = ? WHERE username = ?';
+    connection.execute(query, [newPass, newEmail, this._username], function(rows) {
+        callback(rows);
+    }, function(err) {
+        return console.log(err);
+    });
+};
+
 
 module.exports = UserCache;

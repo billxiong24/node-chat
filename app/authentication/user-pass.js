@@ -38,14 +38,20 @@ function checkLoggedIn(req, res, next) {
 
 function passportSignupCallback(passport, req, res, next) {
     passport.authenticate('signup', function(err, user, info) {
+        console.log(err, user, info);
         if(err) {
-            console.log("there is an error");
-            console.log(err);
+            res.status(200).json({
+                signup_error : true,
+                error: err
+            });
             return;
         }
 
         if(!user) {
-            res.status(200).json({signup_error : true});
+            res.status(200).json({
+                signup_error : true,
+                error: "Error signing up, please try again."
+            });
             return;
         }
         req.login(user, function(err) {
@@ -147,7 +153,7 @@ function passportAuth(passport) {
 
             //NOTE this failure signup might not be called, since everything else is validated above
             var signupFailure = function() {
-                return done(null, false, req.flash('signup_error', 'There was an error signing up'));
+                return done("Username exists", false, req.flash('signup_error', 'There was an error signing up'));
             };
             var signupSuccess = function(userObj) {
                 req.session.user = userObj; 

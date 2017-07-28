@@ -1,17 +1,21 @@
 const connection = require('../database/config.js');
 
-var User = function User(username, id=undefined, password=undefined, first=undefined, last=undefined) {
+var User = function User(username, id=undefined, password=undefined, first=undefined, last=undefined, email=undefined) {
     this._id = id;    
     this._username = username;    
     this._password = password;    
     this._first = first;    
     this._last = last;    
+    this._email = email;
 
     /*
      *Getters
      */
 };
 
+User.prototype.getEmail = function() {
+    return this._email;
+};
 User.prototype.getID = function() {
     return this._id;
 };
@@ -32,13 +36,18 @@ User.prototype.setPassword = function(password) {
     this._password = password;
 };
 
+User.prototype.setEmail = function(email) {
+    this._email = email;
+};
+
 User.prototype.toJSON = function() {
     return {
         username: this._username,
         id: this._id,
         password: this._password,
         first: this._first,
-        last: this._last
+        last: this._last,
+        email: this._email
     }; 
 };
 

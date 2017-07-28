@@ -4,7 +4,7 @@ function validateUsername(username) {
 }
 
 function validatePassword(password) {
-    return password.length > 6;
+    return password.length >= 6;
 }
 
 

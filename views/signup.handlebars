@@ -8,7 +8,7 @@
 	<meta name="description" content="Neon Admin Panel" />
 	<meta name="author" content="" />
 
-	<link rel="icon" href="stylesheets/assets/images/favicon.ico">
+	{{!-- <link rel="icon" href="stylesheets/assets/images/favicon.ico"> --}}
 
 	<title>Neon | Register</title>
 
@@ -99,7 +99,16 @@
 								<input type="text" class="form-control" name="lastname_signup" id="name" placeholder="Last name" autocomplete="off" required/>
 							</div>
 						</div>
-						
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">
+									<i class="entypo-mail"></i>
+								</div>
+								
+								<input type="text" class="form-control" name="email" id="email" data-mask="email" placeholder="E-mail" autocomplete="off" required/>
+							</div>
+                        </div>
+
 						<!--<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-addon">
@@ -117,10 +126,6 @@
 							</button>
 						</div>
 						
-						<div class="form-group">
-							Step 1 of 2
-						</div>
-					
 					</div>
 					
 					<div class="step" id="step-2">
@@ -139,22 +144,31 @@
 							</div>
 						</div>
 					
-						<!-- <div class="form-group">
-							<div class="input-group">
-								<div class="input-group-addon">
-									<i class="entypo-mail"></i>
-								</div>
+						{{!-- <div class="form-group"> --}}
+							{{!-- <div class="input-group"> --}}
+								{{!-- <div class="input-group-addon"> --}}
+									{{!-- <i class="entypo-mail"></i> --}}
+								{{!-- </div> --}}
 								
-								<input type="text" class="form-control" name="email" id="email" data-mask="email" placeholder="E-mail" autocomplete="off" />
-							</div>
-                        </div> -->
+								{{!-- <input type="text" class="form-control" name="email_signup" id="email" data-mask="email" placeholder="E-mail" autocomplete="off" /> --}}
+							{{!-- </div> --}}
+                        {{!-- </div> --}}
 						
 						<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-addon">
 									<i class="entypo-lock"></i>
 								</div>
-								<input type="password" class="form-control" name="password_signup" id="password" placeholder="Choose Password" autocomplete="off" />
+								<input type="password" class="form-control" name="password_signup" id="password" placeholder="Choose Password" autocomplete="off" required/>
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">
+									<i class="entypo-lock"></i>
+								</div>
+								<input type="password" class="form-control" name="pass_confirm" id="" placeholder="Confirm Password" autocomplete="off" required/>
                                 <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 							</div>
 						</div>
@@ -170,10 +184,6 @@
 								<i class="entypo-right-open-mini"></i>
 							    Previous	
 							</button>
-						</div>
-						
-						<div class="form-group">
-							Step 2 of 2
 						</div>
 						
 					</div>
