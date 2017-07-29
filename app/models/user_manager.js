@@ -55,6 +55,10 @@ UserManager.prototype.authenticate = function(password, loginResult) {
         if(!result) { return null; }
         if(!inCache) { 
             console.log("user login cache miss");
+            //redis does not store null values, for users created previously, just
+            //let them pass
+            sqlUser.confirmed = (sqlUser.confirmed === null) ? 'true' : sqlUser.confirmed;
+            sqlUser.hash = (sqlUser.hash === null) ? 'true' : sqlUser.hash;
             user.addToCache(sqlUser);
         }
         delete sqlUser.password;

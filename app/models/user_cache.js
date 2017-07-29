@@ -3,6 +3,7 @@ var User = require('./user.js');
 const connection = require('../database/config.js');
 const cache_functions = require('../cache/cache_functions.js');
 const password_util = require('../authentication/password_util.js');
+const crypto = require('crypto');
 function defaultErrorCB(err) {
     console.log(err);
 }
@@ -22,12 +23,46 @@ UserCache.prototype.read = function() {
 UserCache.prototype.insert = function(callback = function(rows) {}, errorCallback=defaultErrorCB) {
     var userObj = User.prototype.toJSON.call(this);
     var that = this;
-    //write through
-    connection.execute('INSERT INTO User SET ? ', userObj, function(rows) {
-        //only add to cache if no database errors, otherwise we have invalid data in cache
-        that.addToCache();
-        callback(rows);
-    }, errorCallback); 
+    var conn;
+    var hash = crypto.randomBytes(10).toString('hex');
+    var startTrans = function(poolConnection) {
+        conn = poolConnection;
+        poolConnection.query('START TRANSACTION');
+        return poolConnection;
+    };
+    var insertUser = function(poolConnection) {
+        return poolConnection.query('INSERT INTO User SET ?', userObj);
+    };
+
+    var insertEmail = function(poolConnection) {
+        return conn.query('INSERT INTO EmailConfirm SET ?', {
+            hash: hash,
+            username: that.getUsername()
+        });
+    };
+
+    var err = function(err) {
+        //TODO need real error handling here
+        console.log('user sign up has an error');
+        conn.query('ROLLBACK');
+        console.log('releasing connection in sign up error');
+        connection.release(conn);
+        errorCallback(err); 
+        return null;
+    };
+
+    var commit = function(result) {
+        var finished = conn.query('COMMIT');
+        console.log("releasing connection");
+        connection.release(conn);
+        userObj.hash = hash;
+        userObj.confirmed = false;
+        that.addToCache(userObj);
+        callback(result);
+        return finished;
+    };
+
+    connection.executePoolTransaction([startTrans, insertUser, insertEmail, commit], err);
 };
 
 UserCache.prototype.addToCache = function(jsonObj = null) {

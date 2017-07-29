@@ -45,9 +45,13 @@ User.prototype.toJSON = function() {
 User.prototype.read = function() {
     var username = this._username;
     return function(poolConnection) {
-        return poolConnection.query('SELECT * FROM User WHERE User.username = ?', [username]);
+        var query = "SELECT User.id, User.email, User.password,"+
+            "User.username, User.first, User.last, EmailConfirm.confirmed, "+ 
+            "EmailConfirm.hash from User LEFT JOIN EmailConfirm ON User.username = EmailConfirm.username WHERE User.username = ?";
+        return poolConnection.query(query, [username]);
     };
 };
+
 User.prototype.insert = function() {
 };
 

@@ -126,7 +126,10 @@ Chat.prototype.load = function(user, transport) {
     var commit = transport(that, notif, chatLine);
 
     connection.executePoolTransaction([getChat, transferChat, getNumNotifs, transferNotifs, commit, releasing], function(err) { 
-        throw err; 
+        //NOTE error handling not so important here
+        consoe.log(err);
+        console.log("releasing connection from error");
+        return connection.release(conn);
     });
 };
 
@@ -175,12 +178,15 @@ Chat.prototype.retrieveLines = function(callback) {
 
     var releaseConn = function(connect) {
         console.log("releasing connection");
-        connection.release(conn);
+        return connection.release(conn);
     };
     var promises = [setConn, getLines, setLines, retrieveCacheLines, appendCacheLines, getVotes, attachVotes, callback, releaseConn];
     connection.executePoolTransaction(promises, function(err) {
+        //NOTE error handling not important here either 
         console.log(err);
-        throw err;
+        console.log('releasing connection in error');
+        connection.release(conn);
+        return null;
     });
 };
 
@@ -204,24 +210,25 @@ Chat.prototype.insert = function(user, callback=function(result) {}) {
         return poolConnection;
     };
     var insertChat = function(poolConnection) {
-        poolConnection.query('INSERT INTO Chat SET ?', chatInfo);
-        return poolConnection;
+        return poolConnection.query('INSERT INTO Chat SET ?', chatInfo);
     };
 
-    var insertMember = function(poolConnection) {
-        poolConnection.query('INSERT INTO MemberOf SET ?', {chat_id: chatInfo.id, username: userTemp});
-        return poolConnection;
+    var insertMember = function(result) {
+        return conn.query('INSERT INTO MemberOf SET ?', {chat_id: chatInfo.id, username: userTemp});
     };
 
     var err = function(err) {
+        //TODO need real error handling here
+        console.log("there was an error");
         conn.query('ROLLBACK');
-        console.log(err);
+        console.log("releasing connection after rollback");
+        connection.release(conn);
     };
 
-    var commit = function(poolConnection) {
-        var result = poolConnection.query('COMMIT');
+    var commit = function(reply) {
+        var result = conn.query('COMMIT');
         console.log("releasing connection");
-        connection.release(poolConnection);
+        connection.release(conn);
         return result;
     };
 
@@ -277,15 +284,17 @@ Chat.prototype.join = function(user, callback) {
     var err = function(err) {
         connect.query('ROLLBACK');
         console.log(err);
+        connection.release(connect);
+        return null;
     };
 
     connection.executePoolTransaction([startTrans, retrieveChat, validateChat, insertMembers, commit, callback(that)], err);
 };
 
-Chat.prototype.loadLists = function(user, callback=function(rows) {}) {
+Chat.prototype.loadLists = function(user, callback=function(rows) {}, error=function(err) {console.log(err);}) {
     var query = 'SELECT Chat.chat_name, Chat.id, Chat.code, Notifications.num_notifications, MemberOf.username FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
 
-    connection.execute(query, [user.getUsername(), user.getUsername()], callback);
+    connection.execute(query, [user.getUsername(), user.getUsername()], callback, error);
     
 };
 
