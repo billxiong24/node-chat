@@ -320,24 +320,24 @@ describe('authentication routes', function() {
         expect(addToCacheSpy.calledOnce).to.equal(false);
     });
 
-    signupTest('/POST signup should work because meets all criteria, should add user to cache', '/signup', {
-        user_signup: 'validUsername',
-        password_signup: 'aValidPassword',
-        firstname_signup: 'Firstname',
-        lastname_signup: 'Lastname'
-    }, function(result) {
-        expect(userCacheInsertSpy.calledOnce).to.equal(true);
+    //signupTest('/POST signup should work because meets all criteria, should add user to cache', '/signup', {
+        //user_signup: 'validUsername',
+        //password_signup: 'aValidPassword',
+        //firstname_signup: 'Firstname',
+        //lastname_signup: 'Lastname'
+    //}, function(result) {
+        //expect(userCacheInsertSpy.calledOnce).to.equal(true);
 
-    });
+    //});
 
-    signupTest('/POST signup should not work bc username is taken', '/signup', {
-        user_signup: 'jj45',
-        password_signup: 'doesntmatter',
-        firstname_signup: 'firstdoesnt',
-        lastname_signup: 'lastdoesnt'
-    }, function(result) {
-        expect(addToCacheSpy.calledOnce).to.equal(false);
-    });
+    //signupTest('/POST signup should not work bc username is taken', '/signup', {
+        //user_signup: 'jj45',
+        //password_signup: 'doesntmatter',
+        //firstname_signup: 'firstdoesnt',
+        //lastname_signup: 'lastdoesnt'
+    //}, function(result) {
+        //expect(addToCacheSpy.calledOnce).to.equal(false);
+    //});
 
     it('/POST signup_auth should return some error since username too short', function(done) {
         agent.get('/signup').then(function(result) {
@@ -373,14 +373,14 @@ describe('authentication routes', function() {
         });
     });
 
-    signupTest('/POST signup should not work bc password doesnt qualify', '/signup', {
-        user_signup: 'jj45',
-        password_signup: 'a',
-        firstname_signup: 'firstdoesnt',
-        lastname_signup: 'lastdoesnt'
-    }, function(result) {
+    //signupTest('/POST signup should not work bc password doesnt qualify', '/signup', {
+        //user_signup: 'jj45',
+        //password_signup: 'a',
+        //firstname_signup: 'firstdoesnt',
+        //lastname_signup: 'lastdoesnt'
+    //}, function(result) {
 
-    });
+    //});
 
     it('POST /logout should redirect to login page', function(done) {
         agent.get('/login').then(function(result) {

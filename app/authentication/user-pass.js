@@ -14,11 +14,14 @@ const params = {
     passwordField : 'password',
     passReqToCallback : true
 };
-
 //middleware need to return next function
 function checkLoggedOut(req, res, next) {
     if(!req.isAuthenticated()) {
         res.redirect('/');
+    }
+    //since redis serializes everything to string, compare to string
+    else if(req.session.user.confirmed === 'false') {
+        return res.redirect('/signup_success');
     }
     else {
         //need to return next to pass on to the next function,
@@ -38,7 +41,6 @@ function checkLoggedIn(req, res, next) {
 
 function passportSignupCallback(passport, req, res, next) {
     passport.authenticate('signup', function(err, user, info) {
-        console.log(err, user, info);
         if(err) {
             res.status(200).json({
                 signup_error : true,
@@ -135,7 +137,8 @@ function passportAuth(passport) {
                 username: user_signup,
                 password: password_signup,
                 first: req.body.firstname_signup,
-                last: req.body.lastname_signup
+                last: req.body.lastname_signup,
+                email: req.body.email
             };
 
             if(!validate_cred_util.validateUsername(info.username)) {
@@ -148,16 +151,16 @@ function passportAuth(passport) {
                 return done(null, false, req.flash('error', 'Signup error.'));
             }
 
-            var user_manager = new UserManager(new UserCache(user_signup, info.id, info.password, info.first, info.last));
-        
+            var user_manager = new UserManager(new UserCache(user_signup, info.id, info.password, info.first, info.last, info.email));
 
-            //NOTE this failure signup might not be called, since everything else is validated above
             var signupFailure = function() {
                 return done("Username exists", false, req.flash('signup_error', 'There was an error signing up'));
             };
             var signupSuccess = function(userObj) {
                 req.session.user = userObj; 
                 req.session.members = {};
+                //this is added in database and cache as well
+                req.session.emailValidated = false;
                 return done(null, info);
             };
 

@@ -2896,6 +2896,11 @@
       "from": "node.extend@>=1.1.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/node.extend/-/node.extend-1.1.6.tgz"
     },
+    "nodemailer": {
+      "version": "4.0.1",
+      "from": "nodemailer@latest",
+      "resolved": "https://registry.npmjs.org/nodemailer/-/nodemailer-4.0.1.tgz"
+    },
     "nodemon": {
       "version": "1.11.0",
       "from": "nodemon@>=1.10.2 <2.0.0",

@@ -32,9 +32,7 @@ function executePoolTransaction(transactions, error=function(err) {}, info=null)
 
     transactions.reduce(function(prevFunc, currFunc) {
         return prevFunc.then(currFunc);
-    }, connected).then(function(res) {
-
-    }).catch(error);
+    }, connected).catch(error);
 }
 
 function release(connection) {

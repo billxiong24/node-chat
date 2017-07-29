@@ -61,6 +61,7 @@
     "mysql": "^2.13.0",
     "n": "^2.1.8",
     "node-mysql": "^0.4.2",
+    "nodemailer": "^4.0.1",
     "os": "^0.1.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",

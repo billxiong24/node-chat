@@ -4,6 +4,7 @@ var authenticator = require('../app/authentication/user-pass.js');
 var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
 var cache_functions = require('../app/cache/cache_functions.js');
+var email = require('../app/authentication/email.js');
 
 const timeout = require('connect-timeout');
 const crypto = require('crypto');
@@ -46,8 +47,25 @@ module.exports = function(app, passport) {
         authenticator.passportSignupCallback(passport, req, res, next);
     });
 
+    //FIXME check email verified middleware
+    router.get('/signup_success', function(req, res, next) {
+        res.render('signup_success', {csrfToken: req.csrfToken()});
+    });
+
     router.post('/signup_auth', authenticator.checkLoggedIn, function(req, res, next) {
         authenticator.checkExistingUser(req, res);
+    });
+
+    router.get('/confirm/:hash', function(req, res, next) {
+        //TODO set confirmed to true in both cache and database
+        res.render('registered.handlebars');
+    });
+
+    //FIXME check email verified middleware
+    router.post('/sendEmail', function(req, res, next) {
+        email.sendEmailConfirmation(req.session.user.email, req.session.user.hash, function(err, info) {
+            res.status(200).json({sent: true});
+        });
     });
 
     router.post('/logout', function(req, res, next) {

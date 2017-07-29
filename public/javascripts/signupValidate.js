@@ -21,8 +21,8 @@ $(document).ready(function() {
             obj.password_signup = $('input[name=password_signup]').val();
             obj.firstname_signup = $('input[name=firstname_signup]').val();
             obj.lastname_signup = $('input[name=lastname_signup]').val();
+            obj.email = $('input[name=email]').val();
             var confirmed = $('input[name=pass_confirm]').val();
-
 
             var para = $('#username_error');
             var pass = $('#password_error');
@@ -54,7 +54,7 @@ $(document).ready(function() {
             
             chatAjaxService.chatAjax('/signup', 'POST', JSON.stringify(obj), function(data) {
                 if(!data.signup_error) {
-                    window.location.replace('/home');
+                    window.location.replace('/signup_success');
                     return;
                 }
                 para.text(data.error);
