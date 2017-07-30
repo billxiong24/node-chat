@@ -32,12 +32,15 @@ function checkEmailVerified(req, res, next) {
 }
 
 function sendEmailConfirmation(email, hash, callback) {
+    console.log(process.env.MAIL_USER);
+    console.log(process.env.MAIL_PASS);
     var mail_user = process.env.MAIL_USER;
     var options = {
         from: '"Workspace" <'+mail_user+'>',
         to: email,
         subject: 'Welcome!',
-        html: '<h1> hello welcome every one</h1> <a href="http://localhost:3000/confirm/'+hash+'">Click here to confirm your account</a>'
+        html: '<h3>Welcome! Click the link below to confirm your account.</h3><br/> <p>This link will expire soon, so click it now.</p>'+
+        '<a href="http://localhost:3000/confirm/'+hash+'">Click here to confirm your account</a>'
     };
     transport.sendMail(options, function(err, info) {
         if(err) {

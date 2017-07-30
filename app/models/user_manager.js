@@ -53,7 +53,7 @@ UserManager.prototype.authenticate = function(password, loginResult) {
         connection.release(conn);
 
         if(!result) { return null; }
-        if(!inCache) { 
+        if(!user.getInCache()) { 
             console.log("user login cache miss");
             //redis does not store null values, for users created previously, just
             //let them pass
@@ -64,17 +64,7 @@ UserManager.prototype.authenticate = function(password, loginResult) {
         delete sqlUser.password;
         return sqlUser;
     };
-    
-    user.retrieveFromCache().then(function(result) {
-        if(result) {
-            console.log("found user cache when logging in");
-            checkDB = function(poolConnection) {
-                inCache = true;
-                return [result]; 
-            };
-        }
-        connection.executePoolTransaction([setConn, checkDB, validate, retrievePassword, loginValidate, loginResult], function(err) {console.log(err);});
-    });
+    connection.executePoolTransaction([setConn, checkDB, validate, retrievePassword, loginValidate, loginResult], function(err) {console.log(err);});
 };
 
 UserManager.prototype.authenticateEmail = function(userJSON, hash, callback) {

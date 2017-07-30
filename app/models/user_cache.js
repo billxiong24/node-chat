@@ -10,18 +10,31 @@ function defaultErrorCB(err) {
 
 var UserCache = function (username, id=undefined, password=undefined, first=undefined, last=undefined, email=undefined) {
     User.call(this, username, id, password, first, last, email);
+    this._inCache = false;
 };
 
 UserCache.prototype = Object.create(User.prototype);
 UserCache.prototype.constructor = UserCache;
 
-UserCache.prototype.read = function() {
-    return User.prototype.read.call(this);
+UserCache.prototype.getInCache = function() {
+    return this._inCache;
 };
 
-UserCache.prototype.setJSON = function(userJSON) {
-    User.prototype.setJSON.call(this, userJSON);
-    return this;
+UserCache.prototype.read = function() {
+    var that = this;
+    var cacheRetrieve = this.retrieveFromCache();
+    //wtf is this lmao
+    return function(poolConnection) {
+        return cacheRetrieve.then(function(result) {
+            if(result) {
+                console.log("found user in cache when reading");
+                that._inCache = true;
+                return [result];
+            }
+            that._inCache = false;
+            return User.prototype.read.call(that)(poolConnection);
+        });
+    };
 };
 
 //NOTE need to return queries inorder to catch errors 
@@ -73,6 +86,7 @@ UserCache.prototype.insert = function(callback = function(rows) {}, errorCallbac
 
 UserCache.prototype.addToCache = function(jsonObj = null) {
     var userObj = !jsonObj ? User.prototype.toJSON.call(this) : jsonObj;
+    this._inCache = true;
     return cache_functions.addJSON(this.getKey(), userObj, null, true);
 };
 
@@ -103,6 +117,7 @@ UserCache.prototype.confirmPassword = function(password, callback) {
         return result && result.password ? password_util.retrievePassword(password, result.password, null, true) : 'not cache';
     }).then(function(result) {
         if(result !== 'not cache') {
+            that._inCache = true;
             callback(result);
         }
         return result !== 'not cache';
@@ -111,6 +126,7 @@ UserCache.prototype.confirmPassword = function(password, callback) {
             return null;
         }
         //hitting db, since user was not in cache
+        that._inCache = false;
         var conn;
         var setConn = function(poolConnection) {
             conn = poolConnection;
@@ -164,7 +180,8 @@ UserCache.prototype.confirmEmail = function(sessionUser, hash, callback) {
         return cache_functions.addJSON(that.getKey(), sessionUser, null, true)
         .then(function(result) {
             var query ='UPDATE EmailConfirm SET hash = ?, confirmed = 1 WHERE username = ?';
-            connection.execute(query, [0, that.getUsername()], function(rows) {
+            //update to hash to something random that no one will ever know
+            connection.execute(query, [crypto.randomBytes(34).toString('hex'), that.getUsername()], function(rows) {
                 callback(rows);
             });
         });

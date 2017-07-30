@@ -58,6 +58,7 @@ module.exports = function(app, passport) {
         authenticator.checkExistingUser(req, res);
     });
 
+    //TODO test this extensively
     router.get('/confirm/:hash', email.checkEmailVerified, function(req, res, next) {
         //TODO set confirmed to true in both cache and database
         var userManager = new UserManager(new UserCache(req.session.user.username).setJSON(req.session.user));

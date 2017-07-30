@@ -25,6 +25,7 @@ function checkLoggedOut(req, res, next) {
         return res.redirect('/signup_success');
     }
     else {
+        delete req.session.user.hash;
         //need to return next to pass on to the next function,
         //but only do it if we are logged in. Don't do this
         //if we redirected, because that wiil send headers twice
