@@ -1,11 +1,11 @@
 //chat ajax function
 //why the fuck is Handlebars.templates undefined
-define(function(Handlebars) {
-    return {
-        chatAjax: chatAjaxRequire(),
-        chatAjaxPromise: chatAjaxPromise
-    };
-});
+//define(function(Handlebars) {
+    //return {
+        //chatAjax: chatAjaxRequire(),
+        //chatAjaxPromise: chatAjaxPromise
+    //};
+//});
 
 function chatAjaxPromise(url, type, data) {
     return $.ajax({
@@ -33,3 +33,8 @@ function chatAjaxRequire() {
         });
     };        
 }
+
+module.exports = {
+    chatAjaxPromise: chatAjaxPromise,
+    chatAjax: chatAjaxRequire()
+};

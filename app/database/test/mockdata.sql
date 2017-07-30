@@ -2098,6 +2098,16 @@ ALTER TABLE `Notifications`
 -- quick hack to add a new column
 ALTER TABLE User ADD COLUMN email VARCHAR(255) NOT NULL DEFAULT "billx0477@gmail.com";
 
+DROP TABLE IF EXISTS EmailConfirm;
+
+CREATE TABLE EmailConfirm (
+    hash VARCHAR(255) NOT NULL UNIQUE PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    confirmed BOOLEAN NOT NULL DEFAULT 0,
+    CONSTRAINT `email_userid` FOREIGN KEY (`username`) REFERENCES `User` (`username`) ON DELETE CASCADE,
+    UNIQUE KEY `email_username` (`username`)
+);
+
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

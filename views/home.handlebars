@@ -826,10 +826,11 @@
         </div>
 
         <script type="text/javascript" src="/javascripts/js-build/home.min.js"></script>
-        <script type="text/javascript" src="/javascripts/js/home-setup.js"></script>
+        <script type="text/javascript" src="/javascripts/bundle/home_bundle.js"></script>
 
         <script>
             var roomIDs = JSON.parse(decodeURIComponent("{{{parseList}}}"));
+//TODO use media queries
 $(document).ready(function() {
     $('#search').click(function(event) {
         event.preventDefault();

@@ -17,6 +17,9 @@ var clean_css = require('gulp-clean-css');
 
 var fixme = require('fixme');
 var gulp_mocha = require('gulp-mocha');
+var gulp_webpack = require('gulp-webpack');
+var runSeq = require('run-sequence');
+var gulp_todo = require('gulp-todo');
 //TODO precompile handlebars,
 //minify, concat css
 //run jshint,
@@ -34,8 +37,6 @@ var neon_js_src = [
     'public/stylesheets/assets/js/neon-api.js',
     'public/stylesheets/assets/js/neon-chat.js',
     'public/javascripts/js.cookie.js',
-    'public/javascripts/js/require.js',
-    'public/javascripts/requireconfig.js',
     'public/stylesheets/assets/js/neon-custom.js',
     'public/stylesheets/assets/js/neon-demo.js'
 ];
@@ -48,8 +49,6 @@ var home_js_src = [
     'public/stylesheets/assets/js/resizeable.js',
     'public/stylesheets/assets/js/neon-api.js',
     'public/javascripts/js.cookie.js',
-    'public/javascripts/js/require.js',
-    'public/javascripts/requireconfig.js',
     'public/stylesheets/assets/js/neon-custom.js'
 ];
 
@@ -73,7 +72,9 @@ gulp.task('compress-neon-css', function() {
 
 //use bash script, since that's easier than all the other stuff
 gulp.task('precompile-hbs', function() {
-    gulp_run('handlebars -m views/partials/ -f public/javascripts/templates/templates.js').exec();
+    gulp_run('handlebars -m views/partials/ -f public/javascripts/templates/templates.js').exec(function() {
+        console.log('-------------Finished compiling hbs templates-------------');
+    });
 });
 
 gulp.task('compress-neon-js', function() {
@@ -110,7 +111,6 @@ gulp.task('compress-home-css', function() {
 
 });
 
-gulp.task('build', ['compress-neon-css', 'precompile-hbs', 'compress-neon-js']);
 
 gulp.task('start-cache-worker', function() {
     gulp_nodemon({
@@ -134,6 +134,17 @@ gulp.task('todo', function() {
         file_encoding: 'utf8',
         line_length_limit: 1000
     });
+});
+
+gulp.task('todofile', function() {
+    return gulp.src(['./**/*.js','!public/javascripts/js/**', 
+            '!public/javascripts/js-build/*', 
+            '!bower_components/**/*', 
+            '!node_modules/**', 
+            '!.git/**', 
+            '!.hg/**', 
+            '!public/stylesheets/assets/js/**/*', '!*.md', '!*.json']).pipe(gulp_todo()).pipe(gulp.dest('./docs'));
+
 });
 
 
@@ -166,20 +177,9 @@ gulp.task('test', function() {
     });
 });
 
-//gulp.task('precompile-handlebars', function() {
-    //gulp.src('views/partials/*.handlebars')
-    //.pipe(gulp_handlebars({
-        //handlebars: require('handlebars')
-    //}))
-    //.pipe(gulp_wrap('Handlebars.template(<%= contents %>)'))
-    //.pipe(gulp_declare({
-        //namespace: 'Handlebars.templates',
-        //noRedeclare: true
-    //}))
-    //.pipe(concat('templates.js'))
-    //.pipe(gulp.dest('public/javascripts/templates'));
-//});
-
+gulp.task('webpack', function() {
+    gulp_webpack(require('./webpack.config.js')).pipe(gulp.dest('public/javascripts/bundle'));
+});
 
 gulp.task('watch', function() {
     gulp.watch(handlebars_src, ['precompile-hbs']);
@@ -187,4 +187,8 @@ gulp.task('watch', function() {
     gulp.watch(neon_css_src, ['compress-neon-css']);
 });
 
-gulp.task('default', ['watch']);
+gulp.task('build', function() {
+    runSeq('compress-neon-css', 'precompile-hbs', 'compress-neon-js', 'webpack', 'test', 'todofile');
+});
+
+gulp.task('default', ['build']);

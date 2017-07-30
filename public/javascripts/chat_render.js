@@ -3,6 +3,21 @@
 //No idea why thsi happens
 //make sure to use handlebars 4.0.10 for both global and local binary
 const handlebars = Handlebars;
+var chatAjaxService = require('./service/chatAjaxService.js');
+var OnlineView = require('./view/onlineview.js');
+var LineView = require('./view/lineview.js');
+
+var SocketView = require('./viewmodel/socketview.js');
+var ChatInfo= require('./viewmodel/chatinfo.js');
+var TypingView = require('./viewmodel/typingview.js');
+
+var NotifView = require('./viewmodel/notifview.js');
+var ChatView = require('./viewmodel/chatview.js');
+var ChatViewModel = require('./chatViewModel.js');
+
+var DirectChatView = require('./viewmodel/directChatView.js');
+var OnlineViewModel = require('./viewmodel/onlineview.js');
+var VotingView = require('./viewmodel/votingview.js');
 
 function parseID(url) {
     var str = url;
@@ -50,76 +65,46 @@ function displayLines(chatList, handlebars, lines, display) {
                         'typingview', 'notifview', 'chatview', 'chatviewmodel', 
                         'directChatView', 'onlineviewModel', 'votingview'];
 
-        console.log("document is ready");
         initializeData(roomID, csrfTokenObj, dependencies);
 
         //HACK for some reason, require doesnt get called sometimes, so refresh the page if that's the case
-        loopRequire();
     });
 
-    function loopRequire() {
-        var counter = 0;
-        var timer = setInterval(function() {
-            console.log("timing");
-            if(++counter && !reached) {
-                location.reload();
-            }
-            else if(reached) {
-                clearInterval(timer);
-            }
-        }, 500);
-    }
-
     function initializeData(roomID, csrfTokenObj, dependencies) {
-        console.log("reached init data func");
-        require(dependencies, function(chatAjaxService, 
-                                        onlineview, 
-                                        lineview, 
-                                        socketview, 
-                                        chatinfo, 
-                                        typingview, 
-                                        notifview, 
-                                        chatview, 
-                                        chatviewmodel, 
-                                        directChatView,
-                                        onlineviewModel, 
-                                        votingview) {
-            console.log("inside require function");
-            reached = true;
-            chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data) {
-                $('.chat-header').remove();
-                $('.chat').prepend(handlebars.templates.chatinfo(data));
-                //zombie cookie
-                console.log("entered userid check");
+        console.log("inside require function");
+        reached = true;
+        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data) {
+            $('.chat-header').remove();
+            $('.chat').prepend(handlebars.templates.chatinfo(data));
+            //zombie cookie
+            console.log("entered userid check");
 
-                if(!sessionStorage.getItem('userid')) {
-                    console.log("userid not set");
-                    chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
-                    .then(function(data) {
-                        console.log("fetch_home post success");
-                        Cookies.set('userid', data.cookie);
-                        sessionStorage.setItem('userid', data.cookie);
-                    })
-                    .then(function(data) {
-                        return ajaxRenderLines(chatAjaxService, csrfTokenObj);
+            if(!sessionStorage.getItem('userid')) {
+                console.log("userid not set");
+                chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
+                .then(function(data) {
+                    console.log("fetch_home post success");
+                    Cookies.set('userid', data.cookie);
+                    sessionStorage.setItem('userid', data.cookie);
+                })
+                .then(function(data) {
+                    return ajaxRenderLines(chatAjaxService, csrfTokenObj);
 
-                    }).then(function(data) {
-                        console.log("initLines post successful");
-                        renderLinesCB(data);
-                        setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel, votingview);
-                    });
-                }
-                else {
-                    ajaxRenderLines(chatAjaxService, csrfTokenObj).then(function(data) {
-                        renderLinesCB(data);
-                        setup(roomID, socketview, chatinfo, typingview, notifview, chatview, lineview, onlineview, chatviewmodel, directChatView, onlineviewModel, votingview);
-                    });
-                }
-                setUpEvents(chatAjaxService, roomID, csrfTokenObj);
-            });
-
+                }).then(function(data) {
+                    console.log("initLines post successful");
+                    renderLinesCB(data);
+                    setup(roomID);
+                });
+            }
+            else {
+                ajaxRenderLines(chatAjaxService, csrfTokenObj).then(function(data) {
+                    renderLinesCB(data);
+                    setup(roomID);
+                });
+            }
+            setUpEvents(chatAjaxService, roomID, csrfTokenObj);
         });
-        console.log("end of require function");
+
     }
 
 })();
@@ -183,24 +168,13 @@ function renderLinesCB(data) {
     chat.scrollTop(chat[0].scrollHeight);
 }
 
-function setup(roomID, 
-                socketview, 
-                chatinfo, 
-                typingview, 
-                notifview, 
-                chatview, 
-                lineview, 
-                onlineview, 
-                chatviewmodel, 
-                directChatView,
-                onlineviewModel,
-                votingview) {
+function setup(roomID) {
 
     var userid = sessionStorage.getItem('userid');
 
-    var cvm = new chatviewmodel.ChatViewModel(userid, roomID, handlebars);
-    cvm.initChatNotifs(roomIDs, chatinfo, socketview);
-    cvm.initTyping(typingview, socketview);
-    cvm.initChat(socketview, chatview, notifview, onlineview, directChatView);
-    cvm.initVoting(socketview, votingview);
+    var cvm = new ChatViewModel(userid, roomID, handlebars);
+    cvm.initChatNotifs(roomIDs, ChatInfo, SocketView);
+    cvm.initTyping(TypingView, SocketView);
+    cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView);
+    cvm.initVoting(SocketView, VotingView);
 }

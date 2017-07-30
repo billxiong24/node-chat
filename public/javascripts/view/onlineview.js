@@ -1,22 +1,20 @@
-define(['./viewrender'], function(viewrender) {
-    return {
-        OnlineView: (function() {
-            function OnlineView(username, userid) {
-                viewrender.ViewRender.call(this, username);
-                this._userid = userid;
-            }
+var ViewRender = require('./viewrender.js');
+var OnlineView = (function() {
+    function OnlineView(username, userid) {
+        ViewRender.call(this, username);
+        this._userid = userid;
+    }
 
-            OnlineView.prototype = Object.create(viewrender.ViewRender.prototype);
-            OnlineView.prototype.constructor = OnlineView;
-            
-            OnlineView.prototype.toJSON = function() {
-                return {
-                    username: this.getUsername(),
-                    userid: this._userid
-                };
-            };
+    OnlineView.prototype = Object.create(ViewRender.prototype);
+    OnlineView.prototype.constructor = OnlineView;
 
-            return OnlineView;
-        })()
+    OnlineView.prototype.toJSON = function() {
+        return {
+            username: this.getUsername(),
+            userid: this._userid
+        };
     };
-});
+
+    return OnlineView;
+})();
+module.exports = OnlineView;

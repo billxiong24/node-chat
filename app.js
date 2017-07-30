@@ -122,7 +122,7 @@ else {
     require('./cluster_node.js')(cluster, http, init(0), PORT);
 }
 
-//LOAD TESTING
+//FIXME load testing does not work anymore because of csrf token
 if(process.env.NODE_ENV === "loadtest") {
     var siege = require('siege');
     siege().on(PORT).concurrent(500).for(1000).times.withCookie.post('/login', {username: "billxiong24", pass:"pass"}).get('/home').attack();
