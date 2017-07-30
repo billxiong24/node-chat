@@ -76,13 +76,12 @@
 			</form>
 			<div class="login-bottom-links">
 				
-                <span>Already have an account?</span>
-				<a href="/login" class="link">
+			    <form method="post" action="/logout" role="form" id="form_register">
 					<i class="entypo-lock"></i>
-                    Login
-				</a>
+                    <button id="loginbutton" type="submit" value="Login">Login with another account</button>
+                    <input type="hidden" name="_csrf" id="" value="{{csrfToken}}" />
 				<br />
-				
+                </form>
 				<a href="#">ToS</a>  - <a href="#">Privacy Policy</a>
 				
 			</div>

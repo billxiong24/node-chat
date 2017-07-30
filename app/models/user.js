@@ -51,6 +51,15 @@ User.prototype.toJSON = function() {
     }; 
 };
 
+User.prototype.setJSON = function(userJSON) {
+    this._username = userJSON.username;
+    this._id = userJSON.id;
+    this._first = userJSON.first;
+    this._last = userJSON.last;
+    this._email = userJSON.email;
+    return this;
+};
+
 User.prototype.read = function() {
     var username = this._username;
     return function(poolConnection) {
@@ -78,6 +87,7 @@ User.prototype.leaveChat = function(chat_id, callback) {
         console.log(err);
     });
 };
+
 
 
 module.exports = User;

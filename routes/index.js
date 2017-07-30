@@ -5,6 +5,8 @@ var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
 var cache_functions = require('../app/cache/cache_functions.js');
 var email = require('../app/authentication/email.js');
+var UserManager = require('../app/models/user_manager.js');
+var UserCache = require('../app/models/user_cache.js');
 
 const timeout = require('connect-timeout');
 const crypto = require('crypto');
@@ -48,7 +50,7 @@ module.exports = function(app, passport) {
     });
 
     //FIXME check email verified middleware
-    router.get('/signup_success', function(req, res, next) {
+    router.get('/signup_success', email.checkEmailVerified, function(req, res, next) {
         res.render('signup_success', {csrfToken: req.csrfToken()});
     });
 
@@ -56,13 +58,21 @@ module.exports = function(app, passport) {
         authenticator.checkExistingUser(req, res);
     });
 
-    router.get('/confirm/:hash', function(req, res, next) {
+    router.get('/confirm/:hash', email.checkEmailVerified, function(req, res, next) {
         //TODO set confirmed to true in both cache and database
-        res.render('registered.handlebars');
+        var userManager = new UserManager(new UserCache(req.session.user.username).setJSON(req.session.user));
+        userManager.authenticateEmail(req.session.user, req.params.hash, function(rows) {
+            if(!rows) {
+                //TODO render some error page
+                res.status(403).send({auth: 'forbidden'});
+                return;
+            }
+            res.render('registered');
+        });
     });
 
     //FIXME check email verified middleware
-    router.post('/sendEmail', function(req, res, next) {
+    router.post('/sendEmail', email.checkEmailVerified, function(req, res, next) {
         email.sendEmailConfirmation(req.session.user.email, req.session.user.hash, function(err, info) {
             res.status(200).json({sent: true});
         });
@@ -72,7 +82,6 @@ module.exports = function(app, passport) {
         authenticator.logOut(req, res);
     });
 
-    /* GET home page. */
     router.use('/home', home);
     router.use('/chats', chats);
 

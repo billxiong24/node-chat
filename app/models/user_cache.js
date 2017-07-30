@@ -1,4 +1,4 @@
-require('dotenv').config();
+/*jshint sub:true*/
 var User = require('./user.js');
 const connection = require('../database/config.js');
 const cache_functions = require('../cache/cache_functions.js');
@@ -15,11 +15,16 @@ var UserCache = function (username, id=undefined, password=undefined, first=unde
 UserCache.prototype = Object.create(User.prototype);
 UserCache.prototype.constructor = UserCache;
 
-
 UserCache.prototype.read = function() {
     return User.prototype.read.call(this);
 };
 
+UserCache.prototype.setJSON = function(userJSON) {
+    User.prototype.setJSON.call(this, userJSON);
+    return this;
+};
+
+//NOTE need to return queries inorder to catch errors 
 UserCache.prototype.insert = function(callback = function(rows) {}, errorCallback=defaultErrorCB) {
     var userObj = User.prototype.toJSON.call(this);
     var that = this;
@@ -55,10 +60,11 @@ UserCache.prototype.insert = function(callback = function(rows) {}, errorCallbac
         var finished = conn.query('COMMIT');
         console.log("releasing connection");
         connection.release(conn);
+
         userObj.hash = hash;
-        userObj.confirmed = false;
+        userObj.confirmed = 0;
         that.addToCache(userObj);
-        callback(result);
+        callback(userObj);
         return finished;
     };
 
@@ -94,7 +100,7 @@ UserCache.prototype.confirmPassword = function(password, callback) {
         return result;
     }).then(function(result) {
         //if result, user found in cache
-        return result ? password_util.retrievePassword(password, result.password, null, true) : 'not cache';
+        return result && result.password ? password_util.retrievePassword(password, result.password, null, true) : 'not cache';
     }).then(function(result) {
         if(result !== 'not cache') {
             callback(result);
@@ -129,6 +135,39 @@ UserCache.prototype.updateSettings = function(newPass, newEmail, callback=functi
         callback(rows);
     }, function(err) {
         return console.log(err);
+    });
+};
+
+UserCache.prototype.confirmEmail = function(sessionUser, hash, callback) {
+    //update cache and database as per write through policy
+    //FIXME assuming user in cache, since user has just logged in- risky but low chance of anything otherwise 
+    //this route will be authenticated, so ya but i really need to fix this
+
+    var that = this;
+    cache_functions.retrieveJSON(this.getKey(), null, true)
+    .then(function(result) {
+        if(!result.hash) {
+            return null;
+        }
+        if(result.hash !== hash) {
+            return null;
+        }
+
+        sessionUser['confirmed'] = 1;
+        sessionUser['hash'] = 0;
+        return result;
+    }).then(function(result) {
+        if(!result) {
+            return callback(null);
+        }
+
+        return cache_functions.addJSON(that.getKey(), sessionUser, null, true)
+        .then(function(result) {
+            var query ='UPDATE EmailConfirm SET hash = ?, confirmed = 1 WHERE username = ?';
+            connection.execute(query, [0, that.getUsername()], function(rows) {
+                callback(rows);
+            });
+        });
     });
 };
 

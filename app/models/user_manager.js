@@ -17,8 +17,8 @@ UserManager.prototype.signup = function(password, signupFailure, signupSuccess) 
     var that = this;
     password_util.storePassword(password, function(err, hash) {
         that._userObj.setPassword(hash);
-        that._userObj.insert(function(rows) {
-            var jsonObj = that._userObj.toJSON();
+        that._userObj.insert(function(userObj) {
+            var jsonObj = userObj;
             delete jsonObj.password;
             return signupSuccess(jsonObj);
         },
@@ -57,8 +57,8 @@ UserManager.prototype.authenticate = function(password, loginResult) {
             console.log("user login cache miss");
             //redis does not store null values, for users created previously, just
             //let them pass
-            sqlUser.confirmed = (sqlUser.confirmed === null) ? 'true' : sqlUser.confirmed;
-            sqlUser.hash = (sqlUser.hash === null) ? 'true' : sqlUser.hash;
+            sqlUser.confirmed = (sqlUser.confirmed === null) ? 1 : sqlUser.confirmed;
+            sqlUser.hash = (sqlUser.hash === null) ? 1 : sqlUser.hash;
             user.addToCache(sqlUser);
         }
         delete sqlUser.password;
@@ -75,6 +75,12 @@ UserManager.prototype.authenticate = function(password, loginResult) {
         }
         connection.executePoolTransaction([setConn, checkDB, validate, retrievePassword, loginValidate, loginResult], function(err) {console.log(err);});
     });
+};
+
+UserManager.prototype.authenticateEmail = function(userJSON, hash, callback) {
+    this._userObj.confirmEmail(userJSON, hash, function(rows) {
+        callback(rows);
+    });   
 };
 
 module.exports = UserManager;

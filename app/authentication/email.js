@@ -1,8 +1,9 @@
 const connection = require('../database/config.js');
 const nodemailer = require('nodemailer');
 var transport;
+
+//just 1 instance of transport object
 if(!transport) {
-    console.log("creating new transport object");
     transport = nodemailer.createTransport({
         //host can be anything, gmail is easiest
         host: 'smtp.gmail.com',
@@ -22,7 +23,7 @@ function checkEmailVerified(req, res, next) {
     else if(!req.session.user) {
         res.redirect('/login');
     }
-    else if(req.session.user.confirmed === 'true') {
+    else if(req.session.user.confirmed == 1) {
         res.redirect('/home');
     }
     else {

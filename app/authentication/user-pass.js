@@ -1,3 +1,4 @@
+
 /**
  * user-password authentication using passport.js
  */
@@ -20,7 +21,7 @@ function checkLoggedOut(req, res, next) {
         res.redirect('/');
     }
     //since redis serializes everything to string, compare to string
-    else if(req.session.user.confirmed === 'false') {
+    else if(req.session.user.confirmed == '0') {
         return res.redirect('/signup_success');
     }
     else {
@@ -161,7 +162,7 @@ function passportAuth(passport) {
                 req.session.members = {};
                 //this is added in database and cache as well
                 req.session.emailValidated = false;
-                return done(null, info);
+                return done(null, userObj);
             };
 
             user_manager.signup(password_signup, signupFailure, signupSuccess);

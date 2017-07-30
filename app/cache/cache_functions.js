@@ -95,7 +95,7 @@ function pushMessage(key, arr, callback) {
     //flush the cache if too many messages
     retrieveArray(key, 0, -1, function(err, arr) {
         //some randomass values
-        if(arr.length < 8) {
+        if(arr.length < 12) {
             return;
         }
 
@@ -104,7 +104,7 @@ function pushMessage(key, arr, callback) {
             num_messages: Math.floor((arr.length + 4) / 2)
         }, function(err) {
             if(err) { console.log(err); return; }
-        }, 5);
+        }, 4);
     });
     multi.exec(callback);
 }

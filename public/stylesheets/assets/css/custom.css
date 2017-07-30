@@ -20,6 +20,17 @@ body {
     color: white;
 }
 
+#form_register #loginbutton {
+    background:none !important;
+    color:inherit;
+    border:none; 
+    padding:0 !important;
+    font: inherit;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
 .signup-error {
     font-size: 11px;
     color: #fff;

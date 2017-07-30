@@ -31,7 +31,11 @@ function executePoolTransaction(transactions, error=function(err) {}, info=null)
     var connected = pool.getConnection();
 
     transactions.reduce(function(prevFunc, currFunc) {
-        return prevFunc.then(currFunc);
+        return prevFunc.then(currFunc).catch(function(err) {
+            //when we detect expection, throw it so none of next functions can
+            //be executed. This error will be caught at the very end
+            throw err;
+        });
     }, connected).catch(error);
 }
 
