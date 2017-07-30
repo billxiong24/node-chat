@@ -17,13 +17,13 @@ if(!transport) {
 }
 
 function checkEmailVerified(req, res, next) {
-    if(!req.session){
+    if(!req.session) {
         res.redirect('/login');
     }
-    else if(!req.session.user) {
+    else if(!req.user) {
         res.redirect('/login');
     }
-    else if(req.session.user.confirmed == 1) {
+    else if(parseInt(req.user.confirmed) === 1) {
         res.redirect('/home');
     }
     else {
@@ -40,7 +40,7 @@ function sendEmailConfirmation(email, hash, callback) {
         to: email,
         subject: 'Welcome!',
         html: '<h3>Welcome! Click the link below to confirm your account.</h3><br/> <p>This link will expire soon, so click it now.</p>'+
-        '<a href="http://localhost:3000/confirm/'+hash+'">Click here to confirm your account</a>'
+        '<a href="http://192.168.1.153:3000/confirm/'+hash+'">Click here to confirm your account</a>'
     };
     transport.sendMail(options, function(err, info) {
         if(err) {

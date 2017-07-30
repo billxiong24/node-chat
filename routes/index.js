@@ -51,9 +51,9 @@ module.exports = function(app, passport) {
 
     router.get('/signup_success', email.checkEmailVerified, function(req, res, next) {
         //TODO send email conf here
-        //email.sendEmailConfirmation(req.session.user.email, req.session.user.hash, function(err, info) {
+        email.sendEmailConfirmation(req.user.email, req.user.hash, function(err, info) {
             res.render('signup_success', {csrfToken: req.csrfToken()});
-        //});
+        });
     });
 
     router.post('/signup_auth', authenticator.checkLoggedIn, function(req, res, next) {
@@ -63,8 +63,8 @@ module.exports = function(app, passport) {
     //TODO test this extensively
     router.get('/confirm/:hash', email.checkEmailVerified, function(req, res, next) {
         //TODO set confirmed to true in both cache and database
-        var userManager = new UserManager(new UserCache(req.session.user.username).setJSON(req.session.user));
-        userManager.authenticateEmail(req.session.user, req.params.hash, function(rows) {
+        var userManager = new UserManager(new UserCache(req.user.username).setJSON(req.user));
+        userManager.authenticateEmail(req.user, req.params.hash, function(rows) {
             if(!rows) {
                 //TODO render some error page
                 res.status(403).send({auth: 'forbidden'});
@@ -76,7 +76,7 @@ module.exports = function(app, passport) {
 
     //FIXME check email verified middleware
     router.post('/sendEmail', email.checkEmailVerified, function(req, res, next) {
-        email.sendEmailConfirmation(req.session.user.email, req.session.user.hash, function(err, info) {
+        email.sendEmailConfirmation(req.user.email, req.user.hash, function(err, info) {
             res.status(200).json({sent: true});
         });
     });

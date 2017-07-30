@@ -48,7 +48,7 @@ function init(port) {
     app.set('view engine', 'handlebars');
 
     // uncomment after placing your favicon in /public
-    //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+    app.use(favicon(path.join(__dirname, 'public/stylesheets/assets/images', 'favicon.ico')));
 
     app.use(helmet());
     app.use(helmet.hidePoweredBy());

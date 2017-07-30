@@ -67,7 +67,7 @@ function displayLines(chatList, handlebars, lines, display) {
             else if(reached) {
                 clearInterval(timer);
             }
-        }, 300);
+        }, 500);
     }
 
     function initializeData(roomID, csrfTokenObj, dependencies) {

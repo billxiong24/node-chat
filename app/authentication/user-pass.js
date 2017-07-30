@@ -20,12 +20,12 @@ function checkLoggedOut(req, res, next) {
     if(!req.isAuthenticated()) {
         res.redirect('/');
     }
-    //since redis serializes everything to string, compare to string
-    else if(req.session.user.confirmed == '0') {
+    else if(parseInt(req.user.confirmed) === 0) {
         return res.redirect('/signup_success');
     }
     else {
         delete req.session.user.hash;
+        delete req.user.hash;
         //need to return next to pass on to the next function,
         //but only do it if we are logged in. Don't do this
         //if we redirected, because that wiil send headers twice
@@ -154,7 +154,7 @@ function passportAuth(passport) {
                 return done(null, false, req.flash('error', 'Signup error.'));
             }
 
-            //TODO add password checker
+            //TODO add stronger password checker
             if(!validate_cred_util.validatePassword(info.password)) {
                 //TODO less lazy error message lmao
                 return done(null, false, req.flash('error', 'Signup error.'));
@@ -172,7 +172,6 @@ function passportAuth(passport) {
                 req.session.emailValidated = false;
                 return done(null, userObj);
             };
-
             user_manager.signup(password_signup, signupFailure, signupSuccess);
         }
     ));
@@ -180,14 +179,11 @@ function passportAuth(passport) {
     passport.use('login', new LocalStrategy(params, function(req, username, password, done) {
         var loginResult = function(user) {
             if(!user) {return done(null, false, req.flash('error', 'Login error.')); }
-            console.log(user, 'passport login');
-
             req.session.user = user;
             //req.session.rooms = [];
             req.session.members = {};
             return done(null, user);
         };
-
         var user_manager = new UserManager(new UserCache(username));
         user_manager.authenticate(password, loginResult);
     }));

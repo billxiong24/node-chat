@@ -59,8 +59,8 @@
                 <p>{{signup_error}}</p>
 			</div>
 			
-			<form method="get" action="/home" role="form" id="form_register">
 				
+			<form method="get" role="form" action="/home" id="sendEmail">
 				<div class="form-register-success"style="display: block;">
 					<i class="entypo-check"></i>
 					<h3>Your account has been confirmed! </h3>
@@ -71,9 +71,8 @@
                         <i class="entypo-right-open-mini"></i>
                         Continue
                     </button>
-                    <input type="hidden" name="_csrf" id="" value="{{csrfToken}}" />
                 </div>
-			</form>
+            </form>
 			<div class="login-bottom-links">
 				
 			    <form method="post" action="/logout" role="form" id="form_register">
