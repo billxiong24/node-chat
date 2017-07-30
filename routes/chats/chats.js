@@ -14,7 +14,8 @@ if(!manager) {
 }
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.loadChatLists(req.csrfToken(), req.session.user, req.session.members, res, function(userJSON, inChat) {
+    console.log(req.user);
+    manager.loadChatLists(req.csrfToken(), req.user, req.session.members, res, function(userJSON, inChat) {
         if(process.env.NODE_ENV === 'test') {
             if(!inChat) {
                 return res.redirect('/home');
@@ -31,11 +32,13 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
 });
 
 router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.loadMoreLines(req.session.user.username, req.body.chatID, req.session.lastTimeStamp, req, res); 
+    console.log(req.user);
+    manager.loadMoreLines(req.user.username, req.body.chatID, req.session.lastTimeStamp, req, res); 
 });
 
 router.post('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, res, next) {
     //hack
+    console.log(req.user);
     var cachedCB = function(members) {
         res.status(200).send(members[req.params.chatID]);
     };
@@ -50,10 +53,12 @@ router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req,
 });
 
 router.post('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.loadLines(req.session.user.username, req.params.chatID, req, res);
+    console.log(req.user);
+    manager.loadLines(req.user.username, req.params.chatID, req, res);
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
+    console.log(req.user);
     //TODO find a way to test this, since we are resetting members every time in the test
     for(var key in req.session.members) {
         //chat code was found 
@@ -76,15 +81,17 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         //when redirected, the chat info will be cached
         res.redirect('/chats/' + id);
     };
-    manager.joinChat(req.session.user.username, req.body.joinChat, failure, success);
+    manager.joinChat(req.user.username, req.body.joinChat, failure, success);
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.createChat(req.session.user.username, req.body.createChat, req.session.members, res);
+    console.log(req.user);
+    manager.createChat(req.user.username, req.body.createChat, req.session.members, res);
 });
 
 router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
-    var userManager = new UserManager(new UserCache(req.session.user.username));
+    console.log(req.user);
+    var userManager = new UserManager(new UserCache(req.user.username));
     userManager.leave(req.body.chatID, function(rows) {
         //this was a huge bug, and why we need unit tests
         delete req.session.members[req.body.chatID];
@@ -93,7 +100,7 @@ router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, nex
 });
 
 function chatRender(req, res, cachedCB, missCB) {
-    var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.session.user.username, -1));
+    var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.user.username, -1));
     if(req.params.chatID in req.session.members) {
         notif_manager.loadNotifications(function(numNotifs) {
             console.log("post renderinfo cached");
@@ -104,7 +111,7 @@ function chatRender(req, res, cachedCB, missCB) {
     }
     else {
         console.log("post renderinfo not cached");
-        manager.loadChat(req.session.user.username, req.params.chatID, req.session.members, req.csrfToken(), res, function(deepCopy) {
+        manager.loadChat(req.user.username, req.params.chatID, req.session.members, req.csrfToken(), res, function(deepCopy) {
             missCB(deepCopy);
         });
     }

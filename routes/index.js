@@ -49,9 +49,11 @@ module.exports = function(app, passport) {
         authenticator.passportSignupCallback(passport, req, res, next);
     });
 
-    //FIXME check email verified middleware
     router.get('/signup_success', email.checkEmailVerified, function(req, res, next) {
-        res.render('signup_success', {csrfToken: req.csrfToken()});
+        //TODO send email conf here
+        //email.sendEmailConfirmation(req.session.user.email, req.session.user.hash, function(err, info) {
+            res.render('signup_success', {csrfToken: req.csrfToken()});
+        //});
     });
 
     router.post('/signup_auth', authenticator.checkLoggedIn, function(req, res, next) {

@@ -119,14 +119,21 @@ function passportAuth(passport) {
     //functions for serializing and deserializing users for session
     passport.serializeUser(function(user, done) {
         console.log("serializing user");
-        done(null, user.id);
+        //serialize user by username key, so easy to look up in redis
+        done(null, user.username);
     });
 
-    passport.deserializeUser(function(id, done) {
+    passport.deserializeUser(function(username, done) {
         console.log("deserializing user");
-        //TODO cache this shit, so we dont hit db on every request
-        connection.execute('SELECT id, username, first, last FROM User WHERE id = ? ', [id], function(rows) {
-            done(null, rows[0]);
+        //NOTE when deserializing user, check cache first, also we are releasing connection
+        
+        var userCache = new UserCache(username);
+        var read = userCache.read();
+        var end = function(result) {
+            return done(null, result[0]);
+        };
+        connection.executePoolTransaction([read, end], function(err) {
+            throw err;
         });
     });
 
@@ -173,6 +180,7 @@ function passportAuth(passport) {
     passport.use('login', new LocalStrategy(params, function(req, username, password, done) {
         var loginResult = function(user) {
             if(!user) {return done(null, false, req.flash('error', 'Login error.')); }
+            console.log(user, 'passport login');
 
             req.session.user = user;
             //req.session.rooms = [];

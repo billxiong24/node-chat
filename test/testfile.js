@@ -33,6 +33,12 @@ beforeEach(function() {
             //we are not going to be hitting the cache at all
             req.session.members = {};
             //mock some session user
+            req.user = {
+                id: 'b4b4b4e8201ea19c963b',
+                username: 'jj45',
+                first: "john",
+                last: 'jones'
+            };
             req.session.user = {
                 id: 'b4b4b4e8201ea19c963b',
                 username: 'jj45',

@@ -169,6 +169,7 @@ UserCache.prototype.confirmEmail = function(sessionUser, hash, callback) {
             return null;
         }
 
+        //NOTE if we use passport's builtin serialize/deserialize, we dont need to update session user  
         sessionUser['confirmed'] = 1;
         sessionUser['hash'] = 0;
         return result;
