@@ -9,6 +9,7 @@ $(document).ready(function() {
         chatAjaxService.chatAjax('/sendEmail', 'POST', JSON.stringify(validate), function(data) {
             if(data.sent) {
                 //TODO update the view here
+                $('.resent-email').show();
             }
         });
     });

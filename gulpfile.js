@@ -169,7 +169,7 @@ gulp.task('test', function() {
         gulp_run('mysql -u root --password=Chem1313# chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
 
             gulp.src('./test/*.js', {read: true}).pipe(gulp_mocha({
-                reporter: 'nyan'
+                reporter: 'spec'
             })).on('error', function() {
                 process.exit(1);
             });

@@ -1,4 +1,5 @@
 //TODO organize this using some frontend framework
+
 var ChatViewModel = (function() {
     var ChatViewModel = function(userid, roomID, handlebars) {
         this._csrfTokenObj = {

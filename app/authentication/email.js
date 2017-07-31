@@ -32,8 +32,6 @@ function checkEmailVerified(req, res, next) {
 }
 
 function sendEmailConfirmation(email, hash, callback) {
-    console.log(process.env.MAIL_USER);
-    console.log(process.env.MAIL_PASS);
     var mail_user = process.env.MAIL_USER;
     var options = {
         from: '"Workspace" <'+mail_user+'>',

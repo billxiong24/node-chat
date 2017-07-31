@@ -63,6 +63,7 @@ function passportSignupCallback(passport, req, res, next) {
                 console.log(err);
                 return;
             }
+            req.session.sent = false;
             req.session.user = user;
             res.status(200).json({signup_error : false});
         });
@@ -83,7 +84,8 @@ function passportAuthCallback(passport, req, res, next) {
         req.login(user, function(err) {
             if(err) { console.log(err); }
             
-            res.send({login_error : false});
+            req.session.sent = false;
+            res.status(200).json({login_error : false});
         });
 
     })(req, res, next);

@@ -326,24 +326,33 @@ describe('authentication routes', function() {
         expect(addToCacheSpy.calledOnce).to.equal(false);
     });
 
-    //signupTest('/POST signup should work because meets all criteria, should add user to cache', '/signup', {
-        //user_signup: 'validUsername',
-        //password_signup: 'aValidPassword',
-        //firstname_signup: 'Firstname',
-        //lastname_signup: 'Lastname'
-    //}, function(result) {
-        //expect(userCacheInsertSpy.calledOnce).to.equal(true);
+    signupTest('/POST signup should work because meets all criteria, should add user to cache', '/signup', {
+        user_signup: 'validUsername',
+        password_signup: 'aValidPassword',
+        firstname_signup: 'Firstname',
+        lastname_signup: 'Lastname',
+        email: 'willxiong@gmail.com'
+    }, function(result) {
+        expect(userCacheInsertSpy.calledOnce).to.equal(true);
+        expect(result.res.client._httpMessage.res.text).to.not.equal(null);
+        var json = JSON.parse(result.res.client._httpMessage.res.text);
+        expect(json).to.have.property('signup_error');
+        expect(json.signup_error).to.equal(false);
+    });
 
-    //});
-
-    //signupTest('/POST signup should not work bc username is taken', '/signup', {
-        //user_signup: 'jj45',
-        //password_signup: 'doesntmatter',
-        //firstname_signup: 'firstdoesnt',
-        //lastname_signup: 'lastdoesnt'
-    //}, function(result) {
-        //expect(addToCacheSpy.calledOnce).to.equal(false);
-    //});
+    signupTest('/POST signup should not work bc username is taken', '/signup', {
+        user_signup: 'jj45',
+        password_signup: 'doesntmatter',
+        firstname_signup: 'firstdoesnt',
+        lastname_signup: 'lastdoesnt',
+        email: 'someemail@gmail'
+    }, function(result) {
+        expect(addToCacheSpy.calledOnce).to.equal(false);
+        expect(result.res.client._httpMessage.res.text).to.not.equal(null);
+        var json = JSON.parse(result.res.client._httpMessage.res.text);
+        expect(json).to.have.property('signup_error');
+        expect(json.signup_error).to.equal(true);
+    });
 
     it('/POST signup_auth should return some error since username too short', function(done) {
         agent.get('/signup').then(function(result) {
@@ -379,14 +388,18 @@ describe('authentication routes', function() {
         });
     });
 
-    //signupTest('/POST signup should not work bc password doesnt qualify', '/signup', {
-        //user_signup: 'jj45',
-        //password_signup: 'a',
-        //firstname_signup: 'firstdoesnt',
-        //lastname_signup: 'lastdoesnt'
-    //}, function(result) {
-
-    //});
+    signupTest('/POST signup should not work bc password doesnt qualify', '/signup', {
+        user_signup: 'jj45',
+        password_signup: 'a',
+        firstname_signup: 'firstdoesnt',
+        lastname_signup: 'lastdoesnt',
+        email: 'anemail@gfaf'
+    }, function(result) {
+        expect(result.res.client._httpMessage.res.text).to.not.equal(null);
+        var json = JSON.parse(result.res.client._httpMessage.res.text);
+        expect(json).to.have.property('signup_error');
+        expect(json.signup_error).to.equal(true);
+    });
 
     it('POST /logout should redirect to login page', function(done) {
         agent.get('/login').then(function(result) {

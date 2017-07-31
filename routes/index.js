@@ -50,9 +50,13 @@ module.exports = function(app, passport) {
     });
 
     router.get('/signup_success', email.checkEmailVerified, function(req, res, next) {
-        //TODO send email conf here
+        if(req.session.sent) {
+            console.log("sent email already");
+            return res.render('signup_success', {first: req.user.first, csrfToken: req.csrfToken()});
+        }
         email.sendEmailConfirmation(req.user.email, req.user.hash, function(err, info) {
-            res.render('signup_success', {csrfToken: req.csrfToken()});
+            res.render('signup_success', {first: req.user.first, csrfToken: req.csrfToken()});
+            req.session.sent = true;
         });
     });
 
