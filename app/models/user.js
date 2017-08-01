@@ -34,10 +34,12 @@ User.prototype.getLast = function() {
 
 User.prototype.setPassword = function(password) {
     this._password = password;
+    return this;
 };
 
 User.prototype.setEmail = function(email) {
     this._email = email;
+    return this;
 };
 
 User.prototype.toJSON = function() {

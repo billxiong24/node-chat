@@ -8,6 +8,7 @@ function storePassword(password, callback, async=false) {
         });
     }
     else {
+        //no idea why empty callback has to be used, but its necessary for promise to work
         return bcrypt.hashAsync(password, null, function() {});
     }
 }

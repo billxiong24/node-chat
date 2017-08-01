@@ -19,5 +19,10 @@ router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUse
     });
 });
 
+router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
+
+
+});
+
 
 module.exports = router;

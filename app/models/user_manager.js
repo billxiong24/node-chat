@@ -65,4 +65,8 @@ UserManager.prototype.authenticateEmail = function(userJSON, hash, callback) {
     });   
 };
 
+UserManager.prototype.updateUserProfile = function(oldPass, newPass, infoObj) {
+    
+};
+
 module.exports = UserManager;

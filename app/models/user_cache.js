@@ -130,7 +130,7 @@ UserCache.prototype.confirmPassword = function(password, callback) {
     }).then(function(result) {
         if(result !== 'not cache') {
             that._inCache = true;
-            callback(result);
+            return callback(result);
         }
         return result !== 'not cache';
     }).then(function(result) {
@@ -157,12 +157,22 @@ UserCache.prototype.confirmPassword = function(password, callback) {
     });
 };
 
-UserCache.prototype.updateSettings = function(newPass, newEmail, callback=function(rows) {}) {
-    var query = 'UPDATE User SET password = ?, email = ? WHERE username = ?';
-    connection.execute(query, [newPass, newEmail, this._username], function(rows) {
-        callback(rows);
-    }, function(err) {
-        return console.log(err);
+UserCache.prototype.updateSettings = function(newObj, sessionObj, callback=function(rows) {}) {
+    //need to update cache and database at the same time
+    var that = this;
+    this.setJSON(newObj);
+
+    password_util.storePassword(newPass, function(err, hash) {
+        that.setPassword(hash);
+
+        var query = 'UPDATE User SET password = ?, email = ? WHERE username = ?';
+        connection.execute(query, [hash, newEmail, that._username], function(rows) {
+            //we're gonna have to update cache anyways, so whatever
+            that.addToCache();
+            callback(rows);
+        }, function(err) {
+            return console.log(err);
+        });
     });
 };
 
