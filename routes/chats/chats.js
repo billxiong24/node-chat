@@ -31,14 +31,12 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     }, req.params.chatID);
 });
 
-router.post('/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
-    console.log(req.user);
-    manager.loadMoreLines(req.user.username, req.body.chatID, req.session.lastTimeStamp, req, res); 
+router.get('/:chatID/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
+    manager.loadMoreLines(req.user.username, req.params.chatID, req.session.lastTimeStamp, req, res); 
 });
 
-router.post('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, res, next) {
+router.get('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, res, next) {
     //hack
-    console.log(req.user);
     var cachedCB = function(members) {
         res.status(200).send(members[req.params.chatID]);
     };
@@ -52,7 +50,7 @@ router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req,
 
 });
 
-router.post('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
+router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
     console.log(req.user);
     manager.loadLines(req.user.username, req.params.chatID, req, res);
 });

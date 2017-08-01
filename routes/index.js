@@ -3,6 +3,7 @@ var router = express.Router();
 var authenticator = require('../app/authentication/user-pass.js');
 var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
+var users = require('./users/users.js');
 var cache_functions = require('../app/cache/cache_functions.js');
 var email = require('../app/authentication/email.js');
 var UserManager = require('../app/models/user_manager.js');
@@ -91,6 +92,7 @@ module.exports = function(app, passport) {
 
     router.use('/home', home);
     router.use('/chats', chats);
+    router.use('/users', users);
 
 
     function haltOnTimeout(req, res, next) {

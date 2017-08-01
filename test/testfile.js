@@ -134,13 +134,12 @@ describe('chat routes', function() {
         });
     });
 
-    it('POST /:id/renderInfo should return correct header information about chat', function(done) {
+    it('GET /:id/renderInfo should return correct header information about chat', function(done) {
         agent.get('/chats/019274b44a472600').then(function(result) {
             //console.log(loadLists.calledOnce);
 
             result.body.should.have.property('csrfToken');
-            return agent.post('/chats/019274b44a472600/renderInfo')
-            .send({'_csrf': result.body.csrfToken})
+            return agent.get('/chats/019274b44a472600/renderInfo')
             .then(function(result) {
 
                 expect(releaseSpy.calledOnce).to.equal(true);
@@ -160,12 +159,11 @@ describe('chat routes', function() {
         });
     });
 
-    it('POST / initLines should give the inital lines user sees', function(done) {
+    it('GET / initLines should give the inital lines user sees', function(done) {
         agent.get('/chats/019274b44a472600').then(function(result) {
             result.body.should.have.property('csrfToken');
 
-            return agent.post('/chats/019274b44a472600/initLines')
-            .send({'_csrf': result.body.csrfToken})
+            return agent.get('/chats/019274b44a472600/initLines')
             .then(function(result) {
                 expect(releaseSpy.calledOnce).to.equal(true);
                 result.should.have.status(200);
@@ -262,9 +260,9 @@ describe('chat routes', function() {
         });
     });
 
-    it('POST /chats/loadLines should more lines if there are more lines', function(done) {
+    it('GET /chats/loadLines should more lines if there are more lines', function(done) {
         agent.get('/home').then(function(result) {
-            return agent.post('/chats/loadLines')
+            return agent.get('/chats/019274b44a472600/loadLines')
             .send({'_csrf': result.body.csrfToken, chatID: '019274b44a472600'})
             .then(function(result) {
                 result.body.should.have.property('lines');
@@ -276,9 +274,9 @@ describe('chat routes', function() {
         });
     });
 
-    it('POST /chats/loadLines should return null since there are no more lines', function(done) {
+    it('GET /chats/loadLines should return null since there are no more lines', function(done) {
         agent.get('/home').then(function(result) {
-            return agent.post('/chats/loadLines')
+            return agent.get('/chats/0c8beba0e895fe71eedc2794fa294fd6/loadLines')
             .send({'_csrf': result.body.csrfToken, chatID: '0c8beba0e895fe71eedc2794fa294fd6'})
             .then(function(result) {
                 result.body.should.have.property('lines');

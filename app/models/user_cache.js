@@ -32,7 +32,19 @@ UserCache.prototype.read = function() {
                 return [result];
             }
             that._inCache = false;
-            return User.prototype.read.call(that)(poolConnection);
+            console.log("user cache miss when reading");
+
+            //if cache miss, we add the result to cache as per write through policy
+            return User.prototype.read.call(that)(poolConnection).then(function(result) {
+                if(result.length === 0) {
+                    return result;
+                }
+                var sqlUser = result[0];
+                sqlUser.confirmed = (sqlUser.confirmed === null) ? 1 : parseInt(sqlUser.confirmed);
+                sqlUser.hash = (sqlUser.hash === null) ? 1 : sqlUser.hash;
+                that.addToCache(sqlUser);
+                return result;
+            });
         });
     };
 };

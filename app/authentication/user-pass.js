@@ -32,6 +32,14 @@ function checkLoggedOut(req, res, next) {
         return next();
     }
 }
+function checkOwnUser(req, res, next) {
+    //TODO verify session token as well
+    if(req.user.username !== req.params.username) {
+        return res.redirect('/users/'+req.user.username);
+    }
+
+    return next();
+}
 function checkLoggedIn(req, res, next) {
     if(req.isAuthenticated()) {
         res.redirect('/home');
@@ -132,6 +140,9 @@ function passportAuth(passport) {
         var userCache = new UserCache(username);
         var read = userCache.read();
         var end = function(result) {
+            if(result.length === 0) {
+                return done(null, false);
+            }
             return done(null, result[0]);
         };
         connection.executePoolTransaction([read, end], function(err) {
@@ -171,7 +182,6 @@ function passportAuth(passport) {
                 req.session.user = userObj; 
                 req.session.members = {};
                 //this is added in database and cache as well
-                req.session.emailValidated = false;
                 return done(null, userObj);
             };
             user_manager.signup(password_signup, signupFailure, signupSuccess);
@@ -191,4 +201,13 @@ function passportAuth(passport) {
     }));
 }
 
-module.exports = {logOut, checkLoggedOut, checkLoggedIn, passportSignupCallback, checkExistingUser, passportAuth, passportAuthCallback};
+module.exports = {
+    logOut,
+    checkLoggedOut,
+    checkLoggedIn,
+    checkOwnUser,
+    passportSignupCallback,
+    checkExistingUser,
+    passportAuth,
+    passportAuthCallback
+};

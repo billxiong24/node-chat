@@ -119,7 +119,7 @@
 	    function initializeData(roomID, csrfTokenObj, dependencies) {
 	        console.log("inside require function");
 	        reached = true;
-	        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'POST', JSON.stringify(csrfTokenObj), function(data) {
+	        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'GET', null, function(data) {
 	            $('.chat-header').remove();
 	            $('.chat').prepend(handlebars.templates.chatinfo(data));
 	            //zombie cookie
@@ -178,13 +178,9 @@
 
 	        var firstMessage = $('.message-data:first');
 	        var curScroll = firstMessage.offset().top - $(document).scrollTop();
-
-	        var dataObj = {
-	            chatID: roomID,
-	            _csrf: csrfTokenObj._csrf
-	        };
-	        chatAjaxService.chatAjax('/chats/loadLines', 'POST', JSON.stringify(dataObj), 
+	        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/loadLines', 'GET', null, 
 	            function(data) {
+	                console.log(data);
 	                if(data.lines === null) {return;}
 
 	                var chat = $('.chat-history-group');
@@ -202,7 +198,7 @@
 	}
 
 	function ajaxRenderLines(chatAjaxService, csrfTokenObj) {
-	    return chatAjaxService.chatAjaxPromise(cutSlash(window.location.pathname)+'/initLines', 'POST', JSON.stringify(csrfTokenObj));
+	    return chatAjaxService.chatAjaxPromise(cutSlash(window.location.pathname)+'/initLines', 'GET', null);
 	}
 
 	function renderLinesCB(data) {
