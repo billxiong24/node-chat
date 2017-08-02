@@ -14,7 +14,6 @@ if(!manager) {
 }
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    console.log(req.user);
     manager.loadChatLists(req.csrfToken(), req.user, req.session.members, res, function(userJSON, inChat) {
         if(process.env.NODE_ENV === 'test') {
             if(!inChat) {
@@ -51,12 +50,10 @@ router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req,
 });
 
 router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
-    console.log(req.user);
     manager.loadLines(req.user.username, req.params.chatID, req, res);
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    console.log(req.user);
     //TODO find a way to test this, since we are resetting members every time in the test
     for(var key in req.session.members) {
         //chat code was found 
@@ -83,12 +80,10 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    console.log(req.user);
     manager.createChat(req.user.username, req.body.createChat, req.session.members, res);
 });
 
 router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
-    console.log(req.user);
     var userManager = new UserManager(new UserCache(req.user.username));
     userManager.leave(req.body.chatID, function(rows) {
         //this was a huge bug, and why we need unit tests

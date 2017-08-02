@@ -17,6 +17,7 @@ const params = {
 };
 //middleware need to return next function
 function checkLoggedOut(req, res, next) {
+    console.log(req.user, req.session.user);
     if(!req.isAuthenticated()) {
         res.redirect('/');
     }

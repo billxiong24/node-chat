@@ -771,10 +771,10 @@
 			</section>
             
 			<section class="profile-feed">
-<form role="form" method="post" class="form-horizontal form-groups-bordered validate" action="">
+        <form role="form" method="" class="form-horizontal form-groups-bordered validate" action="">
 		
 			<div class="row">
-				<div class="col-md-12">
+				<div class="col-md-6">
 					
 					<div class="panel panel-primary" data-collapsed="0">
 					
@@ -790,20 +790,12 @@
 						</div>
 						
 						<div class="panel-body">
-				
-							<div class="form-group">
-								<label for="field-1" class="col-sm-3 control-label">Username</label>
-								
-								<div class="col-sm-5">
-                                    <input type="text" class="form-control" id="field-1" value="{{username}}">
-								</div>
-							</div>
-			
+                            <input name="_csrf" type="hidden" value="{{csrfToken}}">
 							<div class="form-group">
 								<label for="field-2" class="col-sm-3 control-label">First name</label>
 								
 								<div class="col-sm-5">
-                                    <input type="text" class="form-control" id="field-2" value="{{first}}">
+                                    <input name="first" type="text" class="form-control" id="field-2" value="{{first}}">
 								</div>
 							</div>
 			
@@ -811,7 +803,7 @@
 								<label for="field-3" class="col-sm-3 control-label">Last name</label>
 								
 								<div class="col-sm-5">
-                                    <input type="text" class="form-control" name="site-url" id="field-3" data-validate="required,url" value="{{last}}">
+                                    <input name="last" type="text" class="form-control" name="site-url" id="field-3" data-validate="required,url" value="{{last}}">
 								</div>
 							</div>
 			
@@ -819,31 +811,65 @@
 								<label for="field-4" class="col-sm-3 control-label">Email address</label>
 								
 								<div class="col-sm-5">
-                                    <input type="text" class="form-control" name="email" id="field-4" data-validate="required,email" value="{{email}}">
+                                    <input name="email" type="text" class="form-control" name="email" id="field-4" data-validate="required,email" value="{{email}}">
+								</div>
+							</div>
+				            <button type="submit" class="btn btn-success">Update Settings</button>
+						</div>
+					
+					</div>
+				
+                </div>
+		    </form>
+            <form action="" method="" class="password_form">
+                
+                <div class="col-md-6">
+					
+					<div class="panel panel-primary" data-collapsed="0">
+					
+						<div class="panel-heading">
+							<div class="panel-title">
+								Password Settings
+							</div>
+							
+							<div class="panel-options">
+								<a href="#" data-rel="collapse"><i class="entypo-down-open"></i></a>
+								<a href="#" data-rel="reload"><i class="entypo-arrows-ccw"></i></a>
+							</div>
+						</div>
+						
+						<div class="panel-body">
+				
+							<div class="form-group">
+								<label for="field-1" class="col-sm-3 control-label">Old password</label>
+								
+								<div class="col-sm-5">
+                                    <input name="old_password" type="password" class="form-control" id="field-1">
+                                    <input name="_csrf" type="hidden" value="{{csrfToken}}">
 								</div>
 							</div>
                             <div class="form-group">
-								<label for="field-5" class="col-sm-3 control-label">Old password</label>
+								<label for="field-1" class="col-sm-3 control-label">New password</label>
 								
 								<div class="col-sm-5">
-                                    <input type="password" class="form-control" name="email" id="field-5">
+                                    <input name="new_password" type="password" class="form-control" id="field-1">
 								</div>
                             </div>
                             <div class="form-group">
-								<label for="field-6" class="col-sm-3 control-label">New password</label>
+								<label for="field-1" class="col-sm-3 control-label">Confirm password</label>
 								
 								<div class="col-sm-5">
-                                    <input type="password" class="form-control" name="email" id="field-6">
+                                    <input name="confirm_password" type="password" class="form-control" id="field-1">
 								</div>
 							</div>
-
-							
+				            <button type="submit" class="btn btn-success">Update Password</button>
 						</div>
 					
 					</div>
 				
 				</div>
 			</div>
+            </form> 
 			
 			
 		
@@ -978,16 +1004,15 @@
 				{{!-- </div> --}}
 			</div>
 												
-			<div class="form-group default-padding">
-				<button type="submit" class="btn btn-success">Save Changes</button>
-				<button type="reset" class="btn">Reset Previous</button>
-			</div>
+			{{!-- <div class="form-group default-padding"> --}}
+				{{!-- <button type="submit" class="btn btn-success">Save Changes</button> --}}
+				{{!-- <button type="reset" class="btn">Reset Previous</button> --}}
+			{{!-- </div> --}}
             <div class="chat-history-group">
                 <ul>
                 </ul>
             </div>
 						
-		</form>
             </section>
 		</div>
 	</div>
@@ -996,6 +1021,7 @@
 	<!-- Bottom scripts (common) -->
     <script src='http://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js'></script>
     <script type="text/javascript" src="/javascripts/js-build/neon.min.js"></script>
+    <script src="/javascripts/bundle/settings_bundle.js"> </script>
 
 </body>
 </html>

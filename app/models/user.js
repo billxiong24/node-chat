@@ -19,9 +19,18 @@ User.prototype.getEmail = function() {
 User.prototype.getID = function() {
     return this._id;
 };
+User.prototype.setID = function(id) {
+    this._id= id;
+    return this;
+};
 
 User.prototype.getUsername = function() {
     return this._username;
+};
+
+User.prototype.setUsername = function(username) {
+    this._username = username;
+    return this;
 };
 
 User.prototype.getFirst = function() {
@@ -30,6 +39,10 @@ User.prototype.getFirst = function() {
 
 User.prototype.getLast = function() {
     return this._last;
+};
+
+User.prototype.getPassword = function() {
+    return this._password;
 };
 
 User.prototype.setPassword = function(password) {

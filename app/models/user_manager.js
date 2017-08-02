@@ -65,8 +65,27 @@ UserManager.prototype.authenticateEmail = function(userJSON, hash, callback) {
     });   
 };
 
-UserManager.prototype.updateUserProfile = function(oldPass, newPass, infoObj) {
-    
+UserManager.prototype.updatePassword = function(oldPass, newPass, callback) {
+    var that = this;
+    this._userObj.confirmPassword(oldPass, function(result) {
+        if(!result) {
+            return callback(result);
+        }
+        password_util.storePassword(newPass, null, true)
+        .then(function(hash) {
+            that._userObj.setPassword(hash);
+            that._userObj.changePassword(function(rows) {
+                callback(result);
+            });
+            return null;
+        });
+    });
+};
+
+UserManager.prototype.updateUserProfile = function(infoObj, sessionObj, callback) {
+    this._userObj.updateSettings(infoObj, sessionObj, function(rows) {
+        callback(rows);
+    });
 };
 
 module.exports = UserManager;

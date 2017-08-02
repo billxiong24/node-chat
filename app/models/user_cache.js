@@ -96,9 +96,12 @@ UserCache.prototype.insert = function(callback = function(rows) {}, errorCallbac
     connection.executePoolTransaction([startTrans, insertUser, insertEmail, commit], err);
 };
 
-UserCache.prototype.addToCache = function(jsonObj = null) {
+UserCache.prototype.addToCache = function(jsonObj = null, inclPass = true) {
     var userObj = !jsonObj ? User.prototype.toJSON.call(this) : jsonObj;
     this._inCache = true;
+    if(!inclPass) {
+        delete userObj.password;
+    }
     return cache_functions.addJSON(this.getKey(), userObj, null, true);
 };
 
@@ -130,7 +133,7 @@ UserCache.prototype.confirmPassword = function(password, callback) {
     }).then(function(result) {
         if(result !== 'not cache') {
             that._inCache = true;
-            return callback(result);
+            callback(result);
         }
         return result !== 'not cache';
     }).then(function(result) {
@@ -157,22 +160,45 @@ UserCache.prototype.confirmPassword = function(password, callback) {
     });
 };
 
+UserCache.prototype.changePassword = function(callback) {
+    var pass = this.getPassword();
+    var username = this.getUsername();
+    var that = this;
+
+    var query = 'UPDATE User SET password = ? WHERE username = ?';
+    connection.execute(query, [pass, username], function(rows) {
+        that.addToCache();
+        callback(rows);
+
+    }, function(err) {
+        console.log(err);
+    });
+};
 UserCache.prototype.updateSettings = function(newObj, sessionObj, callback=function(rows) {}) {
     //need to update cache and database at the same time
     var that = this;
+    var oldUsername = this.getUsername();
+    var oldID = this.getID();
     this.setJSON(newObj);
+    //HACK since newobj will not contain the userid
+    this.setID(oldID);
+    this.setUsername(oldUsername);
 
-    password_util.storePassword(newPass, function(err, hash) {
-        that.setPassword(hash);
+    var query = 'UPDATE User SET username = ?, first = ?, last = ?, email = ? WHERE username = ?';
+    connection.execute(query, [
+        this.getUsername(), 
+        this.getFirst(),
+        this.getLast(),
+        this.getEmail(),
+        oldUsername
+    ], function(rows) {
+        //we're gonna have to update cache anyways, so whatever
+        that.addToCache(null, false);
+        sessionObj = that.toJSON();
+        callback(rows);
 
-        var query = 'UPDATE User SET password = ?, email = ? WHERE username = ?';
-        connection.execute(query, [hash, newEmail, that._username], function(rows) {
-            //we're gonna have to update cache anyways, so whatever
-            that.addToCache();
-            callback(rows);
-        }, function(err) {
-            return console.log(err);
-        });
+    }, function(err) {
+        return console.log(err);
     });
 };
 
