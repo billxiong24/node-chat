@@ -150,7 +150,7 @@ gulp.task('todofile', function() {
 
 gulp.task('start', function() {
     gulp_nodemon({
-        script: 'app.js',
+        script: './run/app.js',
         ext: 'js',
         env: {'BLUEBIRD_WARNINGS':0, 'NODE_ENV': 'development'}
     });

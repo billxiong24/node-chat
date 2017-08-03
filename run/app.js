@@ -6,14 +6,14 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const index = require('./routes/index');
+const index = require('../routes');
 const app = express();
 const passport = require('passport');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-const cache_store = require('./app/cache/cache_store.js');
+const cache_store = require('../app/cache/cache_store.js');
 const crypto = require('crypto');
-const connection = require('./app/database/config.js');
+const connection = require('../app/database/config.js');
 const flash = require('connect-flash');
 const expressHandlebars = require('express-handlebars');
 const helmet = require('helmet');
@@ -30,6 +30,8 @@ if(process.env.NODE_ENV === "production") {
 }
 
 //XXX sometimes rendering static files hangs, even though the GET request completes, maybe issue with middleware. Needs fixing
+
+__dirname = __dirname + '/../';
 
 function init(port) {
     app.use(compression());
@@ -48,7 +50,7 @@ function init(port) {
     app.set('view engine', 'handlebars');
 
     // uncomment after placing your favicon in /public
-    app.use(favicon(path.join(__dirname, 'public/stylesheets/assets/images', 'favicon.ico')));
+    app.use(favicon(path.join(__dirname, '/public/stylesheets/assets/images', 'favicon.ico')));
 
     app.use(helmet());
     app.use(helmet.hidePoweredBy());
@@ -84,8 +86,8 @@ function init(port) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    require('./app/authentication/user-pass.js').passportAuth(passport);
-    require('./routes/index')(app, passport);
+    require('../app/authentication/user-pass.js').passportAuth(passport);
+    require('../routes')(app, passport);
 
     // catch 404 and forward to error handler
     app.use(function(req, res, next) {
@@ -106,7 +108,7 @@ function init(port) {
     });
 
     var httpServer = http.Server(app).listen(port, '0.0.0.0');
-    var io = require(__dirname + '/app/sockets/socketServer.js')(httpServer, sessionMiddleWare);
+    var io = require(__dirname + 'app/sockets/socketServer.js')(httpServer, sessionMiddleWare);
     return httpServer;
 }
 

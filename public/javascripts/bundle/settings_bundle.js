@@ -44,6 +44,7 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	//TODO need a password util to validate password
 	var chatAjaxService = __webpack_require__(1);
 	$(document).ready(function() {
 	    $('.validate').submit(function(event) {
@@ -62,12 +63,18 @@
 	    });
 
 	    $('.password_form').submit(function(event) {
+	        //TODO update errors in UI, too lazy
 	        event.preventDefault();
 	        var obj = {
 	            old_password:$('input[name=old_password]').val(),
 	            new_password:$('input[name=new_password]').val(),
 	            _csrf: $('input[name=_csrf]').val()
 	        };
+	        
+	        if(obj.new_password.length < 6) {
+	            console.log("must be more than 6");
+	            return;
+	        }
 
 	        if(obj.new_password !== $('input[name=confirm_password]').val()) {
 	            console.log("doesnt match");
@@ -75,9 +82,8 @@
 	        }
 
 	        chatAjaxService.chatAjax(window.location.pathname+'/updatedPassword', 'PUT', JSON.stringify(obj), function(data) {
-	            console.log(data.changed);
-	            //TODO update result in UI
 	            if(data.changed) {
+	                //update ui
 	                return;
 	            }
 	        });

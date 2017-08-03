@@ -56,7 +56,7 @@ beforeEach(function() {
     userCacheInsertSpy = sinon.spy(UserCache.prototype, 'insert');
     
     authenticator = auth;
-    server = require('../app.js');
+    server = require('../run/app.js');
     agent = chai.request.agent(server);
 });
 
