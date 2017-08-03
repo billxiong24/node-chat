@@ -2,10 +2,16 @@
 
 run `npm list --depth=0` to view globally installed packages
 
-├── express-generator@4.15.0  
-├── gulp@3.9.1  
-├── mocha@3.5.0   
-├── siege@0.2.0   
-├── trucker@0.7.3   
-└── webpack@3.4.1  
+├── express-generator@4.15.0
+├── gulp@3.9.1
+├── istanbul@0.4.5
+├── jshint@2.9.5
+├── mocha@3.5.0
+├── nodemon@1.11.0
+├── siege@0.2.0
+├── trucker@0.7.3
+└── webpack@3.4.1
 
+### External dependencies
+`MySQL v14.14`
+`Redis-Server v3.2.8`

@@ -1,0 +1,124 @@
+[18:24:55] Working directory changed to ~/chat
+[18:24:55] Using gulpfile ~/chat/gulpfile.js
+[18:24:55] Starting 'build'...
+[18:24:55] Starting 'compress-neon-css'...
+[18:24:56] Finished 'compress-neon-css' after 23 ms
+[18:24:56] Starting 'precompile-hbs'...
+[18:24:56] Finished 'precompile-hbs' after 22 ms
+[18:24:56] Starting 'compress-neon-js'...
+[18:24:56] Finished 'compress-neon-js' after 16 ms
+[18:24:56] Starting 'webpack'...
+[18:24:56] Finished 'webpack' after 233 ms
+[18:24:56] Starting 'test'...
+[18:24:56] Finished 'test' after 8.56 ms
+[18:24:56] Starting 'todofile'...
+[18:24:56] Finished 'build' after 320 ms
+[18:24:56] Starting 'default'...
+[18:24:56] Finished 'default' after 2.84 μs
+original size: 1857
+compressed size: 1392
+Preparing /home/billxiong24/chat/public/javascripts/js/index.js for jshint
+-------------Finished compiling hbs templates-------------
+$ mysql -u root --password=Chem1313# < ./app/database/test/clean.sql
+mysql: [Warning] Using a password on the command line interface can be insecure.
+$ handlebars -m views/partials/ -f public/javascripts/templates/templates.js
+original size: 15808
+compressed size: 11264
+Preparing /home/billxiong24/chat/public/stylesheets/assets/js/gsap/TweenMax.min.js for jshint
+Minifying /home/billxiong24/chat/public/javascripts/js/index.js
+Preparing /home/billxiong24/chat/public/stylesheets/assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js for jshint
+original size: 157470
+compressed size: 151995
+Minifying /home/billxiong24/chat/public/stylesheets/assets/js/gsap/TweenMax.min.js
+Minifying /home/billxiong24/chat/public/stylesheets/assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js
+Preparing /home/billxiong24/chat/public/stylesheets/assets/js/bootstrap.js for jshint
+Minifying /home/billxiong24/chat/public/stylesheets/assets/js/bootstrap.js
+original size: 30860
+compressed size: 0
+original size: 31113
+compressed size: 106
+Preparing /home/billxiong24/chat/public/stylesheets/assets/js/joinable.js for jshint
+Minifying /home/billxiong24/chat/public/stylesheets/assets/js/joinable.js
+original size: 17341
+compressed size: 11870
+Preparing /home/billxiong24/chat/public/stylesheets/assets/js/resizeable.js for jshint
+Minifying /home/billxiong24/chat/public/stylesheets/assets/js/resizeable.js
+[18:25:08] Version: webpack 1.15.0
+                   Asset     Size  Chunks             Chunk Names
+          chat_bundle.js  94.1 kB       0  [emitted]  chat_bundle
+          home_bundle.js  70.7 kB       1  [emitted]  home_bundle
+      settings_bundle.js  3.94 kB       2  [emitted]  settings_bundle
+        signup_bundle.js  4.54 kB       3  [emitted]  signup_bundle
+signup_success_bundle.js   2.9 kB       4  [emitted]  signup_success_bundle
+Preparing /home/billxiong24/chat/public/stylesheets/assets/js/neon-api.js for jshint
+Minifying /home/billxiong24/chat/public/stylesheets/assets/js/neon-api.js
+original size: 144755
+compressed size: 119786
+Preparing /home/billxiong24/chat/public/stylesheets/assets/js/neon-chat.js for jshint
+Minifying /home/billxiong24/chat/public/stylesheets/assets/js/neon-chat.js
+original size: 5973
+compressed size: 4454
+Preparing /home/billxiong24/chat/public/javascripts/js.cookie.js for jshint
+Minifying /home/billxiong24/chat/public/javascripts/js.cookie.js
+original size: 327054
+compressed size: 273980
+$ mysql -u root --password=Chem1313# chatdbtest < ./app/database/test/mockdata.sql
+mysql: [Warning] Using a password on the command line interface can be insecure.
+Preparing /home/billxiong24/chat/public/stylesheets/assets/js/neon-custom.js for jshint
+Minifying /home/billxiong24/chat/public/stylesheets/assets/js/neon-custom.js
+original size: 134925
+compressed size: 111172
+Preparing /home/billxiong24/chat/public/stylesheets/assets/js/neon-demo.js for jshint
+Minifying /home/billxiong24/chat/public/stylesheets/assets/js/neon-demo.js
+original size: 194523
+compressed size: 168947
+-------------------------------------------------------------
+Wrote minifed file to destination public/javascripts/js-build
+Compressed 11 source files. Exiting with 0 status.
+[18:25:13] Finished 'todofile' after 17 s
+
+
+  test for cache functions, quick tests since just calls API
+testing environment...
+    1) "before each" hook
+failed jobs: 0
+inactive jobs: 0
+delayed jobs: 0
+completed jobs: 0
+failjobs: 0
+redis hashed 1
+    ✓ should not set string value, since value is null
+    2) "after each" hook
+
+  test callback and promise versions of these cache_functions
+    3) "after each" hook
+    4) "after each" hook for "should retrieve JSON object properly via callback"
+
+
+  1 passing (510ms)
+  4 failing
+
+  1)  "before each" hook:
+     Uncaught Error: listen EADDRINUSE 0.0.0.0:3000
+      at Object.exports._errnoException (util.js:1018:11)
+      at exports._exceptionWithHostPort (util.js:1041:20)
+      at Server._listen2 (net.js:1258:14)
+      at listen (net.js:1294:10)
+      at net.js:1404:9
+      at _combinedTickCallback (internal/process/next_tick.js:83:11)
+      at process._tickCallback (internal/process/next_tick.js:104:9)
+
+  2)  "after each" hook for "should retrieve JSON object properly via callback":
+     TypeError: authenticator.checkLoggedOut.restore is not a function
+      at Context.<anonymous> (test/testfile.js:64:34)
+
+  3)  "after each" hook for "should retrieve JSON object properly via callback":
+     TypeError: authenticator.checkLoggedOut.restore is not a function
+      at Context.<anonymous> (test/testfile.js:64:34)
+
+  4)  "after each" hook for "should retrieve JSON object properly via callback":
+     TypeError: authenticator.checkLoggedOut.restore is not a function
+      at Context.<anonymous> (test/testfile.js:64:34)
+
+
+

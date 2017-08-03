@@ -1,12 +1,14 @@
 var redis = require("redis");
 var subscriber = redis.createClient();
 var publisher = redis.createClient();
+var BusManager = require('./app/bus/bus_manager.js');
 
-subscriber.on("message", function(channel, message) {
-  console.log("mesage receieved in sub", message);
+var bus = new BusManager(subscriber, publisher, 'pubChannel', 'subChannel').getService();
+
+bus.subToChannel(function(channel, message) {
+    console.log("mesage receieved in sub", message);
+    bus.pubToChannel('wowzaa');
 });
-
-subscriber.subscribe("test");
 
 //setInterval(function() {
     //publisher.publish('test', 'publish from sub');

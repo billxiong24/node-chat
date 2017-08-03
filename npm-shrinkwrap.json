@@ -3746,6 +3746,11 @@
       "from": "redis-parser@https://registry.npmjs.org/redis-parser/-/redis-parser-2.6.0.tgz",
       "resolved": "https://registry.npmjs.org/redis-parser/-/redis-parser-2.6.0.tgz"
     },
+    "redlock": {
+      "version": "3.0.0",
+      "from": "redlock@latest",
+      "resolved": "https://registry.npmjs.org/redlock/-/redlock-3.0.0.tgz"
+    },
     "reds": {
       "version": "0.2.5",
       "from": "reds@>=0.2.5 <0.3.0",

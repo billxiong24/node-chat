@@ -70,6 +70,7 @@
     "passport-local": "^1.0.0",
     "promise-mysql": "^3.0.1",
     "redis": "^2.7.1",
+    "redlock": "^3.0.0",
     "requirejs": "^2.3.3",
     "run-sequence": "^2.1.0",
     "serve-favicon": "~2.4.2",
