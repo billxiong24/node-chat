@@ -67,7 +67,7 @@ function init(port) {
         store : new RedisStore({
             host: process.env.HOST,
             port: process.env.REDIS_PORT || 6379,
-            client: cache_store
+            client: cache_store[0]
         })
     }); 
     app.use(sessionMiddleWare);

@@ -11,10 +11,16 @@ else {
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
+var host = process.env.HOST;
 //TODO data sharding with these ports
-var ports = [6379, 6380, 6381, 6382];
+var ports = [6379, 6380, 6381];
+var clients = [];
+
+for (var i = 0, l = ports.length; i < l; i++) {
+    clients.push(redis.createClient(ports[i], host));
+}
 
 var port = process.env.REDIS_PORT || 6379;
 var host = process.env.HOST;
 
-module.exports = redis.createClient(port, host);
+module.exports = clients;

@@ -1,4 +1,4 @@
-var cache_store = require('./cache_store.js');
+var cache_arr = require('./cache_store.js');
 var ProcessQueue = require('../workers/process_queue.js');
 
 //should only be 1 instance of this? singleton?
@@ -6,6 +6,8 @@ var pq = new ProcessQueue();
 
 //all callbacks take err, result as parameters
 function addValue(key, value, callback, expireTime = null) {
+    var cache_store = cache_arr[hashData(key)];
+
     if(!expireTime) {
         cache_store.set(key, value, callback);
     }
@@ -15,14 +17,17 @@ function addValue(key, value, callback, expireTime = null) {
 }
 
 function deleteKey(key, callback) {
+    var cache_store = cache_arr[hashData(key)];
     cache_store.del(key, callback);
 }
 
 function retrieveValue(key, callback) {
+    var cache_store = cache_arr[hashData(key)];
     cache_store.get(key, callback);
 }
 
 function addJSON(key, obj, callback, async=false) {
+    var cache_store = cache_arr[hashData(key)];
     if(!async) {
         cache_store.hmset(key, obj, callback);
     }
@@ -32,6 +37,7 @@ function addJSON(key, obj, callback, async=false) {
 }
 
 function retrieveJSON(key, callback, async=false) {
+    var cache_store = cache_arr[hashData(key)];
     if(!async) {
         cache_store.hgetall(key, callback);
     }
@@ -41,6 +47,7 @@ function retrieveJSON(key, callback, async=false) {
 }
 
 function retrieveJSONElement(key, element, callback, async=false) {
+    var cache_store = cache_arr[hashData(key)];
     if(!async) {
         cache_store.hget(key, element, callback);
     }
@@ -50,6 +57,7 @@ function retrieveJSONElement(key, element, callback, async=false) {
 }
 
 function removeJSONElement(key, element, callback, async=false) {
+    var cache_store = cache_arr[hashData(key)];
     if(!async) {
         cache_store.hdel(key, element, function(err, reply) {
             callback(err, reply);
@@ -62,6 +70,7 @@ function removeJSONElement(key, element, callback, async=false) {
 
 function addJSONElement(key, element, value, callback, async=false) {
     //if key does not exist, redis will create it, then insert value
+    var cache_store = cache_arr[hashData(key)];
     if(!async) {
         cache_store.hset(key, element, value, callback);
     }
@@ -72,6 +81,7 @@ function addJSONElement(key, element, value, callback, async=false) {
 
 //incr_by is any integer
 function incrementJSONElement(key, element, incr_by, callback, async=false) {
+    var cache_store = cache_arr[hashData(key)];
     if(!async) {
         cache_store.hincrby(key, element, incr_by, function(err, result) {
             callback(err, result);
@@ -85,17 +95,16 @@ function incrementJSONElement(key, element, incr_by, callback, async=false) {
 
 //err, reply
 function pushMessage(key, arr, callback) {
+    var cache_store = cache_arr[hashData(key)];
     var multi = cache_store.multi();
     
     arr.forEach(function(element) {
         multi.lpush(key, element);
     });
-
-    
     //flush the cache if too many messages
     retrieveArray(key, 0, -1, function(err, arr) {
         //some randomass values
-        if(arr.length < 12) {
+        if(arr.length < 4) {
             return;
         }
 
@@ -110,6 +119,7 @@ function pushMessage(key, arr, callback) {
 }
 
 function popMessage(key, numMessages, callback) {
+    var cache_store = cache_arr[hashData(key)];
     var multi = cache_store.multi();
     for(var i = 0; i < numMessages; i++) {
         multi.rpop(key);
@@ -121,12 +131,29 @@ function popMessage(key, numMessages, callback) {
 }
 
 function retrieveArray(key, start, end, callback, async=false) {
+    var cache_store = cache_arr[hashData(key)];
     if(!async) {
         cache_store.lrange(key, start, end, callback);
     }
     else {
         return cache_store.lrangeAsync(key, start, end);
     }
+}
+
+function hashData(key) {
+    var hash = 0;
+    if (this.length === 0) {
+        return hash;
+    }
+
+    for (var i = 0; i < key.length; i++) {
+        var ch = key.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + ch;
+        hash |= 0; // Convert to 32bit integer
+    }
+
+    console.log("redis hashed", hash % cache_arr.length);
+    return Math.abs(hash % cache_arr.length);
 }
 
 

@@ -133,6 +133,7 @@ var ChatManager = (function() {
         line.readNext(req.session.lastTimeStamp, function(lineResults) {
             lineResults = lineResults !== null ? line_render(username, lineResults) : null;
 
+            //FIXME modify stamp should be outside the function, maybe in a callback
             console.log(req.session.lastTimeStamp + " BEFORE");
             req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[lineResults.length - 1].stamp : null;
             console.log(req.session.lastTimeStamp + "after");
