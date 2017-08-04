@@ -33,7 +33,9 @@ LineCache.prototype.flush = function(numMessages, callback=function(rows) {}) {
         var first = true;
         //even though looks ratchet, query is protected against sql injection bc still executing parameterized queries
         for(var i = 0; i < numMessages; i++) {
-            var jsonObj = JSON.parse(message[i]);
+            //NOTE json.parse to cache file, should do this for others as well
+            console.log(message[i], "THIS IS A WRONG MESSAGE");
+            var jsonObj = message[i];
             //if false, that means the queue of messages is empty, break
             if(!jsonObj) { break; }
             else {

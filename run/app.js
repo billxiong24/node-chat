@@ -13,7 +13,6 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const cache_store = require('../app/cache/cache_store.js');
 const crypto = require('crypto');
-const connection = require('../app/database/config.js');
 const flash = require('connect-flash');
 const expressHandlebars = require('express-handlebars');
 const helmet = require('helmet');
@@ -67,7 +66,7 @@ function init(port) {
         store : new RedisStore({
             host: process.env.HOST,
             port: process.env.REDIS_PORT || 6379,
-            client: cache_store[0]
+            client: cache_store
         })
     }); 
     app.use(sessionMiddleWare);

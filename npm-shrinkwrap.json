@@ -537,6 +537,11 @@
       "from": "cluster@https://registry.npmjs.org/cluster/-/cluster-0.7.7.tgz",
       "resolved": "https://registry.npmjs.org/cluster/-/cluster-0.7.7.tgz"
     },
+    "cluster-key-slot": {
+      "version": "1.0.8",
+      "from": "cluster-key-slot@>=1.0.6 <2.0.0",
+      "resolved": "https://registry.npmjs.org/cluster-key-slot/-/cluster-key-slot-1.0.8.tgz"
+    },
     "co": {
       "version": "4.6.0",
       "from": "co@https://registry.npmjs.org/co/-/co-4.6.0.tgz",
@@ -905,6 +910,11 @@
       "version": "1.0.0",
       "from": "delegates@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz"
+    },
+    "denque": {
+      "version": "1.2.1",
+      "from": "denque@>=1.1.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/denque/-/denque-1.2.1.tgz"
     },
     "depd": {
       "version": "1.1.0",
@@ -1353,6 +1363,11 @@
       "version": "0.3.2",
       "from": "flagged-respawn@>=0.3.2 <0.4.0",
       "resolved": "https://registry.npmjs.org/flagged-respawn/-/flagged-respawn-0.3.2.tgz"
+    },
+    "flexbuffer": {
+      "version": "0.0.6",
+      "from": "flexbuffer@0.0.6",
+      "resolved": "https://registry.npmjs.org/flexbuffer/-/flexbuffer-0.0.6.tgz"
     },
     "for-in": {
       "version": "1.0.2",
@@ -2219,6 +2234,11 @@
       "version": "1.0.0",
       "from": "invert-kv@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/invert-kv/-/invert-kv-1.0.0.tgz"
+    },
+    "ioredis": {
+      "version": "3.1.2",
+      "from": "ioredis@latest",
+      "resolved": "https://registry.npmjs.org/ioredis/-/ioredis-3.1.2.tgz"
     },
     "ip-regex": {
       "version": "1.0.3",

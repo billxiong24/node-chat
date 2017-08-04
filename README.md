@@ -15,3 +15,4 @@ run `npm list --depth=0` to view globally installed packages
 ### External dependencies
 `MySQL v14.14`
 `Redis-Server v3.2.8`
+`gem v2.5.2 (for running ruby script to create redis cluster)`

@@ -18,7 +18,7 @@ var ChatManager = (function() {
         this.chat_obj = chatobj;
     }
 
-    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, members, res, callback, chatID=null) {
+    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, chatID=null) {
         //TODO error checking
         var chatobj = new Chat();
         var user = new User(userObj.username, userObj.id, undefined, userObj.first, userObj.last);
@@ -33,6 +33,7 @@ var ChatManager = (function() {
 
             var list = rows;
             var inSpecificChat = false;
+            var members = {};
             //cache all chats in members
             for(var i = 0; i < list.length; i++) {
                 if(chatID === list[i].id) {
@@ -42,8 +43,7 @@ var ChatManager = (function() {
                     .toJSON(list[i].username, list[i].num_notifications, null);
             }
 
-            callback(userJSON, inSpecificChat);
-            //res.render('home', userJSON);
+            callback(userJSON, inSpecificChat, members);
         });
     };
 
@@ -88,7 +88,7 @@ var ChatManager = (function() {
         chatobj.load(new User(username), transport);
     };
 
-    ChatManager.prototype.loadLines = function(username, chatID, req, res) {
+    ChatManager.prototype.loadLines = function(username, chatID, callback) {
         var chatobj = new Chat(chatID);
 
         var onLoad = function(lineResults) {
@@ -97,9 +97,7 @@ var ChatManager = (function() {
                 return null;
             }
             lineResults = line_render(username, lineResults).reverse();
-            req.session.lastTimeStamp = lineResults.length > 0 ? lineResults[0].stamp : null;
-            console.log(req.session.lastTimeStamp + " on load tmee");
-            res.status(200).send({lines: lineResults});
+            callback(lineResults);
         };
 
         chatobj.retrieveLines(onLoad);
@@ -107,7 +105,7 @@ var ChatManager = (function() {
 
     
     //TODO Pass in callback here
-    ChatManager.prototype.createChat = function(username, chatName, members, res) {
+    ChatManager.prototype.createChat = function(username, chatName, callback) {
         var chatInfo = {
             id: crypto.randomBytes(8).toString('hex'),
             chat_name: chatName,
@@ -119,33 +117,18 @@ var ChatManager = (function() {
         chat.insert(new User(username), function(result) {
             //just created chat, lines will be null
             var info = chat.toJSON(username, 0, null);
+            callback(chat.getID(), info);
 
-            members[chat.getID()] = info;
-            res.status(200);
-            res.redirect('/chats/' + chat.getID());
         });
 
         return chatInfo;
     };
 
-    ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, req, res) {
+    ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, callback) {
         var line = new LineCache(chatID);
-        line.readNext(req.session.lastTimeStamp, function(lineResults) {
+        line.readNext(lastTimeStamp, function(lineResults) {
             lineResults = lineResults !== null ? line_render(username, lineResults) : null;
-
-            //FIXME modify stamp should be outside the function, maybe in a callback
-            console.log(req.session.lastTimeStamp + " BEFORE");
-            req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[lineResults.length - 1].stamp : null;
-            console.log(req.session.lastTimeStamp + "after");
-
-            if(req.session.lastTimeStamp !== null) {
-                res.status(200).json({lines: lineResults, username: username});
-                res.end();
-            }
-            else {
-                res.status(200).json({lines: null});
-                res.end();
-            }
+            callback(lineResults);
         });
     };
 

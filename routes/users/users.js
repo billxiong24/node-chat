@@ -13,8 +13,9 @@ if(!manager) {
 
 //needs extra middleware to check if user is trying to access another user's profile
 router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
-    manager.loadChatLists(req.csrfToken(), req.user, req.session.members, res, function(userJSON) {
+    manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {
         //this is very bad
+        req.session.members = members;
         userJSON.email = req.user.email;
         userJSON.num_chats = userJSON.list.length;
         return res.render('settings-profile', userJSON);

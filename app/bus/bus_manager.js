@@ -1,4 +1,3 @@
-var redis = require("redis");
 var Bus = require('./bus.js');
 
 var BusManager = function(publisher, subscriber, pubChannel, subChannel) {
@@ -18,7 +17,3 @@ BusManager.prototype.getService = function() {
 };
 
 module.exports = BusManager;
-
-
-
-

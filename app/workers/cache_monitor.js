@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({path: '../../.env'});
 var message_cache_monitor = require('./message_cache_monitor.js');
 const cache_functions = require('../cache/cache_functions.js');
 

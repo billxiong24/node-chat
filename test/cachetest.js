@@ -1,5 +1,5 @@
 process.env.NODE_ENV = "test";
-require('dotenv').config();
+require('dotenv').config({path: '../.env'});
 
 var chai = require('chai');
 var sinon = require('sinon');
@@ -14,8 +14,17 @@ var cache_functions = require('../app/cache/cache_functions.js');
 
 describe('test for cache functions, quick tests since just calls API', function() {
     it('should not set string value, since value is null', function(done) {
+        //ioredis treats null values as empty strings... 
         cache_functions.addValue('test', null, function(err, reply) {
-            expect(reply).to.equal(undefined);
+            expect(reply).to.equal('OK');
+            return done();
+        });
+    });
+
+    it('should retrieve test value correctly', function(done) {
+        //ioredis has different regarding setting null values?
+        cache_functions.retrieveValue('test', function(err, reply) {
+            expect(reply).to.equal('');
             return done();
         });
     });
@@ -151,6 +160,17 @@ describe('test callback and promise versions of these cache_functions', function
         .then(function(reply) {
             expect(reply).to.equal(23);
             return done();
+        });
+    });
+
+    it('should delete key properly', function(done) {
+        cache_functions.deleteKey('randomkey', function(err, reply) {
+            expect(reply).to.equal(1);
+
+            cache_functions.deleteKey('randokey', function(err, reply) {
+                expect(reply).to.equal(1);
+                return done();
+            });
         });
     });
 });

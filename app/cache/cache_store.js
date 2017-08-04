@@ -1,26 +1,23 @@
 var bluebird = require('bluebird');
 var redis;
 
-if(process.env.NODE_ENV === 'test') {
-    redis = require('fakeredis');
-}
-else {
-    redis = require('redis');
-}
+redis = require('ioredis');
 
-bluebird.promisifyAll(redis.RedisClient.prototype);
-bluebird.promisifyAll(redis.Multi.prototype);
+//bluebird.promisifyAll(redis.RedisClient.prototype);
+//bluebird.promisifyAll(redis.Multi.prototype);
 
 var host = process.env.HOST;
-//TODO data sharding with these ports
-var ports = [6379, 6380, 6381];
-var clients = [];
-
-for (var i = 0, l = ports.length; i < l; i++) {
-    clients.push(redis.createClient(ports[i], host));
-}
 
 var port = process.env.REDIS_PORT || 6379;
 var host = process.env.HOST;
 
-module.exports = clients;
+//couldn't find a proper mock for ioredis
+var client; 
+if(process.env.NODE_ENV === 'test') {
+    client = new redis(6666, host);
+    client.flushall();
+}
+else {
+ client = new redis(port, host);
+}
+module.exports = process.env.NODE_ENV === 'test' ? new redis(6666, host) : new redis(port, host);

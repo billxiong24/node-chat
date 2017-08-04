@@ -5,4 +5,5 @@ if(process.env.NODE_ENV === 'test') {
 else {
     conn.getPool(process.env.HOST, process.env.NODE_USER, process.env.PASS, 'chatdb', 200);
 }
+
 module.exports = conn;

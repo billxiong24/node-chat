@@ -14,7 +14,8 @@ if(!manager) {
 }
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.loadChatLists(req.csrfToken(), req.user, req.session.members, res, function(userJSON, inChat) {
+    manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {
+        req.session.members = members;
         if(process.env.NODE_ENV === 'test') {
             if(!inChat) {
                 return res.redirect('/home');
@@ -31,7 +32,16 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
 });
 
 router.get('/:chatID/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.loadMoreLines(req.user.username, req.params.chatID, req.session.lastTimeStamp, req, res); 
+    manager.loadMoreLines(req.user.username, req.params.chatID, req.session.lastTimeStamp, function(lineResults) {
+        console.log(req.session.lastTimeStamp + " BEFORE");
+        req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[lineResults.length - 1].stamp : null;
+        console.log(req.session.lastTimeStamp + "after");
+
+        if(req.session.lastTimeStamp !== null) {
+            return res.status(200).json({lines: lineResults, username: req.user.username});
+        }
+        res.status(200).json({lines: null});
+    }); 
 });
 
 router.get('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, res, next) {
@@ -50,7 +60,11 @@ router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req,
 });
 
 router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.loadLines(req.user.username, req.params.chatID, req, res);
+    manager.loadLines(req.user.username, req.params.chatID, function(lineResults) {
+        req.session.lastTimeStamp = lineResults.length > 0 ? lineResults[0].stamp : null;
+        console.log(req.session.lastTimeStamp + " on load tmee");
+        res.status(200).send({lines: lineResults});
+    });
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
@@ -80,7 +94,11 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.createChat(req.user.username, req.body.createChat, req.session.members, res);
+    manager.createChat(req.user.username, req.body.createChat, function(chatID, chatInfo) {
+        req.session.members[chatID] = chatInfo;
+        res.status(200);
+        res.redirect('/chats/' + chatID);
+    });
 });
 
 router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {

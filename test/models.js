@@ -26,7 +26,6 @@ var ProcessQueue = require('../app/workers/process_queue.js');
 chai.use(chaiHttp);
 var authenticator;
 
-//TODO mock fakeredis so we can test messages properly
 //TODO create testing database environment
 
 describe('testing line model', function() {
@@ -43,7 +42,8 @@ describe('testing line model', function() {
         lineCache.insert();
         //TODO check cache to see exists
         cache_functions.popMessage('0115411bc0ca11ec36b3730da5e50fbd', 1, function(err, message) {
-            var messageJSON = JSON.parse(message);
+            //have to change this, cuz now returning array lol...wrip
+            var messageJSON = message[0];
             expect(messageJSON).to.have.property('chat_id');
             expect(messageJSON).to.have.property('message');
             expect(messageJSON).to.have.property('line_id');
@@ -243,7 +243,9 @@ describe('testing voting model', function() {
     it('should read correct vote for user in chat', function(done) {
         var vote = new Vote(chatid);
         vote.setLineID(lineid).read(function(err, result) {
-            expect(result).to.equal(0);
+            //NOTE ioredis fucked this up, this is now a string
+            //expect(result).to.equal(0);
+            expect(result == 0).to.equal(true);
             return done();
         });
     });
