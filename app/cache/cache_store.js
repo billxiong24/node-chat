@@ -14,10 +14,44 @@ var host = process.env.HOST;
 //couldn't find a proper mock for ioredis
 var client; 
 if(process.env.NODE_ENV === 'test') {
-    client = new redis(6666, host);
-    client.flushall();
+    client = new redis.Cluster([
+        {
+            port: 6379,
+            host: host
+        },
+        {
+            port: 6380,
+            host: host
+        },
+        {
+            port: 6381,
+            host: host
+        }
+
+    ], {
+        scaleReads: 'slave',
+        enableOfflineQueue: true
+    });
 }
 else {
- client = new redis(port, host);
+    client = new redis.Cluster([
+        {
+            port: 6379,
+            host: host
+        },
+        {
+            port: 6380,
+            host: host
+        },
+        {
+            port: 6381,
+            host: host
+        }
+
+    ], {
+        scaleReads: 'slave',
+        enableOfflineQueue: true
+    });
 }
-module.exports = process.env.NODE_ENV === 'test' ? new redis(6666, host) : new redis(port, host);
+
+module.exports = client;

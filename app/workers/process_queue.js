@@ -1,13 +1,35 @@
 const kue = require('kue');
+const cache_store = ('../cache/cache_store.js');
+var Redis = require('ioredis');
 /**
  * If we get an error job doesn't exist, its ok, it removes bad job and moves on,
  * dont get scared
  */
+const host = process.env.HOST || 'localhost';
+
 var ProcessQueue = function(options = {
     prefix: 'q',
     redis: {
-        port: 6379,
-        host: process.env.HOST
+        createClientFactory: function () {
+            //FIXME accessing this from cache_store throws error- as usual, no idea why
+            return new Redis.Cluster([
+                {
+                    port: 6379,
+                    host: host
+                },
+                {
+                    port: 6380,
+                    host: host
+                },
+                {
+                    port: 6381,
+                    host: host
+                }
+            ], {
+                scaleRead: 'slave',
+                enableOfflineQueue: true
+            });
+        }
     }
 }) {
     this._processQueue = kue.createQueue(options);

@@ -1,3 +1,4 @@
+require('dotenv').config({path: '../../.env'});
 var cache_store = require('./cache_store.js');
 var ProcessQueue = require('../workers/process_queue.js');
 

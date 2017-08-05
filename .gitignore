@@ -1,3 +1,5 @@
+nodes.conf
+appendonly.aof
 .env
 docs/build_result.txt
 test.js
