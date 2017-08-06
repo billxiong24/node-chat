@@ -3,6 +3,7 @@ const crypto = require('crypto');
 //const Line = require('../models/line.js');
 const LineCache = require('../models/line_cache.js');
 const Notification = require('../models/notification.js');
+const NotificationManager = require('../chat_functions/notif_manager.js');
 
 var Socket = require('./socket.js');
 
@@ -70,8 +71,10 @@ ChatSocket.prototype.init = function() {
             var line = new LineCache(id, socket.request.session.user.username, message, line_id);
             line.insert();
             //TODO find a way to cache this
-            var notif = new Notification(id, socket.request.session.user.username, -1);
-            notif.flush();
+            var notifManager = new NotificationManager(new Notification(id, socket.request.session.user.username, -1));
+            notifManager.flushNotifications(function(rows) {
+
+            });
         });
 
         //TODO refactor back into above method, quick hack

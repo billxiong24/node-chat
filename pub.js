@@ -1,12 +1,17 @@
 var redis = require("redis");
 var Bus = require('./app/bus/bus.js');
 var BusManager = require('./app/bus/bus_manager.js');
-var ChatRequest = require('./microservices/chat_requester.js');
+var ChatRequest = require('./microservices/chat/chat_requester.js');
+var NotifRequest = require('./microservices/notifs/notif_request.js');
 
 var subscriber = redis.createClient();
 var publisher = redis.createClient();
 
 var chatRequester = new ChatRequest(function() {
+    return redis.createClient();
+});
+
+var notifRequest = new NotifRequest(function() {
     return redis.createClient();
 });
 
@@ -20,6 +25,14 @@ chatRequester.joinChatRequest('marquis', 'qmxq', function(channel, json) {
 
 chatRequester.createChatRequest('user55', 'microchat', function(channel, json) {
     console.log("from created", json);
+});
+
+//notifRequest.flushNotificationRequest(function(channel, json) {
+    //console.log("test flush notif", json);
+//});
+
+notifRequest.loadNotificationRequest(function(channel, json) {
+    console.log('test load', json);
 });
 
 var userObj = {

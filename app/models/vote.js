@@ -69,7 +69,7 @@ function getUserVotesKey() {
 }
 
 function getUserVotesElementKey(userid, line_id) {
-    return userid + "||" + line_id;
+    return userid + ":" + line_id;
 }
 
 module.exports = Vote;

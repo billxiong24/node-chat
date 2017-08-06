@@ -47,9 +47,6 @@ Notification.prototype.load = function() {
 };
 
 Notification.prototype.flush = function(callback = function(result) {}) {
-    //connection.execute("UPDATE Notifications SET num_notifications = num_notifications + 1 WHERE Notifications.chat_id = ? AND Notifications.username <> ?", [this._chatID, this._username], callback);
-    
-    //connection.execute("UPDATE Notifications SET num_notifications = 0 WHERE Notifications.chat_id = ? AND Notifications.username = ?", [this._chatID, this._username], callback);
     var query =  "UPDATE Notifications SET num_notifications = IF (username=?, 0, num_notifications+1) WHERE Notifications.chat_id = ? ";
 
     connection.execute(query, [this._username, this._chatID], function(result) {
