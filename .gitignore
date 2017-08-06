@@ -1,5 +1,5 @@
 nodes.conf
-appendonly.aof
+redisconf/
 .env
 docs/build_result.txt
 test.js

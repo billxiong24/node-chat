@@ -127,7 +127,7 @@ Chat.prototype.load = function(user, transport) {
 
     connection.executePoolTransaction([getChat, transferChat, getNumNotifs, transferNotifs, commit, releasing], function(err) { 
         //NOTE error handling not so important here
-        consoe.log(err);
+        console.log(err);
         console.log("releasing connection from error");
         return connection.release(conn);
     });

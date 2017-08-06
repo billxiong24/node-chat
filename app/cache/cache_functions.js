@@ -110,7 +110,7 @@ function pushMessage(key, arr, callback) {
     //flush the cache if too many messages
     retrieveArray(key, 0, -1, function(err, arr) {
         //some randomass values
-        if(arr.length < 3) {
+        if(arr.length < 10) {
             return;
         }
         var num_messages = arr.length;

@@ -85,19 +85,19 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         //TODO include error message to pass to view
         return res.redirect('/home'); 
     };
-    var success = function(id, chatJSON) {
+    var success = function(chatJSON) {
         req.session.members[chatJSON.id] = chatJSON;
         //when redirected, the chat info will be cached
-        res.redirect('/chats/' + id);
+        res.redirect('/chats/' + chatJSON.id);
     };
     manager.joinChat(req.user.username, req.body.joinChat, failure, success);
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.createChat(req.user.username, req.body.createChat, function(chatID, chatInfo) {
-        req.session.members[chatID] = chatInfo;
+    manager.createChat(req.user.username, req.body.createChat, function(chatInfo) {
+        req.session.members[chatInfo.id] = chatInfo;
         res.status(200);
-        res.redirect('/chats/' + chatID);
+        res.redirect('/chats/' + chatInfo.id);
     });
 });
 
@@ -121,9 +121,17 @@ function chatRender(req, res, cachedCB, missCB) {
         });
     }
     else {
+        //i dont think this will ever get reached since u join before this function is reached
         console.log("post renderinfo not cached");
-        manager.loadChat(req.user.username, req.params.chatID, req.session.members, req.csrfToken(), res, function(deepCopy) {
-            missCB(deepCopy);
+        manager.loadChat(req.user.username, req.params.chatID, function(deepCopy) {
+            if(!deepCopy) {
+                return missCB(null);
+            }
+            req.session.members[deepCopy.id] = deepCopy;
+            
+            var infoDeepCopy = JSON.parse(JSON.stringify(deepCopy));
+            infoDeepCopy.csrfToken = req.csrfToken();
+            missCB(infoDeepCopy);
         });
     }
 }

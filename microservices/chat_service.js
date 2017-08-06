@@ -2,75 +2,72 @@ require('dotenv').config({path: '../.env'});
 var BusManager = require('../app/bus/bus_manager.js');
 var ChatManager = require('../app/chat_functions/chat_manager.js');
 var redis = require('redis');
+var ChatMicro = require('./chat_micro.js');
 
-var ChatService = function(chat_manager, publisher, subscriber) {
+var ChatService = function(chat_manager, genClient) {
+    ChatMicro.call(this, genClient);
     this._chat_manager = chat_manager;
-
-    initChannels.call(this);
-    var busManager = new BusManager(publisher, subscriber, this._pub_channel, this._sub_channel);
-
-    this._service = busManager.getService();
+    this.init();
 };
 
-//ChatService.prototype.getRequester = function() {
-    //return this._master;
-//};
+ChatService.prototype = Object.create(ChatMicro.prototype);
+ChatService.prototype.constructor = ChatService;
 
-ChatService.prototype.getServicer = function() {
-    return this._service;
-};
+ChatService.prototype.listenService = function() {
 
-ChatService.prototype.listen = function() {
-    var that = this;
-    this._service.subToChannel(function(channel, message) {
-        if(channel !== that._pub_list_channel) {
-            console.log("wrong channel");
-            return;
-        }
-        var json = JSON.parse(message);
-        var csrfToken = json.csrfToken;
-        var userObj = json.userObj;
-        var chatID = json.chatID ? json.chatID : null;
-        console.log(json);
-        //that._service.pubToChannel(JSON.stringify(json));
-        that.loadChatListService(csrfToken, userObj, chatID);
-    });
+    this.listen(this._list_service);
+    this.listen(this._info_service);
+    this.listen(this._create_service);
+    this.listen(this._join_service);
 };
 
 ChatService.prototype.loadChatListService = function(csrfToken, userObj, chatID=null) {
     var that = this;
+    //TODO error check for null
+    userObj = JSON.parse(userObj);
 
     this._chat_manager.loadChatLists(csrfToken, userObj, function(userJSON, inSpecificChat, members) {
         var obj = userJSON;
         obj.members = members;
-        console.log("hiiidy");
+        obj.inChat = inSpecificChat;
 
-        that._service.pubToChannel(JSON.stringify(obj));
+        that._list_service.pubToChannel(JSON.stringify(obj));
     }, chatID);
 };
 
-function initChannels() {
-    this._pub_list_channel = 'pub_chat_list';
-    this._sub_list_channel = 'sub_chat_list';
+ChatService.prototype.loadChatService = function(username, chatID) {
+    var that = this;
+    this._chat_manager.loadChat(username, chatID, function(info) {
+        that._info_service.pubToChannel(JSON.stringify(info));
+    });
+};
 
-    this._pub_join_channel = 'pub_join_channel';
-    this._sub_join_channel = 'sub_join_channel';
+ChatService.prototype.createChatService = function(username, chatName) {
+   var that = this;
+    this._chat_manager.createChat(username, chatName, function(info) {
+        that._create_service.pubToChannel(JSON.stringify(info));
+    });
+};
 
-    this._pub_load_channel = 'pub_load_channel';
-    this._sub_load_channel = 'sub_load_channel';
+ChatService.prototype.joinChatService = function(username, chatCode) {
+    var that = this;
 
-    this._pub_loadlines_channel = 'pub_loadlines_channel';
-    this._sub_loadlines_channel = 'sub_loadlines_channel';
+    var fail = function() {
+        that._join_service.pubToChannel(JSON.stringify({
+            join_error: true
+        }));
+    };
+    var success = function(chatJSON) {
+        that._join_service.pubToChannel(JSON.stringify(chatJSON));
+    };
 
-    this._pub_create_channel = 'pub_create_channel';
-    this._sub_create_channel = 'sub_create_channel';
+    this._chat_manager.joinChat(username, chatCode, fail, success);
+};
 
-    this._pub_loadmore_channel = 'pub_loadmore_channel';
-    this._sub_loadmore_channel = 'sub_loadmore_channel';
-}
+var chatService = new ChatService(new ChatManager(null), function() {
+    return redis.createClient();
+});
 
-
-var chatService = new ChatService(new ChatManager(null), redis.createClient(), redis.createClient());
-chatService.listen();
+chatService.listenService();
 
 module.exports = ChatService;

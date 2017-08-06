@@ -99,6 +99,7 @@ describe('testing line model', function() {
     });
     
     it('should insert lines into redis cache', function(done) {
+        //never change message queue limit
         var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
         var counter = 0;
         var cb = function(err, result) {
@@ -158,7 +159,7 @@ describe('testing line model', function() {
             ++counter;
         };
         for(var i = 0; i < 60; i++) {
-            var lineCache = new LineCache(chatid, 'jj45', 'queue message', 'idqueue'+i);
+            var lineCache = new LineCache(chatid, 'jj45', 'queue message', 'idqueue'+i+Math.random());
             lineCache.insert(cb);
         }
 

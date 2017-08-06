@@ -12,127 +12,119 @@ var notifRender = require('./notif_render.js');
 //TODO use async library to make things more asynchronous
 //transfer everything using JSON to make transferring data uniform
 
-var ChatManager = (function() {
+var ChatManager = function ChatManager(chatobj) {
+    this.chat_obj = chatobj;
+};
 
-    function ChatManager(chatobj) {
-        this.chat_obj = chatobj;
-    }
+ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, chatID=null) {
+    //TODO error checking
+    var chatobj = new Chat();
+    var user = new User(userObj.username, userObj.id, undefined, userObj.first, userObj.last);
+    chatobj.loadLists(user, function(rows) {
+        var userJSON = user.toJSON();
+        //this is used for view rendering, will switch to clientside rendering soon
 
-    ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, chatID=null) {
-        //TODO error checking
-        var chatobj = new Chat();
-        var user = new User(userObj.username, userObj.id, undefined, userObj.first, userObj.last);
-        chatobj.loadLists(user, function(rows) {
-            var userJSON = user.toJSON();
-            //this is used for view rendering, will switch to clientside rendering soon
+        var rowString = JSON.stringify(rows);
+        userJSON.list = notifRender(JSON.parse(rowString));
+        userJSON.parseList = encodeURIComponent(rowString);
+        userJSON.csrfToken = csrfToken;
 
-            var rowString = JSON.stringify(rows);
-            userJSON.list = notifRender(JSON.parse(rowString));
-            userJSON.parseList = encodeURIComponent(rowString);
-            userJSON.csrfToken = csrfToken;
-
-            var list = rows;
-            var inSpecificChat = false;
-            var members = {};
-            //cache all chats in members
-            for(var i = 0; i < list.length; i++) {
-                if(chatID === list[i].id) {
-                    inSpecificChat = true;
-                }
-                members[list[i].id] = new Chat(list[i].id, list[i].chat_name, list[i].code)
-                    .toJSON(list[i].username, list[i].num_notifications, null);
+        var list = rows;
+        var inSpecificChat = false;
+        var members = {};
+        //cache all chats in members
+        for(var i = 0; i < list.length; i++) {
+            if(chatID === list[i].id) {
+                inSpecificChat = true;
             }
+            members[list[i].id] = new Chat(list[i].id, list[i].chat_name, list[i].code)
+                .toJSON(list[i].username, list[i].num_notifications, null);
+        }
 
-            callback(userJSON, inSpecificChat, members);
-        });
-    };
+        callback(userJSON, inSpecificChat, members);
+    });
+};
 
-    ChatManager.prototype.joinChat = function(username, chatCode, failure, success) {
-        var chatobj = new Chat();
-        //fake builder pattern again
-        chatobj.setCode(chatCode);
+ChatManager.prototype.joinChat = function(username, chatCode, failure, success) {
+    var chatobj = new Chat();
+    //fake builder pattern again
+    chatobj.setCode(chatCode);
 
-        var sessionStore = function(chatobj) {
-            return function(result) {
-                if(result === null) {
-                    //TODO error message
-                    //res.redirect('/home');
-                    failure();
-                    return null;
-                }
-               success(chatobj.getID(), chatobj.toJSON(username, 0, null));
-            };
-        };
-        chatobj.join(new User(username), sessionStore);
-    };
-
-    ChatManager.prototype.loadChat = function(username, chatID, members, csrfToken, res, callback) {
-
-        var transport = function(chatObj, notifObj, lineObj) {
-            return function(lineResults) {
-                if(lineResults === null) {
-                    //TODO add error message here
-                    res.redirect('/home');
-                    return null;
-                }
-
-                var info = chatObj.toJSON(username, notifObj.getNumNotifications(), null);
-                members[info.id] = info;
-                
-                var infoDeepCopy = JSON.parse(JSON.stringify(info));
-                infoDeepCopy.csrfToken = csrfToken;
-                callback(infoDeepCopy);
-            };
-        };
-        var chatobj = new Chat(chatID);
-        chatobj.load(new User(username), transport);
-    };
-
-    ChatManager.prototype.loadLines = function(username, chatID, callback) {
-        var chatobj = new Chat(chatID);
-
-        var onLoad = function(lineResults) {
-            if(lineResults === null) {
-                res.redirect('/home');
+    var sessionStore = function(chatobj) {
+        return function(result) {
+            if(result === null) {
+                //TODO error message
+                //res.redirect('/home');
+                failure();
                 return null;
             }
-            lineResults = line_render(username, lineResults).reverse();
-            callback(lineResults);
+            success(chatobj.toJSON(username, 0, null));
         };
-
-        chatobj.retrieveLines(onLoad);
     };
+    chatobj.join(new User(username), sessionStore);
+};
 
-    
-    //TODO Pass in callback here
-    ChatManager.prototype.createChat = function(username, chatName, callback) {
-        var chatInfo = {
-            id: crypto.randomBytes(8).toString('hex'),
-            chat_name: chatName,
-            code: crypto.randomBytes(3).toString('hex')
+ChatManager.prototype.loadChat = function(username, chatID, callback) {
+
+    var transport = function(chatObj, notifObj, lineObj) {
+        return function(lineResults) {
+            if(lineResults === null) {
+                //TODO add error message here
+                callback(null);
+                //res.redirect('/home');
+                return null;
+            }
+
+            var info = chatObj.toJSON(username, notifObj.getNumNotifications(), null);
+            callback(info);
         };
+    };
+    var chatobj = new Chat(chatID);
+    chatobj.load(new User(username), transport);
+};
 
-        var chat = new Chat(chatInfo.id, chatInfo.chat_name, chatInfo.code);
+ChatManager.prototype.loadLines = function(username, chatID, callback) {
+    var chatobj = new Chat(chatID);
 
-        chat.insert(new User(username), function(result) {
-            //just created chat, lines will be null
-            var info = chat.toJSON(username, 0, null);
-            callback(chat.getID(), info);
-
-        });
-
-        return chatInfo;
+    var onLoad = function(lineResults) {
+        if(lineResults === null) {
+            res.redirect('/home');
+            return null;
+        }
+        lineResults = line_render(username, lineResults).reverse();
+        callback(lineResults);
     };
 
-    ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, callback) {
-        var line = new LineCache(chatID);
-        line.readNext(lastTimeStamp, function(lineResults) {
-            lineResults = lineResults !== null ? line_render(username, lineResults) : null;
-            callback(lineResults);
-        });
+    chatobj.retrieveLines(onLoad);
+};
+
+
+//TODO Pass in callback here
+ChatManager.prototype.createChat = function(username, chatName, callback) {
+    var chatInfo = {
+        id: crypto.randomBytes(8).toString('hex'),
+        chat_name: chatName,
+        code: crypto.randomBytes(3).toString('hex')
     };
 
-    return ChatManager;
-})();
+    var chat = new Chat(chatInfo.id, chatInfo.chat_name, chatInfo.code);
+
+    chat.insert(new User(username), function(result) {
+        //just created chat, lines will be null
+        var info = chat.toJSON(username, 0, null);
+        callback(info);
+
+    });
+
+    return chatInfo;
+};
+
+ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, callback) {
+    var line = new LineCache(chatID);
+    line.readNext(lastTimeStamp, function(lineResults) {
+        lineResults = lineResults !== null ? line_render(username, lineResults) : null;
+        callback(lineResults);
+    });
+};
 
 module.exports = ChatManager;

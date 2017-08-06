@@ -9,8 +9,21 @@ var Bus = function(publisher, subscriber, pubChannel, subChannel) {
     this._pubChannel = pubChannel;
 };
 
+Bus.prototype.getSubChannel = function() {
+    return this._subChannel;
+};
+
+Bus.prototype.getPubChannel = function() {
+    return this._pubChannel;
+    
+};
+
 Bus.prototype.subToChannel= function(onMessage) {
     subscribeChannel(this._sub, this._subChannel, onMessage);
+};
+
+Bus.prototype.unSubToChannel = function() {
+    this._sub.unsubscribe(this._subChannel);
 };
 
 Bus.prototype.pubToChannel = function(message) {
