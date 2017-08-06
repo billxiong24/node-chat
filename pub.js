@@ -29,7 +29,7 @@ var userObj = {
     last: 'Xiong' 
 };
 chatRequester.loadChatListRequest('123456', userObj, function(channel, json) {
-    console.log("from created", json);
+    console.log("from list", json);
 });
 
 //var bus = new BusManager(publisher, subscriber, 'info_pub_channel', 'info_sub_channel').getMaster();
