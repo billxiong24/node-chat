@@ -85,7 +85,7 @@ var ChatView = (function() {
         if(msg.message.length === 0) {
             return;
         }
-        var numMessages = $('.numMessages');
+        //var numMessages = $('.numMessages');
         var time = "";
         var dir;
         var active;
@@ -114,7 +114,7 @@ var ChatView = (function() {
             line_id: msg.line_id
         });
 
-        numMessages.text(this._notifview.getNotif());
+        //numMessages.text(this._notifview.getNotif());
         //that._notifview.cacheNotification(userid);
 
         var message = displayLine(lineViewObj);

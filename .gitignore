@@ -14,3 +14,4 @@ public/javascripts/socket.io-parser/package.json
 public/javascripts/socket.io/package.json
 blue.js
 coverage/
+info.log

@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const LineCache = require('../models/line_cache.js');
 const Notification = require('../models/notification.js');
 const NotificationManager = require('../chat_functions/notif_manager.js');
+const NotifRequest = require('../../microservices/notifs/notif_request.js');
+const redis = require('redis');
 
 var Socket = require('./socket.js');
 
@@ -71,9 +73,12 @@ ChatSocket.prototype.init = function() {
             var line = new LineCache(id, socket.request.session.user.username, message, line_id);
             line.insert();
             //TODO find a way to cache this
-            var notifManager = new NotificationManager(new Notification(id, socket.request.session.user.username, -1));
-            notifManager.flushNotifications(function(rows) {
-
+            //var notifManager = new NotificationManager(new Notification(id, socket.request.session.user.username, -1));
+            var notifRequest = new NotifRequest(function() {
+                return redis.createClient();
+            });
+            notifRequest.flushNotificationRequest(id, socket.request.session.user.username, function(rows) {
+                console.log('flushed notifs');
             });
         });
 

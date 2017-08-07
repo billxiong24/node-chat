@@ -46,7 +46,7 @@ var OnlineView = (function(socketview, notifview) {
                 onlineList.append(renderList(data.user.username, data.user.id));
                 updateNumOnlineUsers(Object.keys(that._userSockets).length, numOnlineObj);
                 //this._notifview.getNotif will have been set in "connected" event
-                numMessages.text(that._notifview.getNotif());
+                //numMessages.text(that._notifview.getNotif());
             }
             if(!(data.socketID in that._ownSocketIDs)){ //some other tab has opened
                 that._ownSocketIDs[data.socketID] = null;

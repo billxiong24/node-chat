@@ -12,12 +12,12 @@ var redis = require("redis");
 var Bus = require('../../app/bus/bus.js');
 var BusManager = require('../../app/bus/bus_manager.js');
 var ChatRequest = require('../../microservices/chat/chat_requester.js');
+var NotifRequest = require('../../microservices/notifs/notif_request.js');
 
 var manager;
 if(!manager) {
     manager = new Manager(new Chat());
 }
-
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     var chatRequester = new ChatRequest(function() {
         return redis.createClient();
@@ -142,13 +142,15 @@ router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, nex
 
 function chatRender(req, res, cachedCB, missCB) {
     var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.user.username, -1));
+    var notifRequest = new NotifRequest(function() {
+        return redis.createClient();
+    });
+
     if(req.params.chatID in req.session.members) {
-        notif_manager.loadNotifications(function(numNotifs) {
-            console.log("post renderinfo cached");
-            req.session.members[req.params.chatID].csrfToken = req.csrfToken();
-            req.session.members[req.params.chatID].notifs = numNotifs;
-            cachedCB(req.session.members);
-        });
+        console.log("post renderinfo cached");
+        req.session.members[req.params.chatID].csrfToken = req.csrfToken();
+        //req.session.members[req.params.chatID].notifs = numNotifs;
+        cachedCB(req.session.members);
     }
     else {
         //i dont think this will ever get reached since u join before this function is reached

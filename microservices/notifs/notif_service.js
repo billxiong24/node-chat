@@ -20,8 +20,9 @@ NotifService.prototype.listenService = function() {
     this.listen(this._load_service);
 };
 
-NotifService.prototype.flushNotificationService = function() {
+NotifService.prototype.flushNotificationService = function(chatID, username) {
     var that = this;
+    this._notif_manager.setNotification((new Notification(chatID, username, -1)));
     this._notif_manager.flushNotifications(function(result) {
         that._flush_service.pubToChannel(JSON.stringify(result));
     });

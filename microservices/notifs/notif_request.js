@@ -15,7 +15,7 @@ NotifRequest.prototype.loadNotificationRequest = function(chatID, username, call
 
 NotifRequest.prototype.flushNotificationRequest = function(chatID, username, callback) {
     this.genListen('_flush_master', this._flush_pub_channel, this._flush_sub_channel, callback);
-    this.publishChannel(this._flush_master, 'flushNotificationService', []);
+    this.publishChannel(this._flush_master, 'flushNotificationService', [chatID, username]);
 };
 
 //NotifRequest.prototype.finish = function() {

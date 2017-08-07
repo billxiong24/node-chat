@@ -201,7 +201,7 @@ describe('chat routes', function() {
     it('POST /join_chat should add user to memberof table, since code is correct', function(done) {
         agent.get('/home').then(function(result) {
             return agent.post('/chats/join_chat')
-                .send({_csrf: result.body.csrfToken, joinChat: 'pqbj'})
+                .send({_csrf: result.body.csrfToken, joinChat: '7abade'})
                 .then(function(result) {
                     //expect(releaseSpy.calledOnce).to.equal(true);
                     result.should.have.status(200);

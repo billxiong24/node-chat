@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
+const fs = require('fs');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const index = require('../routes');
@@ -27,7 +28,6 @@ const HOST = process.env.HOST || 'localhost';
 if(process.env.NODE_ENV === "production") {
     console.log = function(input) {};
 }
-
 //XXX sometimes rendering static files hangs, even though the GET request completes, maybe issue with middleware. Needs fixing
 
 __dirname = __dirname + '/../';
@@ -54,7 +54,19 @@ function init(port) {
     app.use(helmet());
     app.use(helmet.hidePoweredBy());
 
-    app.use(logger('dev'));
+    if(process.env.NODE_ENV === 'test') {
+
+        //if in testing mode, write logs to file, so it doesnt pollute test output
+        var accessLogStream = fs.createWriteStream(path.join(__dirname, 'info.log'), {flags: 'a'});
+        app.use(logger('dev', {
+            stream: accessLogStream
+        }));
+    }
+    else {
+        app.use(logger('dev'));
+    }
+
+
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(cookieParser());
