@@ -48,6 +48,7 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
 ChatManager.prototype.joinChat = function(username, chatCode, failure, success) {
     var chatobj = new Chat();
     //fake builder pattern again
+    console.log(chatCode);
     chatobj.setCode(chatCode);
 
     var sessionStore = function(chatobj) {

@@ -6,9 +6,9 @@ var redis = require('redis');
 var NotifMicro = require('./notif_micro.js');
 
 
-var NotifService = function(notif_manager, genClient) {
+var NotifService = function(notifManager, genClient) {
     NotifMicro.call(this, genClient);
-    this._notif_manager = notif_manager;
+    this._notif_manager = notifManager;
     this.init();
 };
 
@@ -16,8 +16,8 @@ NotifService.prototype = Object.create(NotifMicro.prototype);
 NotifService.prototype.constructor = NotifService;
 
 NotifService.prototype.listenService = function() {
-   this.listen(this._flush_service); 
-   this.listen(this._load_service); 
+    this.listen(this._flush_service);
+    this.listen(this._load_service);
 };
 
 NotifService.prototype.flushNotificationService = function() {
@@ -27,23 +27,19 @@ NotifService.prototype.flushNotificationService = function() {
     });
 };
 
-NotifService.prototype.loadNotificationService = function() {
+NotifService.prototype.loadNotificationService = function(chatID, username) {
     var that = this;
+    this._notif_manager.setNotification((new Notification(chatID, username, -1)));
     this._notif_manager.loadNotifications(function(result) {
         that._load_service.pubToChannel(JSON.stringify(result));
     });
 };
 
-NotifService.prototype.setNotifManager = function(notifManager) {
-    this._notif_manager = notifManager;
-};
-
-var notifManager = new NotificationManager(new Notification('0043e138f3a1daf9ccfbf718fc9acd48', 'gerrymander', -1));
+var notifManager = new NotificationManager(null);
 
 var notifService = new NotifService(notifManager, function() {
     return redis.createClient();
 });
-
 notifService.listenService();
 
 module.exports = NotifService;

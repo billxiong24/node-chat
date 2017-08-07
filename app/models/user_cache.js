@@ -26,7 +26,7 @@ UserCache.prototype.read = function() {
     //wtf is this lmao
     return function(poolConnection) {
         return cacheRetrieve.then(function(result) {
-            console.log(result);
+            //console.log(result);
             if(result) {
                 console.log("found user in cache when reading");
                 that._inCache = true;

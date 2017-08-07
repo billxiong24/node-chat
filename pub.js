@@ -3,7 +3,8 @@ var Bus = require('./app/bus/bus.js');
 var BusManager = require('./app/bus/bus_manager.js');
 var ChatRequest = require('./microservices/chat/chat_requester.js');
 var NotifRequest = require('./microservices/notifs/notif_request.js');
-
+var Notification = require('./app/models/notification.js');
+var NotificationManager = require('./app/chat_functions/notif_manager.js');
 var subscriber = redis.createClient();
 var publisher = redis.createClient();
 
@@ -11,29 +12,39 @@ var chatRequester = new ChatRequest(function() {
     return redis.createClient();
 });
 
-var notifRequest = new NotifRequest(function() {
+var notifRequest= new NotifRequest(function() {
     return redis.createClient();
 });
 
-chatRequester.loadChatRequest('rhee', '019274b44a472600', function(channel, json) {
-    console.log('from info', json);
-});
+//chatRequester.loadChatRequest('rhee', '019274b44a472600', function(channel, json) {
+    //console.log('from info', json);
+//});
 
-chatRequester.joinChatRequest('marquis', 'qmxq', function(channel, json) {
-    console.log("from join", json);
-});
+//chatRequester.joinChatRequest('marquis', 'qmxq', function(channel, json) {
+    //console.log("from join", json);
+//});
 
-chatRequester.createChatRequest('user55', 'microchat', function(channel, json) {
-    console.log("from created", json);
-});
+//chatRequester.createChatRequest('user55', 'microchat', function(channel, json) {
+    //console.log("from created", json);
+//});
 
 //notifRequest.flushNotificationRequest(function(channel, json) {
     //console.log("test flush notif", json);
 //});
 
-notifRequest.loadNotificationRequest(function(channel, json) {
-    console.log('test load', json);
+    
+notifRequest.loadNotificationRequest('0043e138f3a1daf9ccfbf718fc9acd48', 'marquis', function(channel, json) {
+    console.log('test load first', json, channel);
 });
+
+//notifRequest.setNotifObj(new Notification('0043e138f3a1daf9ccfbf718fc9acd48', 'marquis', -1));
+//var n = new NotifRequest(function() {
+    //return redis.createClient();
+//});
+
+//n.loadNotificationRequest('0043e138f3a1daf9ccfbf718fc9acd48', 'jj45', function(channel, json) {
+    //console.log('test loadsecond ', json, channel);
+//});
 
 var userObj = {
     id: 45,
@@ -41,9 +52,9 @@ var userObj = {
     first: 'Bill',
     last: 'Xiong' 
 };
-chatRequester.loadChatListRequest('123456', userObj, function(channel, json) {
-    console.log("from list", json);
-});
+//chatRequester.loadChatListRequest('123456', userObj, function(channel, json) {
+    //console.log("from list", json);
+//});
 
 //var bus = new BusManager(publisher, subscriber, 'info_pub_channel', 'info_sub_channel').getMaster();
 //var bus2 = new BusManager(redis.createClient(), redis.createClient(), 'join_pub_channel', 'join_sub_channel').getMaster();

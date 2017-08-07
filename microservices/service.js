@@ -22,9 +22,10 @@ Service.prototype.publishChannel = function(publisher, method, args) {
     publisher.pubToChannel(JSON.stringify({
         method: method,
         args: args
-    }));
+    }), function() {
+        console.log('callback');
+    });
 };
-
 
 Service.prototype.listenBack = function(service, callback) {
     var that = this;
@@ -32,6 +33,7 @@ Service.prototype.listenBack = function(service, callback) {
 
     service.subToChannel(function(channel, message) {
         //in case we get message from wrong channel, shouldnt happen
+        service.unSubToChannel();
         if(channel !== service.getSubChannel()) {
             console.log("wrong channel");
             return;
@@ -39,7 +41,6 @@ Service.prototype.listenBack = function(service, callback) {
 
         var json = JSON.parse(message);
         callback(channel, json);
-
     });
 };
 Service.prototype.listen = function(service) {

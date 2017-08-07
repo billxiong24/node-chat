@@ -92,10 +92,12 @@ Chat.prototype.load = function(user, transport) {
 
     var getChat = function(poolConnection) {
         conn = poolConnection;
+        console.log(username, chatID);
         return poolConnection.query('SELECT Chat.code, Chat.chat_name FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?', [username, chatID]);
     };
 
     var transferChat = function(result) {
+        console.log(result);
         if(result.length > 0) {
             that._code = result[0].code;
             that._name = result[0].chat_name;

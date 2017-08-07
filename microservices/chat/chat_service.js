@@ -27,7 +27,8 @@ ChatService.prototype.loadChatListService = function(csrfToken, userObj, chatID=
     userObj = JSON.parse(userObj);
 
     this._chat_manager.loadChatLists(csrfToken, userObj, function(userJSON, inSpecificChat, members) {
-        var obj = userJSON;
+        var obj = {};
+        obj.userJSON = userJSON;
         obj.members = members;
         obj.inChat = inSpecificChat;
 

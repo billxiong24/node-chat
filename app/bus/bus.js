@@ -24,14 +24,20 @@ Bus.prototype.subToChannel= function(onMessage) {
 
 Bus.prototype.unSubToChannel = function() {
     this._sub.unsubscribe(this._subChannel);
+    this._pub.unsubscribe(this._pubChannel);
+    this._sub.unsubscribe(this._pubChannel);
+    this._pub.unsubscribe(this._subChannel);
 };
 
-Bus.prototype.pubToChannel = function(message) {
-    publishChannel(this._pub, this._pubChannel, message);
+Bus.prototype.pubToChannel = function(message, callback) {
+    publishChannel.call(this, this._pub, this._pubChannel, message, callback);
 };
 
-function publishChannel(client, channel, message) {
-    client.publish(channel, message);
+function publishChannel(client, channel, message, callback) {
+    var that = this;
+    client.publish(channel, message, function() {
+        //that.unSubToChannel();
+    });
 }
 
 function subscribeChannel(client, channel, onMessage) {

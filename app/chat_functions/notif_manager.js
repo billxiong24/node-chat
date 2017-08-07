@@ -20,4 +20,8 @@ NotificationManager.prototype.flushNotifications = function(callback) {
     });
 };
 
+NotificationManager.prototype.setNotification = function(notifObj) {
+    this._notifObj = notifObj;
+};
+
 module.exports = NotificationManager;

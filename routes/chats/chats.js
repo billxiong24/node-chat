@@ -8,25 +8,36 @@ const NotificationManager = require('../../app/chat_functions/notif_manager.js')
 const UserManager = require('../../app/models/user_manager.js');
 const UserCache = require('../../app/models/user_cache.js');
 
+var redis = require("redis");
+var Bus = require('../../app/bus/bus.js');
+var BusManager = require('../../app/bus/bus_manager.js');
+var ChatRequest = require('../../microservices/chat/chat_requester.js');
+
 var manager;
 if(!manager) {
     manager = new Manager(new Chat());
 }
 
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {
-        req.session.members = members;
+    var chatRequester = new ChatRequest(function() {
+        return redis.createClient();
+    });
+
+    chatRequester.loadChatListRequest(req.csrfToken(), req.user, function(channel, json) {
+        console.log("received in", req.user.username);
+        console.log("------------------------------------------------");
+        req.session.members = json.members;
         if(process.env.NODE_ENV === 'test') {
-            if(!inChat) {
+            if(!json.inChat) {
                 return res.redirect('/home');
             }
-            res.status(200).send(userJSON);
+            res.status(200).send(json.userJSON);
         }
         else {
-            if(!inChat) {
+            if(!json.inChat) {
                 return res.redirect('/home');
             }
-            res.render('groupchat', userJSON);
+            res.render('groupchat', json.userJSON);
         }
     }, req.params.chatID);
 });
@@ -55,9 +66,9 @@ router.get('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, re
     chatRender(req, res, cachedCB, missCB);
 });
 
-router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req, res, next) {
+//router.post('/:chatID/renderNotifs', authenticator.checkLoggedOut, function(req, res, next) {
 
-});
+//});
 
 router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
     manager.loadLines(req.user.username, req.params.chatID, function(lineResults) {
@@ -87,14 +98,33 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
     };
     var success = function(chatJSON) {
         req.session.members[chatJSON.id] = chatJSON;
+        if(process.env.NODE_ENV === 'test') {
+            return res.status(200).json({joined: true});
+        }
         //when redirected, the chat info will be cached
         res.redirect('/chats/' + chatJSON.id);
     };
-    manager.joinChat(req.user.username, req.body.joinChat, failure, success);
+    var chatRequester = new ChatRequest(function() {
+        return redis.createClient();
+    });
+
+    chatRequester.joinChatRequest(req.user.username, req.body.joinChat, function(channel, json) {
+        console.log("joined chat micro callback");
+        console.log("=====================================");
+        if(json.join_error) {
+            failure();
+        }
+        else {
+            success(json);
+        }
+    });
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.createChat(req.user.username, req.body.createChat, function(chatInfo) {
+    var chatRequester = new ChatRequest(function() {
+        return redis.createClient();
+    });
+    chatRequester.createChatRequest(req.user.username, req.body.createChat, function(channel, chatInfo) {
         req.session.members[chatInfo.id] = chatInfo;
         res.status(200);
         res.redirect('/chats/' + chatInfo.id);
@@ -123,12 +153,17 @@ function chatRender(req, res, cachedCB, missCB) {
     else {
         //i dont think this will ever get reached since u join before this function is reached
         console.log("post renderinfo not cached");
-        manager.loadChat(req.user.username, req.params.chatID, function(deepCopy) {
+        //TODO use microservice
+        var chatRequester = new ChatRequest(function() {
+            return redis.createClient();
+        });
+        chatRequester.loadChatRequest(req.user.username, req.params.chatID, function(channel, deepCopy) {
+            console.log(req.user.username, req.params.chatID);
+            console.log(deepCopy);
             if(!deepCopy) {
                 return missCB(null);
             }
             req.session.members[deepCopy.id] = deepCopy;
-            
             var infoDeepCopy = JSON.parse(JSON.stringify(deepCopy));
             infoDeepCopy.csrfToken = req.csrfToken();
             missCB(infoDeepCopy);
