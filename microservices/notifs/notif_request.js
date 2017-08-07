@@ -1,4 +1,4 @@
-require('dotenv').config({path: '../../.env'});
+require('dotenv').config({path: '/../../.env'});
 var NotifMicro = require('./notif_micro.js');
 
 var NotifRequest = function(genClient) {
@@ -17,9 +17,5 @@ NotifRequest.prototype.flushNotificationRequest = function(chatID, username, cal
     this.genListen('_flush_master', this._flush_pub_channel, this._flush_sub_channel, callback);
     this.publishChannel(this._flush_master, 'flushNotificationService', [chatID, username]);
 };
-
-//NotifRequest.prototype.finish = function() {
-    //this._load_master.unSubToChannel();
-//};
 
 module.exports = NotifRequest;

@@ -1,4 +1,4 @@
-//require('dotenv').config();
+require('dotenv').config({path: __dirname + '../../.env'});
 const cache_functions = require('../cache/cache_functions.js');
 const pq = cache_functions.processQueue;
 var LineCache = require('../models/line_cache.js');

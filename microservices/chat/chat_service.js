@@ -1,4 +1,8 @@
-require('dotenv').config({path: '../../.env'});
+require('dotenv').config({path: __dirname + '/../../.env'});
+//console.log(process.env.HOST);
+//console.log(process.env.NODE_USER);
+//console.log(process.env.PASS);
+
 var BusManager = require('../../app/bus/bus_manager.js');
 var ChatManager = require('../../app/chat_functions/chat_manager.js');
 var redis = require('redis');

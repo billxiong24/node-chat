@@ -5,7 +5,8 @@
   "scripts": {
     "redis": "sudo service redis restart",
     "start": "gulp start",
-    "build": "npm run redis && npm run start"
+    "build": "npm run redis && npm run start",
+    "test":"gulp clean && mocha"
   },
   "dependencies": {
     "async": "^2.4.1",

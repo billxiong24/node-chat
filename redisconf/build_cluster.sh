@@ -7,6 +7,7 @@ for file in *; do
     fi
 done
 
+
 ./clean.sh
 ./init.sh
 ./run.sh

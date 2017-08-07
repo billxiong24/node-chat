@@ -7,6 +7,7 @@ const Notification = require('../../app/models/notification.js');
 const NotificationManager = require('../../app/chat_functions/notif_manager.js');
 const UserManager = require('../../app/models/user_manager.js');
 const UserCache = require('../../app/models/user_cache.js');
+const clean_client = require('../../app/cache/clean_client.js');
 
 var redis = require("redis");
 var Bus = require('../../app/bus/bus.js');
@@ -19,11 +20,13 @@ if(!manager) {
     manager = new Manager(new Chat());
 }
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    var chatRequester = new ChatRequest(function() {
-        return redis.createClient();
-    });
+    var clients = [];
+    var chatRequester = new ChatRequest(clean_client.genClient(clients));
 
     chatRequester.loadChatListRequest(req.csrfToken(), req.user, function(channel, json) {
+        console.log(clients.length);
+        clean_client.cleanup(clients);
+
         console.log("received in", req.user.username);
         console.log("------------------------------------------------");
         req.session.members = json.members;
@@ -104,11 +107,13 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         //when redirected, the chat info will be cached
         res.redirect('/chats/' + chatJSON.id);
     };
-    var chatRequester = new ChatRequest(function() {
-        return redis.createClient();
-    });
+
+    var clients = [];
+    var chatRequester = new ChatRequest(clean_client.genClient(clients));
 
     chatRequester.joinChatRequest(req.user.username, req.body.joinChat, function(channel, json) {
+        clean_client.cleanup(clients);
+
         console.log("joined chat micro callback");
         console.log("=====================================");
         if(json.join_error) {
@@ -121,10 +126,13 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    var chatRequester = new ChatRequest(function() {
-        return redis.createClient();
-    });
+    var clients = [];
+    var chatRequester = new ChatRequest(clean_client.genClient(clients));
+
     chatRequester.createChatRequest(req.user.username, req.body.createChat, function(channel, chatInfo) {
+        console.log('FINISHED CREATING CHAT', clients.length);
+        clean_client.cleanup(clients);
+
         req.session.members[chatInfo.id] = chatInfo;
         res.status(200);
         res.redirect('/chats/' + chatInfo.id);
@@ -142,9 +150,6 @@ router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, nex
 
 function chatRender(req, res, cachedCB, missCB) {
     var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.user.username, -1));
-    var notifRequest = new NotifRequest(function() {
-        return redis.createClient();
-    });
 
     if(req.params.chatID in req.session.members) {
         console.log("post renderinfo cached");
@@ -156,10 +161,11 @@ function chatRender(req, res, cachedCB, missCB) {
         //i dont think this will ever get reached since u join before this function is reached
         console.log("post renderinfo not cached");
         //TODO use microservice
-        var chatRequester = new ChatRequest(function() {
-            return redis.createClient();
-        });
+        var clients = [];
+        var chatRequester = new ChatRequest(clean_client.genClient(clients));
+
         chatRequester.loadChatRequest(req.user.username, req.params.chatID, function(channel, deepCopy) {
+            clean_client.cleanup(clients);
             console.log(req.user.username, req.params.chatID);
             console.log(deepCopy);
             if(!deepCopy) {

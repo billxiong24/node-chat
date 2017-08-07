@@ -7,6 +7,8 @@ const NotificationManager = require('../chat_functions/notif_manager.js');
 const NotifRequest = require('../../microservices/notifs/notif_request.js');
 const redis = require('redis');
 
+const clean_client = require('../cache/clean_client.js');
+
 var Socket = require('./socket.js');
 
 var ChatSocket = function(io, namespace) {
@@ -74,10 +76,11 @@ ChatSocket.prototype.init = function() {
             line.insert();
             //TODO find a way to cache this
             //var notifManager = new NotificationManager(new Notification(id, socket.request.session.user.username, -1));
-            var notifRequest = new NotifRequest(function() {
-                return redis.createClient();
-            });
+            var clients = [];
+            var notifRequest = new NotifRequest(clean_client.genClient(clients));
+
             notifRequest.flushNotificationRequest(id, socket.request.session.user.username, function(rows) {
+                clean_client.cleanup(clients);
                 console.log('flushed notifs');
             });
         });
