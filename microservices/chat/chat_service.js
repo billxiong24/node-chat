@@ -69,10 +69,10 @@ ChatService.prototype.joinChatService = function(username, chatCode) {
     this._chat_manager.joinChat(username, chatCode, fail, success);
 };
 
-var chatService = new ChatService(new ChatManager(null), function() {
-    return redis.createClient();
-});
+//var chatService = new ChatService(new ChatManager(null), function() {
+    //return redis.createClient();
+//});
 
-chatService.listenService();
+//chatService.listenService();
 
 module.exports = ChatService;

@@ -39,11 +39,11 @@ NotifService.prototype.loadNotificationService = function(chatID, username) {
     });
 };
 
-var notifManager = new NotificationManager(null);
+//var notifManager = new NotificationManager(null);
 
-var notifService = new NotifService(notifManager, function() {
-    return redis.createClient();
-});
-notifService.listenService();
+//var notifService = new NotifService(notifManager, function() {
+    //return redis.createClient();
+//});
+//notifService.listenService();
 
 module.exports = NotifService;

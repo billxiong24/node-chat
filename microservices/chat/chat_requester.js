@@ -30,5 +30,4 @@ ChatRequest.prototype.joinChatRequest = function(username, chatCode, callback) {
     this.publishChannel(this._join_master, 'joinChatService', [username, chatCode]);
 };
 
-
 module.exports = ChatRequest;

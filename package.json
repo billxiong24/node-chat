@@ -6,7 +6,7 @@
     "redis": "sudo service redis restart",
     "start": "gulp start",
     "build": "npm run redis && npm run start",
-    "test":"gulp clean && mocha"
+    "test": "gulp clean && mocha"
   },
   "dependencies": {
     "async": "^2.4.1",
@@ -81,7 +81,8 @@
     "siege": "^0.2.0",
     "sinon": "^2.3.8",
     "socket.io": "^2.0.2",
-    "socket.io-redis": "^5.1.0"
+    "socket.io-redis": "^5.1.0",
+    "winston": "^2.3.1"
   },
   "devDependencies": {}
 }
