@@ -28,6 +28,10 @@ var gulp_todo = require('gulp-todo');
 //using requirejs optimizer, ...
 //concat and minify clientside js
 //build and run project using gulp-nodemon
+//
+logger.info(process.env.USER);
+logger.info(process.env.NODE_USER);
+logger.info(process.env.PASS);
 
 var neon_js_src = [
     'public/javascripts/js/index.js',
@@ -159,9 +163,9 @@ gulp.task('start', function() {
 });
 
 gulp.task('clean', function() {
-    gulp_run('mysql -u root --password='+process.env.PASS+' < ./app/database/test/clean.sql').exec(function(err) {
-        gulp_run('mysql -u root --password='+process.env.PASS+' chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
-            gulp_run('mysql -u root --password='+process.env.PASS+' chatdbtest < ./app/database/emailConfirm.sql').exec();
+    gulp_run('mysql -u root --password="" < ./app/database/test/clean.sql').exec(function(err) {
+        gulp_run('mysql -u root --password="" chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
+            gulp_run('mysql -u root --password="" chatdbtest < ./app/database/emailConfirm.sql').exec();
         });
     });
 });

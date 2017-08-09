@@ -4,10 +4,11 @@ language: node_js
 node_js:
     - 7.6.0
 
-global:
-    - PASS=""
-    - NODE_USER="root"
-    - USER="root"
+env:       
+    global:
+        - PASS=""
+        - NODE_USER=root
+        - USER=root
 services: 
     - mysql
     - redis-server
@@ -32,4 +33,4 @@ before_script:
     - npm install -g express-generator@4.15.0 gulp@3.9.1 mocha@3.5.0 siege@0.2.0
     - npm install -g trucker@0.7.3 webpack@3.4.1 istanbul@0.4.5 jshint@2.9.5
 
-script: ./build.sh
+script: cd redisconf && ./build_cluster.sh && npm test && ./clean.sh
