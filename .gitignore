@@ -15,5 +15,3 @@ public/javascripts/socket.io/package.json
 blue.js
 coverage/
 info.log
-.travis.yaml
-loggertest.js

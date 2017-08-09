@@ -1,0 +1,22 @@
+dist: trusty
+sudo: required
+language: node_js
+node_js:
+    - 7.6.0
+
+before_install:
+    - sudo apt-get update
+    - sudo apt-get install redis-server
+    - sudo apt-get install mysql
+
+install:
+    - npm install
+    - npm prune
+    - npm dedupe 
+    - npm shrinkwrap 
+
+before_script:
+    - npm install -g express-generator@4.15.0 gulp@3.9.1 mocha@3.5.0 siege@0.2.0
+    - npm install -g trucker@0.7.3 webpack@3.4.1 istanbul@0.4.5 jshint@2.9.5
+
+script: ./build.sh
