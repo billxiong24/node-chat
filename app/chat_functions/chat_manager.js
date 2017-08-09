@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const connection = require('../database/config.js');
 const crypto = require('crypto');
 const sql = require('promise-mysql');
@@ -41,6 +42,8 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
                 .toJSON(list[i].username, list[i].num_notifications, null);
         }
 
+        logger.info('members after loading list', members);
+
         callback(userJSON, inSpecificChat, members);
     });
 };
@@ -48,18 +51,22 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
 ChatManager.prototype.joinChat = function(username, chatCode, failure, success) {
     var chatobj = new Chat();
     //fake builder pattern again
-    console.log(chatCode);
+    logger.info("joining code", chatCode);
     chatobj.setCode(chatCode);
 
     var sessionStore = function(chatobj) {
         return function(result) {
             if(result === null) {
+                logger.debug("chat failed");
                 //TODO error message
                 //res.redirect('/home');
                 failure();
                 return null;
             }
-            success(chatobj.toJSON(username, 0, null));
+
+            var chatobjJSON = chatobj.toJSON(username, 0, null);
+            logger.debug("chat joined", chatobjJSON);
+            success(chatobjJSON);
         };
     };
     chatobj.join(new User(username), sessionStore);
@@ -71,6 +78,7 @@ ChatManager.prototype.loadChat = function(username, chatID, callback) {
         return function(lineResults) {
             if(lineResults === null) {
                 //TODO add error message here
+                logger.debug("loading chat failed");
                 callback(null);
                 //res.redirect('/home');
                 return null;
@@ -89,6 +97,7 @@ ChatManager.prototype.loadLines = function(username, chatID, callback) {
 
     var onLoad = function(lineResults) {
         if(lineResults === null) {
+            logger.debug("load lines failed");
             res.redirect('/home');
             return null;
         }
@@ -113,6 +122,7 @@ ChatManager.prototype.createChat = function(username, chatName, callback) {
     chat.insert(new User(username), function(result) {
         //just created chat, lines will be null
         var info = chat.toJSON(username, 0, null);
+        logger.info("chat created successfully", info);
         callback(info);
 
     });

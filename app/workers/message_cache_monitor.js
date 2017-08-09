@@ -1,4 +1,5 @@
 require('dotenv').config({path: __dirname + '../../.env'});
+var logger = require('../../util/logger.js')(module);
 const cache_functions = require('../cache/cache_functions.js');
 const pq = cache_functions.processQueue;
 var LineCache = require('../models/line_cache.js');
@@ -9,7 +10,7 @@ var LineCache = require('../models/line_cache.js');
 module.exports = function() {
 
     pq.processJob('flush_message', function(job, done) {
-        console.log(job.data.chat_id, job.data.num_messages);
+        logger.info("jobid", job.data.chat_id, "numMessages", job.data.num_messages);
         var lineCache = new LineCache(job.data.chat_id);
 
         lineCache.flush(job.data.num_messages);

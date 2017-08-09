@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const connection = require('../database/config.js');
 const nodemailer = require('nodemailer');
 var transport;
@@ -42,10 +43,10 @@ function sendEmailConfirmation(email, hash, callback) {
     };
     transport.sendMail(options, function(err, info) {
         if(err) {
-            console.log(err);
+            logger.error(err);
             return;
         }
-        console.log(info);
+        logger.info(info);
         callback(err, info);
     });
 }

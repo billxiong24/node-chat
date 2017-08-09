@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const urlParser = require('url');
 const crypto = require('crypto');
 //const Line = require('../models/line.js');
@@ -55,7 +56,6 @@ ChatSocket.prototype.init = function() {
         });
 
         socket.on('message', function(message) {
-            //console.log(socket.handshake.headers);
             var url = urlParser.parse(socket.handshake.headers.referer);
 
             var line_id = crypto.randomBytes(24).toString('hex');
@@ -81,13 +81,12 @@ ChatSocket.prototype.init = function() {
 
             notifRequest.flushNotificationRequest(id, socket.request.session.user.username, function(rows) {
                 clean_client.cleanup(clients);
-                console.log('flushed notifs');
+                logger.info('flushed notifs after socket reply');
             });
         });
 
         //TODO refactor back into above method, quick hack
         socket.on('direct_message', function(data) {
-            //console.log(Socket.prototype.getIO.call(that).sockets.adapter.rooms);
             socket.to(data.socketID).emit('direct_message', data);
         });
 

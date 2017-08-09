@@ -2,6 +2,7 @@
  * Establishes connection to database using node-mysql
  * and node-promise-mysql for promises and connection pooling
  */
+var logger = require('../../util/logger.js')(module);
 const mysql = require('mysql');
 const promise_sql = require('promise-mysql');
 
@@ -18,7 +19,7 @@ function getPool(host, user, password, database, connectionLim) {
     return pool;
 }
 
-function execute(query, info=null, callback=function(result) {}, error=function(err) {console.log(err);}) {
+function execute(query, info=null, callback=function(result) {}, error=function(err) {logger.error(err);}) {
 
     pool.getConnection().then(function(connection) {
         var result = connection.query(query, info);

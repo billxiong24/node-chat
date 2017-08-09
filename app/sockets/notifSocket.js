@@ -18,14 +18,12 @@ NotifSocket.prototype.init = function() {
             socket.broadcast.to(data.roomID).emit('notify', data);
         });
 
-        socket.on('cacheNotifications', function(data) {
-            console.log("inside cachenotifs");
-            console.log(data);
+        //socket.on('cacheNotifications', function(data) {
             //TODO add this data to cache- contains {userid, notif, roomID}
             //var notifcache = new NotifCache(data.roomID, data.userid, data.notif);
             //notifcache.write();
 
-        });
+        //});
 
         socket.on('disconnect', function(data) { 
         });

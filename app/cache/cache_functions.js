@@ -1,4 +1,5 @@
 require('dotenv').config({path: __dirname + '../../.env'});
+var logger = require('../../util/logger.js')(module);
 var cache_store = require('./cache_store.js');
 var ProcessQueue = require('../workers/process_queue.js');
 
@@ -120,7 +121,11 @@ function pushMessage(key, arr, callback) {
             chat_id: key,
             num_messages:  num_messages
         }, function(err) {
-            if(err) { console.log(err); return; }
+            if(err) { 
+                logger.error(err); 
+                logger.debug("there was an error creating job");
+                return; 
+            }
         }, 4);
     });
     multi.exec(callback);
@@ -153,23 +158,6 @@ function retrieveArray(key, start, end, callback, async=false) {
         return cache_store.lrange(key, start, end);
     }
 }
-
-function hashData(key) {
-    var hash = 0;
-    if (this.length === 0) {
-        return hash;
-    }
-
-    for (var i = 0; i < key.length; i++) {
-        var ch = key.charCodeAt(i);
-        hash  = ((hash << 5) - hash) + ch;
-        hash |= 0; // Convert to 32bit integer
-    }
-
-    console.log("redis hashed", hash % cache_arr.length);
-    return Math.abs(hash % cache_arr.length);
-}
-
 
 module.exports = {
     addValue, 

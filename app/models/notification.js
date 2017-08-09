@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const connection = require('../database/config.js');
 
 var Notification = function Notification(chatID, username, num_notifications) {
@@ -50,7 +51,7 @@ Notification.prototype.flush = function(callback = function(result) {}) {
     var query =  "UPDATE Notifications SET num_notifications = IF (username=?, 0, num_notifications+1) WHERE Notifications.chat_id = ? ";
 
     connection.execute(query, [this._username, this._chatID], function(result) {
-        console.log("flushed notif in model");
+        logger.info("flushed notif in model");
         callback(result);
     });
 };

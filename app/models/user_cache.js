@@ -1,11 +1,12 @@
 /*jshint sub:true*/
+var logger = require('../../util/logger.js')(module);
 var User = require('./user.js');
 const connection = require('../database/config.js');
 const cache_functions = require('../cache/cache_functions.js');
 const password_util = require('../authentication/password_util.js');
 const crypto = require('crypto');
 function defaultErrorCB(err) {
-    console.log(err);
+    logger.error(err);
 }
 
 var UserCache = function (username, id=undefined, password=undefined, first=undefined, last=undefined, email=undefined) {
@@ -27,14 +28,14 @@ UserCache.prototype.read = function() {
     //TODO avoid having to open a connection(small optimization)
     return function(poolConnection) {
         return cacheRetrieve.then(function(result) {
-            //console.log(result);
+            //logger.info(result);
             if(result) {
-                console.log("found user in cache when reading");
+                logger.info("found user in cache when reading");
                 that._inCache = true;
                 return [result];
             }
             that._inCache = false;
-            console.log("user cache miss when reading");
+            logger.info("user cache miss when reading");
 
             //if cache miss, we add the result to cache as per write through policy
             return User.prototype.read.call(that)(poolConnection).then(function(result) {
@@ -75,9 +76,9 @@ UserCache.prototype.insert = function(callback = function(rows) {}, errorCallbac
 
     var err = function(err) {
         //TODO need real error handling here
-        console.log('user sign up has an error');
+        logger.error('user sign up has an error');
         conn.query('ROLLBACK');
-        console.log('releasing connection in sign up error');
+        logger.debug('releasing connection in sign up error');
         connection.release(conn);
         errorCallback(err); 
         return null;
@@ -85,7 +86,7 @@ UserCache.prototype.insert = function(callback = function(rows) {}, errorCallbac
 
     var commit = function(result) {
         var finished = conn.query('COMMIT');
-        console.log("releasing connection");
+        logger.debug("releasing connection");
         connection.release(conn);
 
         userObj.hash = hash;
@@ -151,13 +152,13 @@ UserCache.prototype.confirmPassword = function(password, callback) {
         };
         var end = function(res) {
             return password_util.retrievePassword(password, res[0].password, null, true).then(function(result) {
-                console.log("releasing connection");
+                logger.debug("releasing connection");
                 connection.release(conn);
                 callback(result);
             });
         };
         return connection.executePoolTransaction([setConn, that.read(), end], function(err) {
-            return console.log(err);
+            return logger.error(err);
         });
     });
 };
@@ -173,7 +174,7 @@ UserCache.prototype.changePassword = function(callback) {
         callback(rows);
 
     }, function(err) {
-        console.log(err);
+        logger.error(err);
     });
 };
 UserCache.prototype.updateSettings = function(newObj, sessionObj, callback=function(rows) {}) {
@@ -200,7 +201,7 @@ UserCache.prototype.updateSettings = function(newObj, sessionObj, callback=funct
         callback(rows);
 
     }, function(err) {
-        return console.log(err);
+        return logger.error(err);
     });
 };
 UserCache.prototype.confirmEmail = function(sessionUser, hash, callback) {

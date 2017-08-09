@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const connection = require('../database/config.js');
 const Notification = require('../models/notification.js');
 
@@ -18,7 +19,7 @@ NotificationManager.prototype.loadNotifications = function(callback) {
         return result.length > 0 ? result[0].num_notifications : null;
     };
     var end = function(result) {
-        console.log('releasing notification connection load');
+        logger.debug('releasing notification connection load');
         connection.release(conn);
     };
     connection.executePoolTransaction([setConn, notifLoad, setNotif, callback, end], function(err) {throw err;});

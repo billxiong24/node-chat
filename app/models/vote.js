@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const connection = require('../database/config.js');
 const cache_functions = require('../cache/cache_functions.js');
 
@@ -54,7 +55,7 @@ Vote.prototype.flush = function() {
 };
 
 function changeVote(votes, callback) {
-    console.log(getKey.call(this), this._line_id, " inserting vote into redis");
+    logger.debug(getKey.call(this), this._line_id, " inserting vote into redis");
     cache_functions.incrementJSONElement(getKey.call(this), this._line_id, votes, function(err, reply) {
         callback(err, reply);
     });

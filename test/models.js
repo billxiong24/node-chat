@@ -143,7 +143,7 @@ describe('testing line model', function() {
 
                 expect(lineResults[i].message).to.equal('test message');
                 expect(lineResults[i].username).to.equal('jj45');
-                console.log(lineResults[i].line_id);
+                //console.log(lineResults[i].line_id);
                 expect(lineResults[i].line_id).to.equal('id'+(4-i));
             }
             return done();

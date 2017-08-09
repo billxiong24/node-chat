@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const connection = require('../database/config.js');
 
 var User = function User(username, id=undefined, password=undefined, first=undefined, last=undefined, email=undefined) {
@@ -95,11 +96,11 @@ User.prototype.flush = function() {
 User.prototype.leaveChat = function(chat_id, callback) {
     var username = this._username;
     connection.execute('DELETE FROM MemberOf WHERE username = ? AND chat_id = ?', [username, chat_id], function(rows) {
-        console.log("removed " + username + " from chat " + chat_id);
+        logger.info("removed " + username + " from chat " + chat_id);
         callback(rows);
 
     }, function(err) {
-        console.log(err);
+        logger.error(err);
     });
 };
 

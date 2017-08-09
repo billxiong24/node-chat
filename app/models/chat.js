@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const connection = require('../database/config.js');
 var Line = require('./line.js');
 var LineCache = require('./line_cache.js');
@@ -92,12 +93,12 @@ Chat.prototype.load = function(user, transport) {
 
     var getChat = function(poolConnection) {
         conn = poolConnection;
-        console.log(username, chatID);
+        logger.debug(username, chatID);
         return poolConnection.query('SELECT Chat.code, Chat.chat_name FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?', [username, chatID]);
     };
 
     var transferChat = function(result) {
-        console.log(result);
+        logger.debug(result);
         if(result.length > 0) {
             that._code = result[0].code;
             that._name = result[0].chat_name;
@@ -121,7 +122,7 @@ Chat.prototype.load = function(user, transport) {
     };
 
     var releasing = function(result) {
-        console.log("releasing connection");
+        logger.debug("releasing connection");
         connection.release(conn);
     };
 
@@ -129,8 +130,8 @@ Chat.prototype.load = function(user, transport) {
 
     connection.executePoolTransaction([getChat, transferChat, getNumNotifs, transferNotifs, commit, releasing], function(err) { 
         //NOTE error handling not so important here
-        console.log(err);
-        console.log("releasing connection from error");
+        logger.error(err);
+        logger.debug("releasing connection from error");
         return connection.release(conn);
     });
 };
@@ -179,14 +180,14 @@ Chat.prototype.retrieveLines = function(callback) {
     };
 
     var releaseConn = function(connect) {
-        console.log("releasing connection");
+        logger.debug("releasing connection");
         return connection.release(conn);
     };
     var promises = [setConn, getLines, setLines, retrieveCacheLines, appendCacheLines, getVotes, attachVotes, callback, releaseConn];
     connection.executePoolTransaction(promises, function(err) {
         //NOTE error handling not important here either 
-        console.log(err);
-        console.log('releasing connection in error');
+        logger.err(err);
+        logger.debug('releasing connection in error');
         connection.release(conn);
         return null;
     });
@@ -221,15 +222,15 @@ Chat.prototype.insert = function(user, callback=function(result) {}) {
 
     var err = function(err) {
         //TODO need real error handling here
-        console.log("there was an error");
+        logger.error("there was an error");
         conn.query('ROLLBACK');
-        console.log("releasing connection after rollback");
+        logger.debug("releasing connection after rollback");
         connection.release(conn);
     };
 
     var commit = function(reply) {
         var result = conn.query('COMMIT');
-        console.log("releasing connection");
+        logger.debug("releasing connection");
         connection.release(conn);
         return result;
     };
@@ -278,14 +279,14 @@ Chat.prototype.join = function(user, callback) {
             return null;
         }
         connect.query('COMMIT');
-        console.log("releasing connection in join chat");
+        logger.debug("releasing connection in join chat");
         connection.release(connect);
         return result;
     };
 
     var err = function(err) {
         connect.query('ROLLBACK');
-        console.log(err);
+        logger.error(err);
         connection.release(connect);
         return null;
     };
@@ -293,7 +294,7 @@ Chat.prototype.join = function(user, callback) {
     connection.executePoolTransaction([startTrans, retrieveChat, validateChat, insertMembers, commit, callback(that)], err);
 };
 
-Chat.prototype.loadLists = function(user, callback=function(rows) {}, error=function(err) {console.log(err);}) {
+Chat.prototype.loadLists = function(user, callback=function(rows) {}, error=function(err) {logger.error(err);}) {
     var query = 'SELECT Chat.chat_name, Chat.id, Chat.code, Notifications.num_notifications, MemberOf.username FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
 
     connection.execute(query, [user.getUsername(), user.getUsername()], callback, error);

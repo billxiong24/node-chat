@@ -1,6 +1,7 @@
 /**
  * user-password authentication using passport.js
  */
+var logger = require('../../util/logger.js')(module);
 const password_util = require('./password_util');
 const validate_cred_util = require('./validate_cred_util.js');
 const connection = require('../database/config.js');
@@ -67,7 +68,7 @@ function passportSignupCallback(passport, req, res, next) {
         }
         req.login(user, function(err) {
             if(err) {
-                console.log(err);
+                logger.error(err);
                 return;
             }
             req.session.sent = false;
@@ -80,7 +81,7 @@ function passportSignupCallback(passport, req, res, next) {
 function passportAuthCallback(passport, req, res, next) {
     passport.authenticate('login', function(err, user, info) {
         if(err) {
-            console.log(err);
+            logger.error(err);
             return;
         }
         if(!user) {
@@ -89,7 +90,7 @@ function passportAuthCallback(passport, req, res, next) {
         }
 
         req.login(user, function(err) {
-            if(err) { console.log(err); }
+            if(err) { logger.error(err); }
             
             req.session.sent = false;
             res.status(200).json({login_error : false});
@@ -101,7 +102,7 @@ function passportAuthCallback(passport, req, res, next) {
 function logOut(req, res) {
     req.logout();
     req.session.destroy(function(err) {
-        console.log("destroyed");
+        logger.info("destroyed");
         res.redirect('/login');
     });
 }
@@ -127,13 +128,13 @@ function passportAuth(passport) {
 
     //functions for serializing and deserializing users for session
     passport.serializeUser(function(user, done) {
-        console.log("serializing user");
+        logger.info("serializing user");
         //serialize user by username key, so easy to look up in redis
         done(null, user.username);
     });
 
     passport.deserializeUser(function(username, done) {
-        console.log("deserializing user");
+        logger.info("deserializing user");
         //NOTE when deserializing user, check cache first, also we are releasing connection
         
         var conn = null;
@@ -145,7 +146,7 @@ function passportAuth(passport) {
         var read = userCache.read();
 
         var end = function(result) {
-            console.log("releasing connection from deserliazation");
+            logger.debug("releasing connection from deserliazation");
             connection.release(conn);
             if(result.length === 0) {
                 return done(null, false);

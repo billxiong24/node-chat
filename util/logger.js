@@ -1,3 +1,4 @@
+process.setMaxListeners(0);
 var winston = require('winston');
 
 function setLabel(moduleObj) {
@@ -5,6 +6,7 @@ function setLabel(moduleObj) {
 }
 
 module.exports = function(moduleObj) {
+
     var options = {
         level: 'debug',
         filename: 'info.log',
@@ -19,12 +21,17 @@ module.exports = function(moduleObj) {
     consoleOptions.prettyPrint = true;
     consoleOptions.colorize = true;
 
-    winston.configure({
+    if(process.env.NODE_ENV === 'test') {
+        return new winston.Logger({
+            transports: [
+                new winston.transports.File(options)
+            ]
+        });
+    }
+    return new winston.Logger({
         transports: [
             new winston.transports.File(options),
             new winston.transports.Console(consoleOptions)
         ]
     });
-
-    return winston;
 };

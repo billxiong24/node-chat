@@ -40,7 +40,6 @@ var NotifCache = function(chatID, username, num_notifications) {
         //for(var key in jsonObj) {
             //jsonObj[key] = (key === username) ? 0 : jsonObj[key] + 1;
         //}
-        //console.log("notification cached");
     //});
 //};
 

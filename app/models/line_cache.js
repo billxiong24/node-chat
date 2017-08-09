@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const Line = require('./line.js');
 const connection = require('../database/config.js');
 const cache_functions = require('../cache/cache_functions.js');
@@ -34,7 +35,7 @@ LineCache.prototype.flush = function(numMessages, callback=function(rows) {}) {
         //even though looks ratchet, query is protected against sql injection bc still executing parameterized queries
         for(var i = 0; i < numMessages; i++) {
             //NOTE json.parse to cache file, should do this for others as well
-            console.log(message[i], "THIS IS A WRONG MESSAGE");
+            logger.info(message[i], "message content when flushing");
             var jsonObj = message[i];
             //if false, that means the queue of messages is empty, break
             if(!jsonObj) { break; }
@@ -51,7 +52,7 @@ LineCache.prototype.flush = function(numMessages, callback=function(rows) {}) {
         if(!first) {
             connection.execute(query, jsonArr, function(rows) {
                 callback(rows);
-                console.log("flushed to database");
+                logger.info("flushed to database");
             });
         }
     });

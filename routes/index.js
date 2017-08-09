@@ -1,3 +1,4 @@
+var logger = require('../util/logger.js')(module);
 var express = require('express');
 var router = express.Router();
 var authenticator = require('../app/authentication/user-pass.js');
@@ -22,7 +23,6 @@ module.exports = function(app, passport) {
     router.get('/login', timeout('3s'), haltOnTimeout, authenticator.checkLoggedIn, function(req, res, next) {
         //i dont think this works 
         if(req.timedout) {
-            console.log("timedoutt");
             //try again
             res.redirect('/login');
             return;
@@ -52,7 +52,7 @@ module.exports = function(app, passport) {
 
     router.get('/signup_success', email.checkEmailVerified, function(req, res, next) {
         if(req.session.sent) {
-            console.log("sent email already");
+            logger.info("sent email already");
             return res.render('signup_success', {first: req.user.first, csrfToken: req.csrfToken()});
         }
         email.sendEmailConfirmation(req.user.email, req.user.hash, function(err, info) {
@@ -99,7 +99,6 @@ module.exports = function(app, passport) {
         if(!req.timedout) {
             return next();
         }
-        console.log("timedout");
         //return next();
     }
 

@@ -1,3 +1,4 @@
+var logger = require('../util/logger.js')(module);
 var BusManager = require('../app/bus/bus_manager.js');
 
 var Service = function(genClient) {
@@ -12,7 +13,6 @@ Service.prototype.init = function() {
 Service.prototype.genListen = function(listener, pub_channel, sub_channel, callback) {
     var genClient = this._genClient;
     if(!this[listener]) {
-        //console.log("hi", listener);
         this[listener] = new BusManager(genClient(), genClient(),  pub_channel, sub_channel).getMaster();
     }
     this.listenBack(this[listener], callback);
@@ -23,7 +23,7 @@ Service.prototype.publishChannel = function(publisher, method, args) {
         method: method,
         args: args
     }), function() {
-        console.log('callback');
+        logger.info('callback');
     });
 };
 
@@ -33,9 +33,10 @@ Service.prototype.listenBack = function(service, callback) {
 
     service.subToChannel(function(channel, message) {
         //in case we get message from wrong channel, shouldnt happen
+        logger.info("service subscribed in listenBack");
         service.unSubToChannel();
         if(channel !== service.getSubChannel()) {
-            console.log("wrong channel");
+            logger.error("wrong channel");
             return;
         }
 
@@ -50,15 +51,15 @@ Service.prototype.listen = function(service) {
     service.subToChannel(function(channel, message) {
         //in case we get message from wrong channel, shouldnt happen
         if(channel !== service.getSubChannel()) {
-            console.log("wrong channel");
+            logger.error("wrong channel");
             return;
         }
         var json = JSON.parse(message);
-        console.log(json.method);
-        console.log(json.args);
+        logger.info(json.method);
+        logger.info(json.args);
 
         if(!prototype[json.method]) {
-            console.log("method does not exist");
+            logger.error("method does not exist");
             return;
         }
         prototype[json.method].apply(that, json.args);

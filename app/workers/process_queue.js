@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const kue = require('kue');
 const cache_store = ('../cache/cache_store.js');
 var Redis = require('ioredis');
@@ -39,28 +40,28 @@ var ProcessQueue = function(options = {
 function setGlobalQueueEvents() {
     //remove jobs upon completion
     this._processQueue.on('job enqueue', function(id, type) {
-        console.log("a job got enqueued from another process");
+        logger.info("a job got enqueued from another process");
 
     }).on('job complete', function(id, result) {
-        console.log("job completed");
+        logger.info("job completed");
     });
     this._processQueue.failedCount(function( err, total ) {
-        console.log("failed jobs: " + total);
+        logger.info("failed jobs: " + total);
     });
     this._processQueue.inactiveCount(function( err, total ) {
-          console.log("inactive jobs: " + total);
+          logger.info("inactive jobs: " + total);
     });
     this._processQueue.delayedCount(function( err, total ) {
-          console.log("delayed jobs: " + total);
+          logger.info("delayed jobs: " + total);
     });
     this._processQueue.completeCount(function( err, total ) {
-          console.log("completed jobs: " + total);
+          logger.info("completed jobs: " + total);
     });
     this._processQueue.delayedCount(function( err, total ) {
-          console.log("failjobs: " + total);
+          logger.info("failjobs: " + total);
     });
     this._processQueue.on('error', function(err) {
-        console.log("there was an error");
+        logger.info("there was an error");
         return;
 
     });
@@ -74,21 +75,21 @@ ProcessQueue.prototype.monitorStuck = function() {
 
 ProcessQueue.prototype.removeCompletedJobs= function(max_completed) {
     this._processQueue.completeCount(function(err, completed) {
-        console.log("completed jobs " + completed);
+        logger.info("completed jobs " + completed);
         if(completed < max_completed) { return; }
         
         kue.Job.rangeByState('complete', 0, completed, 'asc', function(err, jobs) {
             if(err) {
-                console.log("tjere was an error");
+                logger.err("tjere was an error");
                 return;
             }
             jobs.forEach(function(job) {
                 if(!job || !job.id) {
-                    console.log("job doesn't exist anymore removing");
+                    logger.err("job doesn't exist anymore removing");
                     return;
                 }
                 job.remove(function() {
-                    console.log("job removed " + job.id);
+                    logger.info("job removed " + job.id);
                 });
             });
         });
@@ -100,13 +101,13 @@ ProcessQueue.prototype.createJob = function(jobName, info, delay=100, attempts=3
     return this._processQueue.create(jobName, info)
         .attempts(attempts).ttl(7000).delay(delay).save(function(err) {
             if(err) {
-                console.log(err);
+                logger.err(err);
             }
         }).on('failed', function(error) {
-        console.log("job failed: " + error);
+        logger.err("job failed: " + error);
         //re enqueue failed job
         newJob.state('inactive').save(function(err) {
-            console.log("error saving job", err);
+            logger.debug("error saving job", err);
         });
     });
 };
@@ -119,7 +120,7 @@ ProcessQueue.prototype.addJobEventHandler = function(job, event, cb) {
 ProcessQueue.prototype.processJob = function(jobName, cb, concurrency=10) {
     this._processQueue.process(jobName, concurrency, function(job, done) {
         if(!job) {
-            console.log("job does not exist");
+            logger.error("job does not exist");
             return;
         }
         cb(job, done);

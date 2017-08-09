@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 var UserCache = require('./user_cache.js');
 var cache_functions = require('../cache/cache_functions.js');
 var connection = require('../database/config.js');
@@ -49,14 +50,14 @@ UserManager.prototype.authenticate = function(password, loginResult) {
     };
 
     var loginValidate = function(result) {
-        console.log("releasing connection");
+        logger.debug("releasing connection");
         connection.release(conn);
 
         if(!result) { return null; }
         delete sqlUser.password;
         return sqlUser;
     };
-    connection.executePoolTransaction([setConn, checkDB, validate, retrievePassword, loginValidate, loginResult], function(err) {console.log(err);});
+    connection.executePoolTransaction([setConn, checkDB, validate, retrievePassword, loginValidate, loginResult], function(err) {logger.error(err);});
 };
 
 UserManager.prototype.authenticateEmail = function(userJSON, hash, callback) {

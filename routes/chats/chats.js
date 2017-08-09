@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 var express = require('express');
 var router = express.Router();
 var authenticator = require('../../app/authentication/user-pass.js');
@@ -24,11 +25,11 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
     var chatRequester = new ChatRequest(clean_client.genClient(clients));
 
     chatRequester.loadChatListRequest(req.csrfToken(), req.user, function(channel, json) {
-        console.log(clients.length);
+        logger.info("num clients: ", clients.length);
         clean_client.cleanup(clients);
 
-        console.log("received in", req.user.username);
-        console.log("------------------------------------------------");
+        logger.info("received in", req.user.username);
+        logger.info("------------------------------------------------");
         req.session.members = json.members;
         if(process.env.NODE_ENV === 'test') {
             if(!json.inChat) {
@@ -47,9 +48,9 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
 
 router.get('/:chatID/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
     manager.loadMoreLines(req.user.username, req.params.chatID, req.session.lastTimeStamp, function(lineResults) {
-        console.log(req.session.lastTimeStamp + " BEFORE");
+        logger.info(req.session.lastTimeStamp + " BEFORE");
         req.session.lastTimeStamp = (lineResults !== null && lineResults.length > 0) ?  lineResults[lineResults.length - 1].stamp : null;
-        console.log(req.session.lastTimeStamp + "after");
+        logger.info(req.session.lastTimeStamp + "after");
 
         if(req.session.lastTimeStamp !== null) {
             return res.status(200).json({lines: lineResults, username: req.user.username});
@@ -76,7 +77,7 @@ router.get('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, re
 router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res, next) {
     manager.loadLines(req.user.username, req.params.chatID, function(lineResults) {
         req.session.lastTimeStamp = lineResults.length > 0 ? lineResults[0].stamp : null;
-        console.log(req.session.lastTimeStamp + " on load tmee");
+        logger.info(req.session.lastTimeStamp + " on load tmee");
         res.status(200).send({lines: lineResults});
     });
 });
@@ -86,13 +87,14 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
     for(var key in req.session.members) {
         //chat code was found 
         if(req.session.members[key].code === req.body.joinChat) {
-            console.log("POST join_chat cached");
+            logger.info("POST join_chat cached");
             res.redirect('/chats/' +  req.session.members[key].id);
             return;
         }
     } 
     //chat was not found
     var failure = function() { 
+        logger.info("chat not found");
         if(process.env.NODE_ENV === 'test') {
             return res.json({error: 'wrong password'});
         }
@@ -100,6 +102,7 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         return res.redirect('/home'); 
     };
     var success = function(chatJSON) {
+        logger.info("chat found", chatJSON);
         req.session.members[chatJSON.id] = chatJSON;
         if(process.env.NODE_ENV === 'test') {
             return res.status(200).json({joined: true});
@@ -114,8 +117,8 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
     chatRequester.joinChatRequest(req.user.username, req.body.joinChat, function(channel, json) {
         clean_client.cleanup(clients);
 
-        console.log("joined chat micro callback");
-        console.log("=====================================");
+        logger.info("joined chat micro callback");
+        logger.info("=====================================", json);
         if(json.join_error) {
             failure();
         }
@@ -130,7 +133,7 @@ router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, nex
     var chatRequester = new ChatRequest(clean_client.genClient(clients));
 
     chatRequester.createChatRequest(req.user.username, req.body.createChat, function(channel, chatInfo) {
-        console.log('FINISHED CREATING CHAT', clients.length);
+        logger.info('FINISHED CREATING CHAT', clients.length);
         clean_client.cleanup(clients);
 
         req.session.members[chatInfo.id] = chatInfo;
@@ -152,22 +155,22 @@ function chatRender(req, res, cachedCB, missCB) {
     var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.user.username, -1));
 
     if(req.params.chatID in req.session.members) {
-        console.log("post renderinfo cached");
+        logger.info("post renderinfo cached");
         req.session.members[req.params.chatID].csrfToken = req.csrfToken();
         //req.session.members[req.params.chatID].notifs = numNotifs;
         cachedCB(req.session.members);
     }
     else {
         //i dont think this will ever get reached since u join before this function is reached
-        console.log("post renderinfo not cached");
+        logger.info("post renderinfo not cached");
         //TODO use microservice
         var clients = [];
         var chatRequester = new ChatRequest(clean_client.genClient(clients));
 
         chatRequester.loadChatRequest(req.user.username, req.params.chatID, function(channel, deepCopy) {
             clean_client.cleanup(clients);
-            console.log(req.user.username, req.params.chatID);
-            console.log(deepCopy);
+            logger.info(req.user.username, req.params.chatID);
+            logger.info(deepCopy);
             if(!deepCopy) {
                 return missCB(null);
             }

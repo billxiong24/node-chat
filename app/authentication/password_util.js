@@ -20,7 +20,6 @@ function retrievePassword(password, hash, callback, async=false) {
         });
     }
     else {
-        //console.log(password, hash);
         return bcrypt.compareAsync(password, hash);
     }
 }

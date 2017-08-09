@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 const connection = require('../database/config.js');
 const Vote = require('./vote.js');
 const VoteManager = require('../chat_functions/vote_manager.js');
@@ -52,7 +53,7 @@ Line.prototype.insert = function() {
     connection.execute('INSERT INTO ChatLines (chat_id, username, message, stamp, line_id) VALUES (?, ?, ?, NOW(6), ?) ', info, function(rows) {
             
     }, function(err) {
-        console.log(err);
+        logger.error(err);
         throw err;
     });
 };
@@ -79,12 +80,14 @@ Line.prototype.readNext = function(latestStamp, callback) {
     var lineResults = null;
     var quer = function(poolConnection) {
         if(poolConnection === null || latestStamp === null) {
+            logger.info("releasing connection since connection/latest stamp was null");
             connection.release(poolConnection);
             return null;
         }
 
         var query =  'SELECT line_id, username, message, DATE_FORMAT(stamp, "%Y-%m-%d %H:%i:%s:%f") as stamp FROM ChatLines WHERE chat_id = ? AND stamp < DATE_FORMAT(?, "%Y-%m-%d %H:%i:%s:%f") ORDER BY stamp DESC LIMIT 15';
 
+        logger.debug("releasing connection after query");
         connection.release(poolConnection);
         return poolConnection.query(query, [chatID, latestStamp]);
     };
@@ -98,6 +101,7 @@ Line.prototype.readNext = function(latestStamp, callback) {
     var attachVotes = function(voteResults) {
         //NOTE yet another bug found, really need unit tests
         if(!voteResults) {
+            logger.info("no votes found in attaching votes");
             return lineResults;
         }
 
@@ -106,7 +110,7 @@ Line.prototype.readNext = function(latestStamp, callback) {
         }
         return lineResults;
     };
-    connection.executePoolTransaction([quer, setLines, getVotes, attachVotes, callback], function(err) {console.log(err);});
+    connection.executePoolTransaction([quer, setLines, getVotes, attachVotes, callback], function(err) {logger.error(err);});
 };
 
 module.exports = Line;
