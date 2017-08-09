@@ -18,3 +18,15 @@ run `npm list --depth=0` to view globally installed packages
 `MySQL v14.14`  
 `Redis-Server v3.2.8`  
 `gem v2.5.2 (for running ruby script to create redis cluster)`  
+
+
+### Install instructions
+`sudo apt-get update`
+`printf '\n' | sudo add-apt-repository ppa:chris-lea/redis-server`
+`sudo apt-get update`
+`sudo apt-get -y install redis-server`
+`sudo apt-get -y install mysql`
+`sudo add-apt-repository universe`
+`sudo apt-get update`
+`sudo apt-get install npm`
+`sudo apt-get install gem`

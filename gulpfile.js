@@ -1,3 +1,5 @@
+var logger = require('./util/logger.js')(module);
+require('dotenv').config();
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
@@ -157,9 +159,9 @@ gulp.task('start', function() {
 });
 
 gulp.task('clean', function() {
-    gulp_run('mysql -u root --password=Chem1313# < ./app/database/test/clean.sql').exec(function(err) {
-        gulp_run('mysql -u root --password=Chem1313# chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
-            gulp_run('mysql -u root --password=Chem1313# chatdbtest < ./app/database/emailConfirm.sql').exec();
+    gulp_run('mysql -u root --password='+process.env.PASS+' < ./app/database/test/clean.sql').exec(function(err) {
+        gulp_run('mysql -u root --password='+process.env.PASS+' chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
+            gulp_run('mysql -u root --password='+process.env.PASS+' chatdbtest < ./app/database/emailConfirm.sql').exec();
         });
     });
 });
