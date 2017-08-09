@@ -4,10 +4,10 @@ language: node_js
 node_js:
     - 7.6.0
 
-env:
+global:
     - PASS=""
-    - USER="root"
     - NODE_USER="root"
+    - USER="root"
 services: 
     - mysql
     - redis-server
