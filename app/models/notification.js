@@ -50,6 +50,7 @@ Notification.prototype.flush = function(callback = function(result) {}) {
     var query =  "UPDATE Notifications SET num_notifications = IF (username=?, 0, num_notifications+1) WHERE Notifications.chat_id = ? ";
 
     connection.execute(query, [this._username, this._chatID], function(result) {
+        console.log("flushed notif in model");
         callback(result);
     });
 };

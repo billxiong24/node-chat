@@ -1,5 +1,6 @@
 #!/bin/bash
 #run this script as source
+echo "$PWD"
 
 for file in *; do
     if [ -f "$file" ]; then

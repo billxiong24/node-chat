@@ -31,6 +31,14 @@ afterEach(function() {
 
 });
 
+before(function() {
+    listen.start();
+});
+
+after(function() {
+
+});
+
 
 describe('testing chat microservice', function() {
     var loadListSpy, loadChatSpy, joinSpy, createSpy;
@@ -39,7 +47,6 @@ describe('testing chat microservice', function() {
         loadChatSpy = sinon.spy(ChatService.prototype, 'loadChatService');
         joinSpy = sinon.spy(ChatService.prototype, 'joinChatService');
         createSpy = sinon.spy(ChatService.prototype, 'createChatService');
-        listen.start();
     });
 
     after(function() {
@@ -219,7 +226,80 @@ describe('testing chat microservice', function() {
 });
 
 describe('testing notification microservice', function() {
+    var flushNotificationSpy, loadNotificationSpy;
+    before(function() {
+        flushNotificationSpy = sinon.spy(NotifService.prototype, 'flushNotificationService');
+        loadNotificationSpy = sinon.spy(NotifService.prototype, 'loadNotificationService');
+        //listen.start();
+    });
+
+    after(function() {
+        NotifService.prototype.flushNotificationService.restore();
+        NotifService.prototype.loadNotificationService.restore();
+    });
+
     it('should load correct number of notifications for user', function(done) {
-        return done();
+        var clients = [];
+        var notifRequest = new NotifRequest(clean_client.genClient(clients));
+        notifRequest.loadNotificationRequest('01a640ac73db164a5c41baad0c9d76f2', 'marquis', function(channel, json) {
+            expect(json).to.equal(0);
+            clean_client.cleanup(clients);
+            return done();
+        });
+    });
+
+    it('should not load notifications for bogus user', function(done) {
+        var clients = [];
+        var notifRequest = new NotifRequest(clean_client.genClient(clients));
+        notifRequest.loadNotificationRequest('01a640ac73db164a5c41baad0c9d76f2', 'ererer', function(channel, json) {
+            expect(json).to.equal(null);
+            clean_client.cleanup(clients);
+            return done();
+        });
+
+    });
+
+    it('should not load notifications for bogus chat', function(done) {
+        var clients = [];
+        var notifRequest = new NotifRequest(clean_client.genClient(clients));
+        notifRequest.loadNotificationRequest('arto98745gnnvmvm', 'marquis', function(channel, json) {
+            expect(json).to.equal(null);
+            clean_client.cleanup(clients);
+            return done();
+        });
+
+    });
+
+    it('should flush notifications correctly for correct username', function(done) {
+        var clients = [];
+        var notifRequest = new NotifRequest(clean_client.genClient(clients));
+        notifRequest.flushNotificationRequest('46215e0b555f8be7', 'marquis', function(channel, json) {
+            //nobody else in chat
+            expect(json.affectedRows).to.equal(0);
+            clean_client.cleanup(clients);
+            return done();
+        });
+
+    });
+    
+    it('should not flush notifications for bogus chat', function(done) {
+        var clients = [];
+        var notifRequest = new NotifRequest(clean_client.genClient(clients));
+        notifRequest.flushNotificationRequest('asdfkuanwer', 'marquis', function(channel, json) {
+            expect(json.affectedRows).to.equal(0);
+            clean_client.cleanup(clients);
+            return done();
+        });
+
+    });
+
+    it('should not flush notifications for bogus user', function(done) {
+        var clients = [];
+        var notifRequest = new NotifRequest(clean_client.genClient(clients));
+        notifRequest.flushNotificationRequest('46215e0b555f8be7', 'awerlkuynaernl', function(channel, json) {
+            expect(json.affectedRows).to.equal(0);
+            clean_client.cleanup(clients);
+            return done();
+        });
     });
 });

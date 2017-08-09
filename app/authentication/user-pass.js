@@ -1,4 +1,3 @@
-
 /**
  * user-password authentication using passport.js
  */
@@ -137,15 +136,23 @@ function passportAuth(passport) {
         console.log("deserializing user");
         //NOTE when deserializing user, check cache first, also we are releasing connection
         
+        var conn = null;
+        var setConn = function(poolConnection) {
+            conn = poolConnection;
+            return conn;
+        };
         var userCache = new UserCache(username);
         var read = userCache.read();
+
         var end = function(result) {
+            console.log("releasing connection from deserliazation");
+            connection.release(conn);
             if(result.length === 0) {
                 return done(null, false);
             }
             return done(null, result[0]);
         };
-        connection.executePoolTransaction([read, end], function(err) {
+        connection.executePoolTransaction([setConn, read, end], function(err) {
             throw err;
         });
     });

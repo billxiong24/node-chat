@@ -1,5 +1,9 @@
 var redis = require('redis');
 
+//if(process.env.NODE_ENV === 'test') {
+    //redis = require('fakeredis');
+//}
+
 function genClient(clients) {
     return function() {
         var client = redis.createClient();

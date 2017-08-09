@@ -24,6 +24,7 @@ UserCache.prototype.read = function() {
     var that = this;
     var cacheRetrieve = this.retrieveFromCache();
     //wtf is this lmao
+    //TODO avoid having to open a connection(small optimization)
     return function(poolConnection) {
         return cacheRetrieve.then(function(result) {
             //console.log(result);
@@ -202,7 +203,6 @@ UserCache.prototype.updateSettings = function(newObj, sessionObj, callback=funct
         return console.log(err);
     });
 };
-
 UserCache.prototype.confirmEmail = function(sessionUser, hash, callback) {
     //update cache and database as per write through policy
     //FIXME assuming user in cache, since user has just logged in- risky but low chance of anything otherwise 

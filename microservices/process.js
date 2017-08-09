@@ -13,9 +13,7 @@ function start() {
     });
 
     chatService.listenService();
-    
     var notifManager = new NotificationManager(null);
-
     var notifService = new NotifService(notifManager, function() {
         return redis.createClient();
     });

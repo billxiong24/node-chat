@@ -7,11 +7,21 @@ var NotificationManager = function(notifObj) {
 
 NotificationManager.prototype.loadNotifications = function(callback) {
      
+    //release the connection
+    var conn = null;
+    var setConn = function(poolConnection) {
+        conn = poolConnection;
+        return conn;
+    };
     var notifLoad = this._notifObj.load();
     var setNotif = function(result) {
         return result.length > 0 ? result[0].num_notifications : null;
     };
-    connection.executePoolTransaction([notifLoad, setNotif, callback], function(err) {throw err;});
+    var end = function(result) {
+        console.log('releasing notification connection load');
+        connection.release(conn);
+    };
+    connection.executePoolTransaction([setConn, notifLoad, setNotif, callback, end], function(err) {throw err;});
 };
 
 NotificationManager.prototype.flushNotifications = function(callback) {

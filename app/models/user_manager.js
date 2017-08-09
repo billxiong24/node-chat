@@ -12,7 +12,6 @@ UserManager.prototype.leave = function(chat_id, callback) {
 };
 
 //FIXME refactor this to use redis promises (bluebird) 
-
 UserManager.prototype.signup = function(password, signupFailure, signupSuccess) {
     var that = this;
     password_util.storePassword(password, function(err, hash) {
@@ -33,6 +32,7 @@ UserManager.prototype.authenticate = function(password, loginResult) {
     var inCache = false;
     var user = this._userObj;
     var setConn = function(poolConnection) { conn = poolConnection; return poolConnection; };
+    //will handle caching
     var checkDB = user.read();
 
     var sqlUser = null;
