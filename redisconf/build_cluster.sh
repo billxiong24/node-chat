@@ -1,6 +1,7 @@
 #!/bin/bash
-#run this script as source
-echo "$PWD"
+
+#### starts the redis cluster ####
+#### RUN THIS SCRIPT WITH SOURCE ####
 
 for file in *; do
     if [ -f "$file" ]; then

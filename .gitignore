@@ -16,3 +16,4 @@ blue.js
 coverage/
 info.log
 .travis.yaml
+loggertest.js

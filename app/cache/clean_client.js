@@ -4,6 +4,7 @@ var redis = require('redis');
     //redis = require('fakeredis');
 //}
 
+var host = process.env.HOST;
 function genClient(clients) {
     return function() {
         var client = redis.createClient();
@@ -14,7 +15,7 @@ function genClient(clients) {
 
 function cleanup(clients) {
     for(var i = 0; i < clients.length; i++)  {
-        clients[i].end(true);
+        clients[i].quit();
     }
 }
 
