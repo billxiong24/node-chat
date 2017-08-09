@@ -163,9 +163,9 @@ gulp.task('start', function() {
 });
 
 gulp.task('clean', function() {
-    gulp_run('mysql -u root --password="" < ./app/database/test/clean.sql').exec(function(err) {
-        gulp_run('mysql -u root --password="" chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
-            gulp_run('mysql -u root --password="" chatdbtest < ./app/database/emailConfirm.sql').exec();
+    gulp_run('mysql -u root --password='+process.env.PASS+'< ./app/database/test/clean.sql').exec(function(err) {
+        gulp_run('mysql -u root --password='+process.env.PASS+' chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
+            gulp_run('mysql -u root --password='+process.env.PASS+' chatdbtest < ./app/database/emailConfirm.sql').exec();
         });
     });
 });

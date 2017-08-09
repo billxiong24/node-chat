@@ -9,7 +9,7 @@ cd redisconf || echo "failed build";
 printf 'yes' | ./build_cluster.sh
 
 #run unit and integration tests (gulp clean && mocha)
-npm test
+npm test || exit 1
 
 ./clean.sh
 cd ../ || echo "failed to change to upper dir";
