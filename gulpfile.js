@@ -29,9 +29,6 @@ var gulp_todo = require('gulp-todo');
 //concat and minify clientside js
 //build and run project using gulp-nodemon
 //
-logger.info(process.env.USER);
-logger.info(process.env.NODE_USER);
-logger.info(process.env.PASS);
 
 var neon_js_src = [
     'public/javascripts/js/index.js',
