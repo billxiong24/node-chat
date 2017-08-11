@@ -18,6 +18,9 @@ router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUse
         req.session.members = members;
         userJSON.email = req.user.email;
         userJSON.num_chats = userJSON.list.length;
+        if(process.env.NODE_ENV === 'test') {
+            return res.status(200).send(userJSON);
+        }
         return res.render('settings-profile', userJSON);
     });
 });

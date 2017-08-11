@@ -20,6 +20,8 @@ var Notification = require('../app/models/notification.js');
 var NotifManager = require('../app/chat_functions/notif_manager.js');
 var Vote = require('../app/models/vote.js');
 var VoteManager = require('../app/chat_functions/vote_manager.js');
+var UserCache = require('../app/models/user_cache.js');
+var UserManager = require('../app/models/user_manager.js');
 
 var ProcessQueue = require('../app/workers/process_queue.js');
 
@@ -170,7 +172,7 @@ describe('testing line model', function() {
                 expect(createJobSpy.called).to.equal(true);
             }
             return done();
-        }, 1500);
+        }, 600);
 
     });
 });
@@ -285,6 +287,130 @@ describe('testing voting model', function() {
 
                 return done();
             });
+        });
+    });
+});
+
+describe('test user model', function() {
+
+    var userCache = new UserCache('nancywilson');
+    var userManager = new UserManager(userCache); 
+
+    it('should confirm password is correct, user should not be in cache', function(done) {
+        userCache.confirmPassword('nancy', function(result) {
+            expect(result).to.equal(true);
+            //should have added user to cache if not
+            expect(userCache.getInCache()).to.equal(true);
+            return done();
+        });
+    });
+
+    it('should confirm password is wrong, user should be in cache', function(done) {
+        userCache.confirmPassword('asdflkjh', function(result) {
+            expect(result).to.equal(false);
+            expect(userCache.getInCache()).to.equal(true);
+            return done();
+        });
+    });
+
+    it('should successfully change password for user', function(done) {
+        userManager.updatePassword('nancy', 'nancy123', function(result) {
+            expect(result).to.have.property('affectedRows');
+            expect(result.affectedRows).to.equal(1);
+            return done();
+        });
+    });
+
+    it('should successfully update settings for user', function(done) {
+        var infoObj = {
+            first: 'newnancy',
+            last: 'newwilson',
+            email: 'nancywilson@gmail.com',
+            username: 'nancywilson',
+            userid: 'doesnt matter'
+        };
+        var sessObj = {
+            first: 'nancy',
+            last: 'wilson',
+            email: 'billx0477@gmail.com',
+            username: 'nancywilson',
+            userid: 'doesnt matter'
+        };
+
+        userManager.updateUserProfile(infoObj, sessObj, function(result) {
+            expect(result).to.have.property('affectedRows');
+            expect(result.affectedRows).to.equal(1);
+            return done();
+        });
+    });
+
+    it('should fail update settings for user, since user does not exist', function(done) {
+        var infoObj = {
+            first: 'newnancy',
+            last: 'newwilson',
+            email: 'nancywilson@gmail.com',
+            username: 'asdfadsfadfasdf',
+            userid: 'doesnt matter'
+        };
+        var sessObj = {
+            first: 'nancy',
+            last: 'wilson',
+            email: 'billx0477@gmail.com',
+            username: 'adfaluynart',
+            userid: 'doesnt matter'
+        };
+        userCache.setJSON(infoObj);
+
+        userManager.updateUserProfile(infoObj, sessObj, function(result) {
+            expect(result).to.have.property('affectedRows');
+            expect(result.affectedRows).to.equal(0);
+            return done();
+        });
+    });
+
+
+    var hash;
+    it('should signup user properly', function(done) {
+        var userCache = new UserCache('user1234', 'id12354', undefined, 'first', 'last', '123@gmail.com');
+        var userManager = new UserManager(userCache); 
+        var success = function(userObj) {
+            expect(userObj).to.have.property('username');
+            expect(userObj).to.have.property('first');
+            expect(userObj).to.have.property('last');
+            expect(userObj).to.have.property('hash');
+
+            hash = userObj.hash;
+
+            expect(userObj).to.have.property('id');
+            expect(userObj).to.have.property('email');
+            return done();
+        };
+        var failure = function() {
+
+        };
+        userManager.signup('pass123', failure, success);
+    });
+
+    it('should not confirm email of previous users, since hash wrong', function(done) {
+        var userCache = new UserCache('user1234', 'id12354', undefined, 'first', 'last', '123@gmail.com');
+        var userManager = new UserManager(userCache); 
+
+        userManager.authenticateEmail(userCache.toJSON(), 'wronghash', function(result) {
+            expect(result).to.equal(null);
+            return done();
+        });
+    });
+
+    it('should confirm email of previous users, since hash correct', function(done) {
+        var userCache = new UserCache('user1234', 'id12354', undefined, 'first', 'last', '123@gmail.com');
+        var userManager = new UserManager(userCache); 
+        var json = userCache.toJSON(); 
+
+        userManager.authenticateEmail(json, hash, function(result) {
+            expect(result).to.have.property('affectedRows');
+            expect(result.affectedRows).to.equal(1);
+            expect(json.confirmed).to.equal(1);
+            return done();
         });
     });
 });

@@ -20,8 +20,9 @@
 `sudo apt-get install npm`  
 `sudo apt-get install ruby`  
 `sudo apt-get install gem`  
+`sudo gem install redis`  
 `sudo apt-get install git`  
-`sudo apt-get install nodejs-legacy`, and use `n` to upgrade to `v7.6.0`    
+`sudo apt-get install nodejs-legacy`, and use `n` to upgrade to `v7.6.0`  
     
 # Installing npm dependencies  
 #### Global dependencies  
@@ -92,17 +93,17 @@ Go to `localhost:3000`
 
 ### gulp watch
 Use `gulp watch` to monitor the following file changes. See `gulpfile.js` for information.  
-###### Handlebars  
+##### Handlebars  
 Since Handlebar templates are precompiled into a javascript file, any changes to template files requires recompiling.  
 
-###### CSS files
+##### CSS files
 CSS files are minifed and concatenated into a single, minified file, which requires any changes to css files to be updated in the minifed file.   
   
   
 ### webpack --watch 
 Use `webpack --watch` to monitor the following file changes  
   
-###### Javascript files in public/javascripts/  
+##### Javascript files in public/javascripts/  
 These client javascript files use CommonJS module loader, which does not run natively in the browser. Therefore, `webpack` is used to bundle these  
 files into javascript which can run on the browser. Any changes to any of these files requires `webpack` to rebundle the modules. `webpack --watch` will handle this  
 automatically. View `webpack.config.js`.  

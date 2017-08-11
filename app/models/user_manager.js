@@ -76,7 +76,7 @@ UserManager.prototype.updatePassword = function(oldPass, newPass, callback) {
         .then(function(hash) {
             that._userObj.setPassword(hash);
             that._userObj.changePassword(function(rows) {
-                callback(result);
+                callback(rows);
             });
             return null;
         });

@@ -215,6 +215,7 @@ UserCache.prototype.confirmEmail = function(sessionUser, hash, callback) {
         if(!result.hash) {
             return null;
         }
+        //this is where we check if same user- random user can't just confirm email 
         if(result.hash !== hash) {
             return null;
         }
