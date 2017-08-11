@@ -2,6 +2,7 @@ var logger = require('../../util/logger.js')(module);
 const kue = require('kue');
 const cache_store = ('../cache/cache_store.js');
 var Redis = require('ioredis');
+var redis_options = require('../cache/cache_config.js');
 /**
  * If we get an error job doesn't exist, its ok, it removes bad job and moves on,
  * dont get scared
@@ -11,25 +12,9 @@ const host = process.env.HOST || 'localhost';
 var ProcessQueue = function(options = {
     prefix: 'q',
     redis: {
-        createClientFactory: function () {
+        createClientFactory: function() {
             //FIXME accessing this from cache_store throws error- as usual, no idea why
-            return new Redis.Cluster([
-                {
-                    port: 6379,
-                    host: host
-                },
-                {
-                    port: 6380,
-                    host: host
-                },
-                {
-                    port: 6381,
-                    host: host
-                }
-            ], {
-                scaleRead: 'slave',
-                enableOfflineQueue: true
-            });
+            return new Redis.Cluster(redis_options.clusters, redis_options.options);
         }
     }
 }) {

@@ -11,7 +11,7 @@ function ipHash(ip, numProcesses) {
     return ~~num % numProcesses;
 }
 
-function addRespawnHandler(workers, index) {
+function addRespawnHandler(workers, cluster, index) {
     workers[index].on('exit', function(code, sig) {
         workers[index] = cluster.fork();
     });
@@ -25,7 +25,7 @@ module.exports = function(cluster, http, httpHiddenServer, PORT) {
 
         for(var i = 0; i < numCPUs; i++) {
             workers[i] = cluster.fork();
-            addRespawnHandler(workers, i);
+            addRespawnHandler(workers, cluster, i);
         }
         
         //var options = {

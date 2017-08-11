@@ -1,4 +1,6 @@
+//var redis = require('ioredis');
 var redis = require('redis');
+var redis_options = require('./cache_config.js');
 
 //if(process.env.NODE_ENV === 'test') {
     //redis = require('fakeredis');

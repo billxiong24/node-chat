@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js');
 const urlParser = require('url');
 
 var Socket = function(io, namespace=null) {

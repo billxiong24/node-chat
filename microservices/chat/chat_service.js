@@ -2,7 +2,6 @@ require('dotenv').config({path: __dirname + '/../../.env'});
 
 var BusManager = require('../../app/bus/bus_manager.js');
 var ChatManager = require('../../app/chat_functions/chat_manager.js');
-var redis = require('redis');
 var ChatMicro = require('./chat_micro.js');
 
 var ChatService = function(chat_manager, genClient) {

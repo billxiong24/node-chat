@@ -2,7 +2,6 @@ require('dotenv').config({path: __dirname + '/../../.env'});
 var BusManager = require('../../app/bus/bus_manager.js');
 var NotificationManager = require('../../app/chat_functions/notif_manager.js');
 var Notification = require('../../app/models/notification.js');
-var redis = require('redis');
 var NotifMicro = require('./notif_micro.js');
 
 

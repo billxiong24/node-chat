@@ -6,7 +6,6 @@ const LineCache = require('../models/line_cache.js');
 const Notification = require('../models/notification.js');
 const NotificationManager = require('../chat_functions/notif_manager.js');
 const NotifRequest = require('../../microservices/notifs/notif_request.js');
-const redis = require('redis');
 
 const clean_client = require('../cache/clean_client.js');
 
