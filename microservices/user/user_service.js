@@ -69,13 +69,13 @@ UserService.prototype.authenticateEmailService = function(username, userJSON, ha
     });
 };
 
-UserService.prototype.updateUserProfileService = function(username, userid, newObj, oldObj) {
+UserService.prototype.updateUserProfileService = function(newObj, oldObj) {
     newObj = JSON.parse(newObj);
     oldObj = JSON.parse(oldObj);
     var that = this;
-    this._user_manager.setUserObj(new UserCache(username).setID(userid));
+    this._user_manager.setUserObj(new UserCache(null).setJSON(oldObj));
 
-    this._user_manager.updateUserProfile(newObj, oldObj, function(rows) {
+    this._user_manager.updateUserProfile(newObj, function(rows) {
         that._updateProf_service.pubToChannel(JSON.stringify(rows));
     });
 };

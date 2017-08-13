@@ -28,18 +28,18 @@ UserRequest.prototype.updatePasswordRequest = function(infoObj, oldPass, newPass
     this.publishChannel(this._updatePass_master, 'updatePasswordService', [infoObj, oldPass, newPass]);
 };
 
-UserRequest.prototype.updateUserProfileRequest = function(username, userid, newObj, oldObj, callback) {
+UserRequest.prototype.updateUserProfileRequest = function(newObj, oldObj, callback) {
     this.genListen('_updateProf_master', this._updateProf_pub_channel, this._updateProf_sub_channel, callback);
 
     var nObj = JSON.stringify(newObj);
     var oObj = JSON.stringify(oldObj);
-    this.publishChannel(this._updatePass_master, 'updateUserProfileService', [username, userid, nObj, oObj]);
+    this.publishChannel(this._updatePass_master, 'updateUserProfileService', [nObj, oObj]);
 };
 
 UserRequest.prototype.authenticateEmailRequest = function(username, userJSON, hash, callback) {
     this.genListen('_authEmail_master', this._authEmail_pub_channel, this._authEmail_sub_channel, callback);
     var json = JSON.stringify(userJSON);
-    this.publishChannel(this._updatePass_master, 'updatePasswordService', [username, json, hash]);
+    this.publishChannel(this._updatePass_master, 'authenticateEmailService', [username, json, hash]);
 };
 
 module.exports = UserRequest;

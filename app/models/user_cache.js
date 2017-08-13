@@ -192,9 +192,11 @@ UserCache.prototype.updateSettings = function(newObj, callback=function(rows) {}
     this.setID(oldID);
     this.setUsername(oldUsername);
 
+    logger.debug('old username', oldUsername);
+
     var query = 'UPDATE User SET username = ?, first = ?, last = ?, email = ? WHERE username = ?';
     connection.execute(query, [
-        this.getUsername(), 
+        this.getUsername(),
         this.getFirst(),
         this.getLast(),
         this.getEmail(),
