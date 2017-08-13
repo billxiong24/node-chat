@@ -329,17 +329,20 @@ describe('test user model', function() {
             username: 'nancywilson',
             userid: 'doesnt matter'
         };
-        var sessObj = {
-            first: 'nancy',
-            last: 'wilson',
-            email: 'billx0477@gmail.com',
-            username: 'nancywilson',
-            userid: 'doesnt matter'
-        };
 
-        userManager.updateUserProfile(infoObj, sessObj, function(result) {
+        userManager.updateUserProfile(infoObj, function(result, jsonObj) {
             expect(result).to.have.property('affectedRows');
             expect(result.affectedRows).to.equal(1);
+            expect(jsonObj).to.have.property('first');
+            expect(jsonObj).to.have.property('last');
+            expect(jsonObj).to.have.property('email');
+            expect(jsonObj).to.have.property('username');
+            expect(jsonObj).to.have.property('id');
+
+            expect(jsonObj.first).to.equal('newnancy');
+            expect(jsonObj.last).to.equal('newwilson');
+            expect(jsonObj.email).to.equal('nancywilson@gmail.com');
+            expect(jsonObj.username).to.equal('nancywilson');
             return done();
         });
     });
@@ -352,18 +355,13 @@ describe('test user model', function() {
             username: 'asdfadsfadfasdf',
             userid: 'doesnt matter'
         };
-        var sessObj = {
-            first: 'nancy',
-            last: 'wilson',
-            email: 'billx0477@gmail.com',
-            username: 'adfaluynart',
-            userid: 'doesnt matter'
-        };
         userCache.setJSON(infoObj);
 
-        userManager.updateUserProfile(infoObj, sessObj, function(result) {
+        userManager.updateUserProfile(infoObj, function(result, jsonObj) {
             expect(result).to.have.property('affectedRows');
             expect(result.affectedRows).to.equal(0);
+            expect(jsonObj).to.equal(null);
+
             return done();
         });
     });
@@ -395,8 +393,9 @@ describe('test user model', function() {
         var userCache = new UserCache('user1234', 'id12354', undefined, 'first', 'last', '123@gmail.com');
         var userManager = new UserManager(userCache); 
 
-        userManager.authenticateEmail(userCache.toJSON(), 'wronghash', function(result) {
+        userManager.authenticateEmail(userCache.toJSON(), 'wronghash', function(result, jsonUser) {
             expect(result).to.equal(null);
+            expect(jsonUser).to.equal(null);
             return done();
         });
     });
@@ -406,10 +405,11 @@ describe('test user model', function() {
         var userManager = new UserManager(userCache); 
         var json = userCache.toJSON(); 
 
-        userManager.authenticateEmail(json, hash, function(result) {
+        userManager.authenticateEmail(json, hash, function(result, jsonUser) {
             expect(result).to.have.property('affectedRows');
             expect(result.affectedRows).to.equal(1);
-            expect(json.confirmed).to.equal(1);
+            expect(jsonUser).to.have.property('confirmed');
+            expect(jsonUser.confirmed).to.equal(1);
             return done();
         });
     });

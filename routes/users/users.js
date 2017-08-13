@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 var express = require('express');
 var router = express.Router();
 var authenticator = require('../../app/authentication/user-pass.js');
@@ -27,7 +28,12 @@ router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUse
 
 router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
     var userManager = new UserManager(new UserCache(req.user.username).setJSON(req.user));
-    userManager.updateUserProfile(req.body, req.session.user, function(rows) {
+    userManager.updateUserProfile(req.body, function(rows, jsonObj) {
+        if(!jsonObj) {
+            return res.status(401).send('error');
+        }
+        req.session.user = jsonObj;
+        logger.info(req.session.user, "updated req session put request");
         res.status(200).send('done');
     });
 });

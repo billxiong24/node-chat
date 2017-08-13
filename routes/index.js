@@ -69,12 +69,15 @@ module.exports = function(app, passport) {
     router.get('/confirm/:hash', email.checkEmailVerified, function(req, res, next) {
         //TODO set confirmed to true in both cache and database
         var userManager = new UserManager(new UserCache(req.user.username).setJSON(req.user));
-        userManager.authenticateEmail(req.user, req.params.hash, function(rows) {
-            if(!rows) {
+        userManager.authenticateEmail(req.user, req.params.hash, function(rows, jsonUser) {
+            if(!rows || !jsonUser) {
                 //TODO render some error page
                 res.status(403).send({auth: 'forbidden'});
                 return;
             }
+            //jsonUser has updated information (set confirmed = 1, remove hash
+            req.user = jsonUser;
+            logger.info(req.user, "after confirming email");
             res.render('registered');
         });
     });

@@ -9,6 +9,8 @@ function defaultErrorCB(err) {
     logger.error(err);
 }
 
+//TODO USE TRANSACTION for multiple redis commands for atomicity
+
 var UserCache = function (username, id=undefined, password=undefined, first=undefined, last=undefined, email=undefined) {
     User.call(this, username, id, password, first, last, email);
     this._inCache = false;
@@ -151,6 +153,9 @@ UserCache.prototype.confirmPassword = function(password, callback) {
             return conn;
         };
         var end = function(res) {
+            if(res.length === 0) {
+                return callback(null);
+            }
             return password_util.retrievePassword(password, res[0].password, null, true).then(function(result) {
                 logger.debug("releasing connection");
                 connection.release(conn);
@@ -177,7 +182,7 @@ UserCache.prototype.changePassword = function(callback) {
         logger.error(err);
     });
 };
-UserCache.prototype.updateSettings = function(newObj, sessionObj, callback=function(rows) {}) {
+UserCache.prototype.updateSettings = function(newObj, callback=function(rows) {}) {
     //need to update cache and database at the same time
     var that = this;
     var oldUsername = this.getUsername();
@@ -195,10 +200,13 @@ UserCache.prototype.updateSettings = function(newObj, sessionObj, callback=funct
         this.getEmail(),
         oldUsername
     ], function(rows) {
-        //we're gonna have to update cache anyways, so whatever
+        if(rows.affectedRows === 0) {
+            return callback(rows, null);
+        }
+        //we're gonna have to update cache anyways
         that.addToCache(null, false);
-        sessionObj = that.toJSON();
-        callback(rows);
+        //sessionObj = that.toJSON();
+        callback(rows, that.toJSON());
 
     }, function(err) {
         return logger.error(err);
@@ -208,6 +216,7 @@ UserCache.prototype.confirmEmail = function(sessionUser, hash, callback) {
     //update cache and database as per write through policy
     //FIXME assuming user in cache, since user has just logged in- risky but low chance of anything otherwise 
     //this route will be authenticated, so ya but i really need to fix this
+    var sessUser = Object.assign({}, sessionUser);
 
     var that = this;
     cache_functions.retrieveJSON(this.getKey(), null, true)
@@ -221,20 +230,23 @@ UserCache.prototype.confirmEmail = function(sessionUser, hash, callback) {
         }
 
         //NOTE if we use passport's builtin serialize/deserialize, we dont need to update session user  
-        sessionUser['confirmed'] = 1;
-        sessionUser['hash'] = 0;
         return result;
     }).then(function(result) {
         if(!result) {
-            return callback(null);
+            return callback(null, null);
         }
+        sessUser['confirmed'] = 1;
+        sessUser['hash'] = 0;
 
-        return cache_functions.addJSON(that.getKey(), sessionUser, null, true)
+        return cache_functions.addJSON(that.getKey(), sessUser, null, true)
         .then(function(result) {
             var query ='UPDATE EmailConfirm SET hash = ?, confirmed = 1 WHERE username = ?';
             //update to hash to something random that no one will ever know
             connection.execute(query, [crypto.randomBytes(34).toString('hex'), that.getUsername()], function(rows) {
-                callback(rows);
+                if(rows.affectedRows === 0) {
+                    callback(rows, null);
+                }
+                callback(rows, sessUser);
             });
         });
     });

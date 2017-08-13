@@ -8,8 +8,15 @@ var UserManager = function(userObj) {
     this._userObj = userObj;
 }; 
 
+UserManager.prototype.setUserObj = function(userObj) {
+    this._userObj = userObj;
+    return this;
+};
+
 UserManager.prototype.leave = function(chat_id, callback) {
-    this._userObj.leaveChat(chat_id, callback);
+    this._userObj.leaveChat(chat_id, function(rows) {
+        callback(rows);
+    });
 };
 
 //FIXME refactor this to use redis promises (bluebird) 
@@ -61,9 +68,9 @@ UserManager.prototype.authenticate = function(password, loginResult) {
 };
 
 UserManager.prototype.authenticateEmail = function(userJSON, hash, callback) {
-    this._userObj.confirmEmail(userJSON, hash, function(rows) {
-        callback(rows);
-    });   
+    this._userObj.confirmEmail(userJSON, hash, function(rows, jsonUser) {
+        callback(rows, jsonUser);
+    });
 };
 
 UserManager.prototype.updatePassword = function(oldPass, newPass, callback) {
@@ -83,9 +90,14 @@ UserManager.prototype.updatePassword = function(oldPass, newPass, callback) {
     });
 };
 
-UserManager.prototype.updateUserProfile = function(infoObj, sessionObj, callback) {
-    this._userObj.updateSettings(infoObj, sessionObj, function(rows) {
-        callback(rows);
+UserManager.prototype.updateUserProfile = function(infoObj, callback) {
+    this._userObj.updateSettings(infoObj, function(rows, jsonObj) {
+        if(rows.affectedRows === 0) {
+            callback(rows, null);
+        }
+        else {
+            callback(rows, jsonObj);
+        }
     });
 };
 

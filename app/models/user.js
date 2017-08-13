@@ -21,7 +21,7 @@ User.prototype.getID = function() {
     return this._id;
 };
 User.prototype.setID = function(id) {
-    this._id= id;
+    this._id = id;
     return this;
 };
 

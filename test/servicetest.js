@@ -70,6 +70,7 @@ describe('testing chat microservice', function() {
         chatRequest.loadChatListRequest('12345', userObj, function(channel, json) {
             expect(loadListSpy.calledOnce).to.equal(true);
             //one for publisher, one for listener
+            //NOTE this will fail if we have multiple processes listening
             expect(pubSpy.calledTwice).to.equal(true);
 
             expect(json).to.have.property('userJSON');

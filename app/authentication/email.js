@@ -18,6 +18,7 @@ if(!transport) {
 }
 
 function checkEmailVerified(req, res, next) {
+    logger.debug(req.user, 'check email verified');
     if(!req.session) {
         res.redirect('/login');
     }
