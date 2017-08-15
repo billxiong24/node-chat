@@ -41,6 +41,7 @@ UserManager.prototype.authenticate = function(password, loginResult) {
     var user = this._userObj;
     var setConn = function(poolConnection) { conn = poolConnection; return poolConnection; };
     //will handle caching
+    //even if user enters incorrect password, if username exists, will load into cache for later attempts
     var checkDB = user.read();
 
     var sqlUser = null;

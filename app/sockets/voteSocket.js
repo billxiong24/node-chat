@@ -1,3 +1,4 @@
+var logger = require('../../util/logger.js')(module);
 var Socket = require('./socket.js');
 const urlParser = require('url');
 const VoteManager = require('../chat_functions/vote_manager.js');
@@ -23,6 +24,7 @@ VoteSocket.prototype.init = function() {
             var voted = false;
 
             var voteManager = new VoteManager(new Vote(chat_id, data.line_id));
+            logger.debug(data.line_id, "line id in sockeet");
             voteManager.incrementVote(data.userid, data.line_id, function(err, newVote) {
                 data.voted = voted;
                 data.num_votes = newVote;
