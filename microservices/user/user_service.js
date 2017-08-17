@@ -75,8 +75,12 @@ UserService.prototype.updateUserProfileService = function(newObj, oldObj) {
     var that = this;
     this._user_manager.setUserObj(new UserCache(null).setJSON(oldObj));
 
-    this._user_manager.updateUserProfile(newObj, function(rows) {
-        that._updateProf_service.pubToChannel(JSON.stringify(rows));
+    this._user_manager.updateUserProfile(newObj, function(rows, jsonObj) {
+        var obj = {
+            rows: rows,
+            jsonObj: jsonObj
+        };
+        that._updateProf_service.pubToChannel(JSON.stringify(obj));
     });
 };
 

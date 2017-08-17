@@ -9,6 +9,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const crypto = require('crypto');
 const UserCache = require('../models/user_cache.js');
 const UserManager = require('../models/user_manager.js');
+const UserRequest = require('../../microservices/user/user_request.js');
+const clean_client = require('../cache/clean_client.js');
 
 const params = {
     usernameField : 'username', 
@@ -17,6 +19,7 @@ const params = {
 };
 //middleware need to return next function
 function checkLoggedOut(req, res, next) {
+    logger.debug(req.user, "user after each request");
     if(!req.isAuthenticated()) {
         res.redirect('/');
     }
@@ -181,7 +184,7 @@ function passportAuth(passport) {
                 return done(null, false, req.flash('error', 'Signup error.'));
             }
 
-            var user_manager = new UserManager(new UserCache(user_signup, info.id, info.password, info.first, info.last, info.email));
+            //var user_manager = new UserManager(new UserCache(user_signup, info.id, info.password, info.first, info.last, info.email));
 
             var signupFailure = function() {
                 return done("Username exists", false, req.flash('signup_error', 'There was an error signing up'));
@@ -192,7 +195,19 @@ function passportAuth(passport) {
                 //this is added in database and cache as well
                 return done(null, userObj);
             };
-            user_manager.signup(password_signup, signupFailure, signupSuccess);
+            //user_manager.signup(password_signup, signupFailure, signupSuccess);
+
+            var clients = [];
+            var user_request = new UserRequest(clean_client.genClient(clients));
+            user_request.signupRequest(info, function(channel, user) {
+                if(user.signup_error) {
+                    signupFailure();
+                }
+                else {
+                    signupSuccess(user);
+                }
+                clean_client.cleanup(clients);
+            });
         }
     ));
 
@@ -204,8 +219,14 @@ function passportAuth(passport) {
             req.session.members = {};
             return done(null, user);
         };
-        var user_manager = new UserManager(new UserCache(username));
-        user_manager.authenticate(password, loginResult);
+        //var user_manager = new UserManager(new UserCache(username));
+        var clients = [];
+        var user_request = new UserRequest(clean_client.genClient(clients));
+        user_request.authenticateRequest(username, password, function(channel, user) {
+            loginResult(user);
+            clean_client.cleanup(clients);
+        });
+        //user_manager.authenticate(password, loginResult);
     }));
 }
 

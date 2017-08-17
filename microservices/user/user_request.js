@@ -33,7 +33,7 @@ UserRequest.prototype.updateUserProfileRequest = function(newObj, oldObj, callba
 
     var nObj = JSON.stringify(newObj);
     var oObj = JSON.stringify(oldObj);
-    this.publishChannel(this._updatePass_master, 'updateUserProfileService', [nObj, oObj]);
+    this.publishChannel(this._updateProf_master, 'updateUserProfileService', [nObj, oObj]);
 };
 
 UserRequest.prototype.authenticateEmailRequest = function(username, userJSON, hash, callback) {
