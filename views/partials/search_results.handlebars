@@ -1,0 +1,42 @@
+<section class="search-results-env">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Search categories tabs -->
+            <ul class="nav nav-tabs right-aligned">
+                <li class="tab-title pull-left">
+                    <div class="search-string">{{num_results}} results found for: <strong>{{search_term}}</strong></div>
+                </li>
+            </ul>
+            <!-- Search search form -->
+            <div class="search-results-panes">
+                <div class="search-results-pane active" id="pages">
+                    <ul class="search-results">
+                        {{#each result_list}}
+                            <li class="search-result">
+                                <div class="sr-inner">
+                                    <h4>
+                                        <a href="/chats/{{id}}">{{chat_name}}</a>
+                                    </h4>
+                                    <p>{{description}}</p>
+                                    <div class="label label-success">
+                                        Number of messages:  <strong>{{num_messages}}</strong>
+                                    </div>
+                                    <br />
+                                    <br />
+                                    <div class="label label-success">
+                                        Number of members:  <strong>{{num_members}}</strong>
+                                    </div>
+                                </div>
+                            </li>
+                        {{/each}}
+                    </ul>
+                    <!-- Pager for search results -->
+                    <ul class="pager">
+                        <li><a href="#"><i class="entypo-left-thin"></i> Previous</a></li>
+                        <li><a href="#">Next <i class="entypo-right-thin"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

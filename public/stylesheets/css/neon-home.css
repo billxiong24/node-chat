@@ -6,11 +6,22 @@
     margin: 0 auto;
     margin-top: 30px;
 }
+
+@media screen and (max-width: 450px) {
+    .container.clearfix.title .title-banner h3 {
+        font-size: 16px !important;
+    }
+
+    .container.clearfix.title .title-banner div h4 {
+        font-size: 13px !important;
+    }
+}
+
 .container.clearfix.title.options {
     font-size: 35px;
 }
 
-.create-bar {
+.create-bar , .enter-bar, .search-bar{
     display: none;
     text-align: center;
     margin-top: 30px;
@@ -18,13 +29,14 @@
     margin-right: 25%;
     width: 50%;
 }
-.search-bar {
-    display: none;
-    text-align: center;
-    margin-top: 30px;
-    margin-left: 25%;
-    margin-right: 25%;
-    width: 50%;
+
+@media screen and (max-width: 640px) {
+    .create-bar, .enter-bar, .search-bar {
+        margin-top: 30px;
+        margin-left: 0%;
+        margin-right: 0%;
+        width: 100%
+    }
 }
 
 .search-btn {
