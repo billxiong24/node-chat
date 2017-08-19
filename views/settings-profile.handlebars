@@ -47,7 +47,7 @@
 
 				<!-- logo -->
 				<div class="logo">
-					<a href="index.html">
+					<a href="/home">
 						<img src="/stylesheets/assets/images/logo@2x.png" width="120" alt="" />
 					</a>
 				</div>
@@ -100,25 +100,12 @@
                             <a href="mailbox.html">
                                 <i class="entypo-user"></i>
                                 <span class="title">Profile</span>
-                                <span class="badge badge-secondary">8</span>
                             </a>
                             <ul>
                                 <li>
-                                    <a href="mailbox.html">
+                                    <a href="/users/{{username}}">
                                         <i class="entypo-inbox"></i>
-                                        <span class="title">Inbox</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="mailbox-compose.html">
-                                        <i class="entypo-pencil"></i>
-                                        <span class="title">Compose Message</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="mailbox-message.html">
-                                        <i class="entypo-attach"></i>
-                                        <span class="title">View Message</span>
+                                        <span class="title">Profile Settings</span>
                                     </a>
                                 </li>
                             </ul>
@@ -403,10 +390,10 @@
 		
 							<!-- Profile sub-links -->
 							<li>
-								<a href="extra-timeline.html">
-									<i class="entypo-user"></i>
-									Edit Profile
-								</a>
+								<a href="/users/{{username}}">
+                                    <i class="entypo-user"></i>
+                                    Edit Profile
+                                </a>
 							</li>
 		
 							<li>
@@ -658,9 +645,10 @@
 					<li class="sep"></li>
 		
 					<li>
-						<a href="extra-login.html">
-							Log Out <i class="entypo-logout right"></i>
-						</a>
+						<form method="post" action="/logout">
+                            <input name="logout" type="submit" class="btn small-buttons" value="Log out"/>
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        </form>
 					</li>
 				</ul>
 		

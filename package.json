@@ -25,6 +25,7 @@
     "csurf": "^1.9.0",
     "debug": "^3.0.0",
     "dotenv": "^4.0.0",
+    "elasticsearch": "^13.3.1",
     "express": "^4.15.4",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.5",

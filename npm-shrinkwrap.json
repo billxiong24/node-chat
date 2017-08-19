@@ -34,6 +34,11 @@
       "from": "after@https://registry.npmjs.org/after/-/after-0.8.2.tgz",
       "resolved": "https://registry.npmjs.org/after/-/after-0.8.2.tgz"
     },
+    "agentkeepalive": {
+      "version": "2.2.0",
+      "from": "agentkeepalive@>=2.2.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/agentkeepalive/-/agentkeepalive-2.2.0.tgz"
+    },
     "ajv": {
       "version": "4.11.8",
       "from": "ajv@https://registry.npmjs.org/ajv/-/ajv-4.11.8.tgz",
@@ -1086,6 +1091,18 @@
       "version": "1.1.1",
       "from": "ee-first@https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
       "resolved": "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz"
+    },
+    "elasticsearch": {
+      "version": "13.3.1",
+      "from": "elasticsearch@latest",
+      "resolved": "https://registry.npmjs.org/elasticsearch/-/elasticsearch-13.3.1.tgz",
+      "dependencies": {
+        "lodash": {
+          "version": "2.4.2",
+          "from": "lodash@2.4.2",
+          "resolved": "https://registry.npmjs.org/lodash/-/lodash-2.4.2.tgz"
+        }
+      }
     },
     "emits": {
       "version": "1.0.2",
@@ -2829,6 +2846,11 @@
       "from": "lodash.foreach@>=4.5.0 <5.0.0",
       "resolved": "https://registry.npmjs.org/lodash.foreach/-/lodash.foreach-4.5.0.tgz"
     },
+    "lodash.get": {
+      "version": "4.4.2",
+      "from": "lodash.get@>=4.4.2 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash.get/-/lodash.get-4.4.2.tgz"
+    },
     "lodash.isarguments": {
       "version": "3.1.0",
       "from": "lodash.isarguments@https://registry.npmjs.org/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz",
@@ -2923,6 +2945,11 @@
       "version": "3.1.1",
       "from": "lodash.templatesettings@https://registry.npmjs.org/lodash.templatesettings/-/lodash.templatesettings-3.1.1.tgz",
       "resolved": "https://registry.npmjs.org/lodash.templatesettings/-/lodash.templatesettings-3.1.1.tgz"
+    },
+    "lodash.trimend": {
+      "version": "4.5.1",
+      "from": "lodash.trimend@>=4.5.1 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash.trimend/-/lodash.trimend-4.5.1.tgz"
     },
     "lodash.values": {
       "version": "4.3.0",
