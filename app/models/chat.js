@@ -238,8 +238,7 @@ Chat.prototype.insert = function(user, callback=function(result) {}) {
     connection.executePoolTransaction([startTrans, insertChat, insertMember, commit, callback], err);
 };
 
-Chat.prototype.join = function(user, callback) {
-    var connect;
+Chat.prototype.join = function(user, callback, verify=false) {
     var that = this;
     var username = user.getUsername();
     //var chatLine = new Line();
@@ -251,6 +250,10 @@ Chat.prototype.join = function(user, callback) {
     };
     
     var retrieveChat = function(poolConnection) {
+        logger.debug("this is verifyy", verify);
+        if(verify) {
+            return poolConnection.query('SELECT * FROM Chat WHERE Chat.code = ? AND Chat.id = ?', [that._code, that._id]);
+        }
         return poolConnection.query('SELECT * FROM Chat WHERE Chat.code = ?', [that._code]);
     };
 

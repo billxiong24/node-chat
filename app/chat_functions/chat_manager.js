@@ -48,9 +48,13 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
     });
 };
 
-ChatManager.prototype.joinChat = function(username, chatCode, failure, success) {
+ChatManager.prototype.joinChat = function(username, chatCode, failure, success, chatID=null) {
     var chatobj = new Chat();
     //fake builder pattern again
+    logger.debug(chatID, 'THIS IS CHAT ID');
+    if(chatID) {
+        chatobj.setID(chatID);
+    }
     logger.info("joining code", chatCode);
     chatobj.setCode(chatCode);
 
@@ -69,7 +73,12 @@ ChatManager.prototype.joinChat = function(username, chatCode, failure, success) 
             success(chatobjJSON);
         };
     };
-    chatobj.join(new User(username), sessionStore);
+    if(!chatID) {
+        chatobj.join(new User(username), sessionStore);
+    }
+    else {
+        chatobj.join(new User(username), sessionStore, true);
+    }
 };
 
 ChatManager.prototype.loadChat = function(username, chatID, callback) {

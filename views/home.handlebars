@@ -799,112 +799,21 @@
                             </div> 
                         </div> 
                     </form>  
-                    <form method="post" action="/chats/join_chat" autocomplete="off" class="search-bar"> 
+                    <form autocomplete="off" class="search-bar"> 
                         <div class="input-group">
-                            <input type="text" class="form-control input-lg" name="joinChat" placeholder="Search for a chat..."> 
+                            <input type="text" class="form-control input-lg" name="searchChat" placeholder="Search for a chat..."> 
                             <input type="hidden" name="_csrf" value="{{csrfToken}}" />
                             <div class="input-group-btn"> 
-                                <button type="submit" name="join_chat" class="btn btn-primary search-btn"> 
+                                <button type="submit" name="search_chat" class="btn btn-primary search-btn"> 
                                     <i class="entypo-search"></i>
                                 </button>
                             </div>
                         </div>
                     </form>
+                <div class="search_results_container">
+                    
+                </div>
 
-<section class="search-results-env">
-			
-			<div class="row">
-				<div class="col-md-12">
-								
-					
-					<!-- Search categories tabs -->
-					<ul class="nav nav-tabs right-aligned">
-						<li class="tab-title pull-left">
-							<div class="search-string">10 results found for: <strong>&ldquo;this&rdquo;</strong></div>
-						</li>
-					</ul>
-					
-					<!-- Search search form -->
-					<div class="search-results-panes">
-						
-						<div class="search-results-pane active" id="pages">
-							
-							<ul class="search-results">
-							
-														<li class="search-result">
-									<div class="sr-inner">
-										<h4>
-											<a href="ui-panels.html">UI Elements</a>
-										</h4>
-										<p>Day handsome addition horrible sensible goodness two contempt. Evening for married his account removal. Estimable me disposing of be moonlight cordially curiosity. Delay rapid joy share allow age manor six. Went why far saw many knew. Exquisite excellent son gentleman acuteness her. Do is voice total power mr ye might round still.</p>
-                                        <div class="label label-success">
-                                            Number of messages:  <strong>234</strong>
-                                        </div>
-                                        <br />
-                                        <br />
-                                        <div class="label label-success">
-                                            Number of members:  <strong>25</strong>
-                                        </div>
-									</div>
-								</li>
-							
-														<li class="search-result">
-									<div class="sr-inner">
-										<h4>
-											<a href="mailbox.html">Inbox</a>
-										</h4>
-										<p>Real sold my in call. Invitation on an advantages collecting. But event old above shy bed noisy. Had sister see wooded favour income has. Stuff rapid since do as hence. Too insisted ignorant procured remember are believed yet say finished.</p>
-										<a href="mailbox.html" class="link">mailbox.html</a>
-									</div>
-								</li>
-							
-														<li class="search-result">
-									<div class="sr-inner">
-										<h4>
-											<a href="forms-validation.html">Data Validation</a>
-										</h4>
-										<p>Denote simple fat denied add worthy little use. As some he so high down am week. Conduct esteems by cottage to pasture we winding. On assistance he cultivated considered frequently. Person how having tended direct own day man. Saw sufficient indulgence one own you inquietude sympathize.</p>
-										<a href="forms-validation.html" class="link">forms-validation.html</a>
-									</div>
-								</li>
-							
-														<li class="search-result">
-									<div class="sr-inner">
-										<h4>
-											<a href="extra-notes.html">Notes</a>
-										</h4>
-										<p>Rank tall boy man them over post now. Off into she bed long fat room. Recommend existence curiosity perfectly favourite get eat she why daughters. Not may too nay busy last song must sell. An newspaper assurance discourse ye certainly. Soon gone game and why many calm have.</p>
-										<a href="extra-notes.html" class="link">extra-notes.html</a>
-									</div>
-								</li>
-							
-														<li class="search-result">
-									<div class="sr-inner">
-									<h4>
-										<a href="extra-timeline.html">Timeline</a>
-									</h4>
-									<p>Betrayed cheerful declared end and. Questions we additions is extremely incommode. Next half add call them eat face. Age lived smile six defer bed their few. Had admitting concluded too behaviour him she. Of death to or to being other.</p>
-									<a href="extra-timeline.html" class="link">extra-timeline.html</a>
-									</div>
-								</li>
-								
-							</ul>
-							
-							<!-- Pager for search results -->
-							
-							<ul class="pager">
-								<li><a href="#"><i class="entypo-left-thin"></i> Previous</a></li>
-								<li><a href="#">Next <i class="entypo-right-thin"></i></a></li>
-							</ul>
-						</div>
-					</div>
-					
-				</div>
-			</div>
-			
-		</section>
-
-                 
                 <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
                 <script src="/javascripts/js/handlebars.min.js"></script>
                 <script src='http://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js'></script>
@@ -920,6 +829,7 @@
             </div>
         </div>
 
+        <script type="text/javascript" src="/javascripts/templates/templates.js"></script>
         <script type="text/javascript" src="/javascripts/js-build/home.min.js"></script>
         <script type="text/javascript" src="/javascripts/bundle/home_bundle.js"></script>
 

@@ -10,10 +10,9 @@ ChatSearchManager.prototype.constructor = ChatSearchManager;
 
 
 //override
-ChatSearchManager.prototype.search = function(searchTerm, callback) { 
+ChatSearchManager.prototype.search = function(searchTerm, from, callback) { 
     var client = this.getClient();
-    var index = this.getIndex();
-    var type = this.getType();
+    var index = this.getIndex(); var type = this.getType();
 
     client.search({
         size: 10,
@@ -58,9 +57,7 @@ ChatSearchManager.prototype.search = function(searchTerm, callback) {
 
     }, function(err, res) {
         logger.info(res, 'search results');
-        var arr = res.hits.hits;
-
-        callback(err, arr);
+        callback(err, res.hits);
     });
 };
 

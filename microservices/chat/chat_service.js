@@ -50,7 +50,7 @@ ChatService.prototype.createChatService = function(username, chatName) {
     });
 };
 
-ChatService.prototype.joinChatService = function(username, chatCode) {
+ChatService.prototype.joinChatService = function(username, chatCode, chatID=null) {
     var that = this;
 
     var fail = function() {
@@ -62,7 +62,7 @@ ChatService.prototype.joinChatService = function(username, chatCode) {
         that._join_service.pubToChannel(JSON.stringify(chatJSON));
     };
 
-    this._chat_manager.joinChat(username, chatCode, fail, success);
+    this._chat_manager.joinChat(username, chatCode, fail, success, chatID);
 };
 
 //var chatService = new ChatService(new ChatManager(null), function() {

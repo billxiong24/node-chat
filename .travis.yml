@@ -26,5 +26,6 @@ install:
 before_script:
     - npm install -g express-generator@4.15.0 gulp@3.9.1 mocha@3.5.0 siege@0.2.0
     - npm install -g trucker@0.7.3 webpack@3.4.1 istanbul@0.4.5 jshint@2.9.5
+    - jshint app/ microservices/ routes/ run/ test/ util/ public/javascripts/service public/javascripts/viewmodel/ public/javascripts/view public/javascripts/js/home-setup.js public/javascripts/chat_render.js public/javascripts/chatViewModel.js
 
 script: ./test.sh cover

@@ -25,9 +25,14 @@ ChatRequest.prototype.createChatRequest = function(username, chatName, callback)
     this.publishChannel(this._create_master, 'createChatService', [username, chatName]);
 };
 
-ChatRequest.prototype.joinChatRequest = function(username, chatCode, callback) {
+ChatRequest.prototype.joinChatRequest = function(username, chatCode, callback, chatID=null) {
     this.genListen('_join_master', this._join_pub_channel, this._join_sub_channel, callback);
-    this.publishChannel(this._join_master, 'joinChatService', [username, chatCode]);
+    if(!chatID) {
+        this.publishChannel(this._join_master, 'joinChatService', [username, chatCode]);
+    }
+    else {
+        this.publishChannel(this._join_master, 'joinChatService', [username, chatCode, chatID]);
+    }
 };
 
 module.exports = ChatRequest;

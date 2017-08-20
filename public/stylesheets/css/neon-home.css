@@ -21,6 +21,10 @@
     font-size: 35px;
 }
 
+.search_results_container .small_font {
+    font-size: 13px;
+}
+
 .create-bar , .enter-bar, .search-bar{
     display: none;
     text-align: center;

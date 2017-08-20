@@ -19,7 +19,7 @@ else
     echo "================================"
     echo "Running unit and integration tests"
     echo "================================"
-    npm test || exit 1
+    gulp || exit 1
 fi
 
 

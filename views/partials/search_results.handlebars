@@ -15,17 +15,22 @@
                             <li class="search-result">
                                 <div class="sr-inner">
                                     <h4>
-                                        <a href="/chats/{{id}}">{{chat_name}}</a>
+                                        <a href="/chats/{{_source.id}}">{{_source.chat_name}}</a>
+                                        <button type="button" class="btn btn-red btn-icon btn-sm btn-indexing" style="color: white; margin-left: 10px;">
+                                            <small style="color: white">Code Required</small>
+                                            <i class="entypo-lock"></i>
+                                        </button>
                                     </h4>
-                                    <p>{{description}}</p>
-                                    <div class="label label-success">
-                                        Number of messages:  <strong>{{num_messages}}</strong>
-                                    </div>
-                                    <br />
-                                    <br />
-                                    <div class="label label-success">
-                                        Number of members:  <strong>{{num_members}}</strong>
-                                    </div>
+                                    <form role="form" class="chat_code_specific"> 
+                                        <input type="text" class="form-control input-sm" style="max-width: 140px;" name="enter_code_specific" placeholder="Enter code..."/>
+                                        </form>
+                                    <p class="small_font">{{_source.description}} No description provided.</p>
+                                    <span class="label label-success">
+                                        Number of messages:  <strong>{{_source.num_messages}}</strong>
+                                    </span >
+                                    <span class="label label-success">
+                                        Number of members:  <strong>{{_source.num_members}}</strong>
+                                    </span >
                                 </div>
                             </li>
                         {{/each}}

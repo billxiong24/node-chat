@@ -82,6 +82,57 @@ router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res
     });
 });
 
+router.post('/verify_chat', authenticator.checkLoggedOut, function(req, res, next) {
+    var chat_id = req.body.chat_id;
+    var code = req.body.code;
+
+    for(var key in req.session.members) {
+        //chat code was found 
+        if(req.session.members[key].code === code && req.session.members[key].id === chat_id) {
+            logger.info("POST verify_chat cached");
+            res.json({
+                joined: true,
+                prevJoined: true
+            });
+            //res.redirect('/chats/' +  req.session.members[key].id);
+            return;
+        }
+    }
+    var failure = function() { 
+        logger.info("chat not found");
+        if(process.env.NODE_ENV === 'test') {
+            return res.json({error: 'wrong password'});
+        }
+        //TODO include error message to pass to view
+        return res.json({
+            error: true
+        });
+    };
+    var success = function(chatJSON) {
+        logger.info("chat found", chatJSON);
+        req.session.members[chatJSON.id] = chatJSON;
+        //when redirected, the chat info will be cached
+        return res.json({
+            joined: true
+        });
+    };
+
+    var clients = [];
+    var chatRequester = new ChatRequest(clean_client.genClient(clients));
+
+    chatRequester.joinChatRequest(req.user.username, req.body.code, function(channel, json) {
+        clean_client.cleanup(clients);
+        logger.info("checked specific chat");
+        logger.info(json);
+        if(json.join_error) {
+            failure();
+        }
+        else {
+            success(json);
+        }
+    }, chat_id);
+});
+
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
     //TODO find a way to test this, since we are resetting members every time in the test
     for(var key in req.session.members) {
@@ -91,7 +142,7 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
             res.redirect('/chats/' +  req.session.members[key].id);
             return;
         }
-    } 
+    }
     //chat was not found
     var failure = function() { 
         logger.info("chat not found");

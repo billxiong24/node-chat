@@ -3251,7 +3251,7 @@
         },
         "path-to-regexp": {
           "version": "1.7.0",
-          "from": "path-to-regexp@>=1.7.0 <2.0.0",
+          "from": "path-to-regexp@^1.7.0",
           "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-1.7.0.tgz"
         }
       }
@@ -4220,9 +4220,9 @@
       "resolved": "https://registry.npmjs.org/simple-get/-/simple-get-1.4.3.tgz"
     },
     "sinon": {
-      "version": "3.2.0",
-      "from": "sinon@3.2.0",
-      "resolved": "https://registry.npmjs.org/sinon/-/sinon-3.2.0.tgz",
+      "version": "3.2.1",
+      "from": "sinon@3.2.1",
+      "resolved": "https://registry.npmjs.org/sinon/-/sinon-3.2.1.tgz",
       "dependencies": {
         "isarray": {
           "version": "0.0.1",

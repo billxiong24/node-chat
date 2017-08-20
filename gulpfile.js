@@ -168,9 +168,10 @@ gulp.task('clean', function() {
 });
 gulp.task('test', function() {
     //FIXME local host password shouldnot be here, but o well
-    gulp_run('mysql -u root --password=Chem1313# < ./app/database/test/clean.sql').exec(function(err) {
-        gulp_run('mysql -u root --password=Chem1313# chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
+    gulp_run('mysql -u root --password='+process.env.PASS+' < ./app/database/test/clean.sql').exec(function(err) {
+        gulp_run('mysql -u root --password='+process.env.PASS+' chatdbtest < ./app/database/test/mockdata.sql').exec(function(err) {
 
+            process.env.NODE_ENV = "test";
             gulp.src('./test/*.js', {read: true}).pipe(gulp_mocha({
                 reporter: 'spec'
             })).on('error', function() {
