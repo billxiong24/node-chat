@@ -9,7 +9,10 @@ var redis_options = require('./cache_config.js');
 var host = process.env.HOST;
 function genClient(clients) {
     return function() {
-        var client = redis.createClient();
+        var client = redis.createClient({
+            host: process.env.HOST,
+            port: 6379 
+        });
         clients.push(client);
         return client;
     };

@@ -45,23 +45,8 @@ SearchManager.prototype.createBulkIndex = function(data, callback) {
     });
 };
 
-SearchManager.prototype.createDocument = function(chatInfoObj, callback) {
-    var that = this;
-    search_client.index({
-        index: that._index,
-        type: that._type,
-        id: chatInfoObj.id,
-        //TODO add suggestions to body
-        body: {
-            id: chatInfoObj.id,
-            chat_name: chatInfoObj.chat_name,
-            num_messages: chatInfoObj.num_messages || 0,
-            num_members: chatInfoObj.num_members || 1
-        }
-    }, function(err, res) {
-        logger.info(res, 'response');
-        callback(err, res);
-    });
+SearchManager.prototype.createDocument = function(infoObj, callback) {
+    //TODO override in subclass
 };
 
 SearchManager.prototype.incrementField = function(id, field, incrementBy, callback) {

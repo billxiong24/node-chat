@@ -1,5 +1,4 @@
 const handlebars = Handlebars;
-console.log(handlebars);
 var SocketView = require('../viewmodel/socketview.js');
 var ChatInfo = require('../viewmodel/chatinfo.js');
 var ChatViewModel = require('../chatViewModel.js');
@@ -32,9 +31,11 @@ $(document).ready(function() {
     function setup(userid) {
         $('.search_results_container').on('submit', '.chat_code_specific', function(evt) {
             evt.preventDefault();
+            var thisObj = $(this);
             var index = $('.chat_code_specific').index(this);
             var chat_id = search_res[index]._id;
-            var code = $(this).find('input[name=enter_code_specific]').val();
+            var inputEl = thisObj.find('input[name=enter_code_specific]');
+            var code = inputEl.val();
             //TODO ajax call to server
             chatAjaxService.chatAjax('/chats/verify_chat', 'POST', JSON.stringify({
                 chat_id: chat_id,
@@ -43,13 +44,14 @@ $(document).ready(function() {
 
             }), function(data) {
                 if(data.error) {
-                    //TODO some error message here
-                }
-                else if(data.joined && !data.prevJoined) {
-                    //TODO some success here
+                    var html = handlebars.templates.code_error();
+                    inputEl.val("");
+                    thisObj.find('.code_error').remove();
+                    inputEl.after(html);
                 }
                 else {
-                    //TODO already a member
+                    //TODO some success here
+                    window.location.replace('/chats/'+chat_id);
                 }
                 console.log(data);
             });

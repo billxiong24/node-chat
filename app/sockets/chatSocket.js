@@ -9,6 +9,8 @@ const NotifRequest = require('../../microservices/notifs/notif_request.js');
 
 const clean_client = require('../cache/clean_client.js');
 
+var ChatSearchManager = require('../search/chat_search_manager.js');
+
 var Socket = require('./socket.js');
 
 var ChatSocket = function(io, namespace) {
@@ -72,13 +74,15 @@ ChatSocket.prototype.init = function() {
 
             //FIXME violates open close principle
             var line = new LineCache(id, socket.request.session.user.username, message, line_id);
-            line.insert();
-            //TODO find a way to cache this
-            //var notifManager = new NotificationManager(new Notification(id, socket.request.session.user.username, -1));
+            line.insert(function(err, result) {
+                new ChatSearchManager().incrementField(id, 'num_messages', 1, function(err, res) {
+                    logger.info('incremented num message by one', res);
+                });
+            });
             var clients = [];
             var notifRequest = new NotifRequest(clean_client.genClient(clients));
 
-            notifRequest.flushNotificationRequest(id, socket.request.session.user.username, function(rows) {
+            notifRequest.flushNotificationRequest(id, socket.request.session.user.username, function(channel, rows) {
                 clean_client.cleanup(clients);
                 logger.info('flushed notifs after socket reply');
             });

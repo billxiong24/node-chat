@@ -1,6 +1,6 @@
 /* jshint expr: true */
+require('dotenv').config({path: __dirname + '/../.env'});
 process.env.NODE_ENV = "test";
-require('dotenv').config();
 
 var chai = require('chai');
 var sinon = require('sinon');
@@ -198,28 +198,42 @@ describe('testing notifcation model', function() {
         var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
         var notif = new Notification(chatid, 'jj45', -1);
 
-        var switched = false;
         notif.flush(function(result) {
             expect(result.affectedRows).to.equal(9);
-            switched = true;
             return done();
         });
     });
 
+    it('should test that incrementing actually worked', function(done) {
+        var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
+        var notif = new Notification(chatid, 'harry', -1);
+        var func1 = notif.load();
+        var func2 = function(result) {
+            expect(result.length).to.equal(1);
+            expect(result[0].num_notifications).to.equal(351);
+            return done();
+        };
+
+
+        connection.executePoolTransaction([func1, func2], function(err) {
+            throw err;
+        });
+    });
+
     //FIXME for some reason this test does not work well with others
-    //it('should test notif manager and load notifications', function(done) {
+    it('should test notif manager and load notifications', function(done) {
 
-        //var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
-        //var notif = new Notification(chatid, 'js12', -1);
-        //var notif_manager = new NotifManager(notif);
+        var chatid = '0043e138f3a1daf9ccfbf718fc9acd48';
+        var notif = new Notification(chatid, 'js12', -1);
+        var notif_manager = new NotifManager(notif);
 
-        //var switched = false;
-        //notif_manager.loadNotifications(function(result) {
-            //expect(result).to.equal(8);
-            //switched = true;
-            //return done();
-        //});
-    //});
+        var switched = false;
+        notif_manager.loadNotifications(function(result) {
+            expect(result).to.equal(8);
+            switched = true;
+            return done();
+        });
+    });
 });
 
 describe('testing voting model', function() {

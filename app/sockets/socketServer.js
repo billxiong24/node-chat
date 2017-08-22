@@ -4,6 +4,9 @@ var ChatSocket = require('./chatSocket.js');
 var VoteSocket = require('./voteSocket.js');
 var Socket = require('./socket.js');
 var socketio_redis = require('socket.io-redis');
+//var socketio_redis = require('socket.io-ioredis');
+var Redis = require('ioredis');
+var redis_options = require('../cache/cache_config.js');
 
 module.exports = function(http, sessionMiddleWare) {
     var io = require('socket.io')(http);
@@ -13,7 +16,15 @@ module.exports = function(http, sessionMiddleWare) {
      * processes (listening on different ports). Combined with
      * redis store, this helps with scalability issues
      */
-    io.adapter(socketio_redis({host: process.env.HOST, port: 6379}));
+
+    var client1 = new Redis.Cluster(redis_options.clusters, redis_options.options);
+    var client2 = new Redis.Cluster(redis_options.clusters, redis_options.options);
+    io.adapter(socketio_redis({
+        pubClient: client1,
+        subClient: client2
+        //host: process.env.HOST,
+        //port: 6379
+    }));
 
     io.use(function(socket, next) {
         sessionMiddleWare(socket.request, socket.request.res, next);

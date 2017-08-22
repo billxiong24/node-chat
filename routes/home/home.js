@@ -17,7 +17,7 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
         secure: true
     });
 
-    manager.loadChatLists(req.csrfToken(), req.session.user, function(userJSON, inChat, members) {
+    manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {
 
         req.session.members = members;
         if(process.env.NODE_ENV=== 'test') {

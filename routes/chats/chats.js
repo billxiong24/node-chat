@@ -15,6 +15,7 @@ var Bus = require('../../app/bus/bus.js');
 var BusManager = require('../../app/bus/bus_manager.js');
 var ChatRequest = require('../../microservices/chat/chat_requester.js');
 var NotifRequest = require('../../microservices/notifs/notif_request.js');
+var ChatSearchManager = require('../../app/search/chat_search_manager.js');
 
 var manager;
 if(!manager) {
@@ -153,11 +154,16 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         return res.redirect('/home'); 
     };
     var success = function(chatJSON) {
+        //enter this function if chat was not joined before
         logger.info("chat found", chatJSON);
         req.session.members[chatJSON.id] = chatJSON;
         if(process.env.NODE_ENV === 'test') {
             return res.status(200).json({joined: true});
         }
+
+        new ChatSearchManager().incrementField(chatJSON.id, 'num_members', 1, function(err, result) {
+            logger.info(result, '**** result from incrementing members in search ****');
+        });
         //when redirected, the chat info will be cached
         res.redirect('/chats/' + chatJSON.id);
     };
@@ -169,7 +175,6 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         clean_client.cleanup(clients);
 
         logger.info("joined chat micro callback");
-        logger.info("=====================================", json);
         if(json.join_error) {
             failure();
         }
@@ -188,6 +193,11 @@ router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, nex
         clean_client.cleanup(clients);
 
         req.session.members[chatInfo.id] = chatInfo;
+        logger.debug(chatInfo, "****chat infofooo****");
+
+        new ChatSearchManager().createDocument(chatInfo, function(err, res) {
+            logger.info("added document to index after creating chat", res);
+        });
         res.status(200);
         res.redirect('/chats/' + chatInfo.id);
     });
@@ -198,6 +208,10 @@ router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, nex
     userManager.leave(req.body.chatID, function(rows) {
         //this was a huge bug, and why we need unit tests
         delete req.session.members[req.body.chatID];
+
+        new ChatSearchManager().incrementField(req.body.chatID, 'num_members', -1, function(err, result) {
+            logger.info("*** removed a user from chat elasticsearch", result);
+        });
         res.status(200).send({deleted: rows.affectedRows});
     });
 });

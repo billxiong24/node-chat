@@ -48,15 +48,6 @@ Chat.prototype.setCode = function(code) {
     this._code = code; 
 };
 
-Chat.prototype.toJSON2 = function() { 
-    return {
-        id: this._id,
-        name: this._name,
-        code: this._code,
-        stamp: this._stamp
-    };
-};
-
 Chat.prototype.toJSON = function(username, notifs, lines) { 
     return {
         id: this._id,

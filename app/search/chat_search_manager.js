@@ -8,6 +8,26 @@ var ChatSearchManager = function() {
 ChatSearchManager.prototype = Object.create(SearchManager.prototype);
 ChatSearchManager.prototype.constructor = ChatSearchManager;
 
+ChatSearchManager.prototype.createDocument = function(chatInfoObj, callback) {
+    var that = this;
+    this.getClient().index({
+        index: that._index,
+        type: that._type,
+        id: chatInfoObj.id,
+        //TODO add suggestions to body
+        body: {
+            id: chatInfoObj.id,
+            //HACK for some reason the chat.toJSON uses name field
+            chat_name: chatInfoObj.chat_name || chatInfoObj.name,
+            num_messages: chatInfoObj.num_messages || 0,
+            num_members: chatInfoObj.num_members || 1
+        }
+    }, function(err, res) {
+        logger.info(res, 'response');
+        callback(err, res);
+    });
+};
+
 
 //override
 ChatSearchManager.prototype.search = function(searchTerm, from, callback) { 
