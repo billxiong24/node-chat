@@ -10,7 +10,7 @@ const crypto = require('crypto');
 const UserCache = require('../models/user_cache.js');
 const UserManager = require('../models/user_manager.js');
 const UserRequest = require('../../microservices/user/user_request.js');
-const clean_client = require('../cache/clean_client.js');
+const CleanClient = require('../cache/clean_client.js');
 
 const params = {
     usernameField : 'username', 
@@ -197,8 +197,8 @@ function passportAuth(passport) {
             };
             //user_manager.signup(password_signup, signupFailure, signupSuccess);
 
-            var clients = [];
-            var user_request = new UserRequest(clean_client.genClient(clients));
+            var clean_client = new CleanClient();
+            var user_request = new UserRequest(clean_client.genClient());
             user_request.signupRequest(info, function(channel, user) {
                 if(user.signup_error) {
                     signupFailure();
@@ -206,7 +206,7 @@ function passportAuth(passport) {
                 else {
                     signupSuccess(user);
                 }
-                clean_client.cleanup(clients);
+                clean_client.cleanup();
             });
         }
     ));
@@ -220,11 +220,11 @@ function passportAuth(passport) {
             return done(null, user);
         };
         //var user_manager = new UserManager(new UserCache(username));
-        var clients = [];
-        var user_request = new UserRequest(clean_client.genClient(clients));
+        var clean_client = new CleanClient();
+        var user_request = new UserRequest(clean_client.genClient());
         user_request.authenticateRequest(username, password, function(channel, user) {
             loginResult(user);
-            clean_client.cleanup(clients);
+            clean_client.cleanup();
         });
         //user_manager.authenticate(password, loginResult);
     }));

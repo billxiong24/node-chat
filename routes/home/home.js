@@ -4,6 +4,11 @@ var authenticator = require('../../app/authentication/user-pass.js');
 const Manager = require('../../app/chat_functions/chat_manager.js');
 const Chat =  require('../../app/models/chat.js');
 
+const CleanClient = require('../../app/cache/clean_client.js');
+var ChatRequest = require('../../microservices/chat/chat_requester.js');
+var NotifRequest = require('../../microservices/notifs/notif_request.js');
+var ChatSearchManager = require('../../app/search/chat_search_manager.js');
+
 var manager;
 if(!manager) {
     manager = new Manager(new Chat());
@@ -17,14 +22,18 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
         secure: true
     });
 
-    manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {
+    var clean_client = new CleanClient();
+    var chatRequester = new ChatRequest(clean_client.genClient());
 
-        req.session.members = members;
+    chatRequester.loadChatListRequest(req.csrfToken(), req.user, function(channel, json) {
+
+        clean_client.cleanup();
+        req.session.members = json.members;
         if(process.env.NODE_ENV=== 'test') {
-            res.status(200).json(userJSON);
+            res.status(200).json(json.userJSON);
         }
         else {
-            res.render('home', userJSON);
+            res.render('home', json.userJSON);
         }
     });
 });

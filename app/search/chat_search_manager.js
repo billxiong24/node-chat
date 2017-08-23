@@ -76,6 +76,7 @@ ChatSearchManager.prototype.search = function(searchTerm, from, callback) {
         }
 
     }, function(err, res) {
+        //TODO need to check if elastic search is running, other wise returns undefined
         logger.info(res, 'search results');
         callback(err, res.hits);
     });

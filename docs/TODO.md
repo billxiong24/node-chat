@@ -29,10 +29,11 @@
 | app/models/user_cache.js | 80 | need real error handling here
 | app/models/user_cache.js | 130 | function works, add user back to cache if not in
 | app/search/chat_search_manager.js | 17 | add suggestions to body
+| app/search/chat_search_manager.js | 79 | need to check if elastic search is running, other wise returns undefined
 | app/search/search_info_generate.js | 19 | generate index and types for user data
 | app/search/search_manager.js | 43 | error handle
 | app/search/search_manager.js | 49 | override in subclass
-| app/sockets/chatSocket.js | 91 | refactor back into above method, quick hack
+| app/sockets/chatSocket.js | 92 | refactor back into above method, quick hack
 | app/sockets/notifSocket.js | 22 | add this data to cache- contains {userid, notif, roomID}
 | app/sockets/voteSocket.js | 23 | fix check if user voted already
 | app/sockets/voteSocket.js | 35 | update vote value in redis if user did not vote yet
@@ -45,10 +46,10 @@
 | public/javascripts/settings.js | 1 | need a password util to validate password
 | public/javascripts/settings.js | 14 | update result in UI
 | public/javascripts/settings.js | 20 | update errors in UI, too lazy
-| routes/chats/chats.js | 107 | include error message to pass to view
-| routes/chats/chats.js | 138 | find a way to test this, since we are resetting members every time in the test
-| routes/chats/chats.js | 153 | include error message to pass to view
-| routes/chats/chats.js | 231 | use microservice
+| routes/chats/chats.js | 103 | include error message to pass to view
+| routes/chats/chats.js | 134 | find a way to test this, since we are resetting members every time in the test
+| routes/chats/chats.js | 149 | include error message to pass to view
+| routes/chats/chats.js | 226 | use microservice
 | public/javascripts/bundle/chat_bundle.js | 105 | organize ajax calls
 | public/javascripts/bundle/chat_bundle.js | 194 | dont hardcode this, okay for now
 | public/javascripts/bundle/chat_bundle.js | 639 | refactor joinRoom in chatview to a super class or something

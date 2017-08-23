@@ -8,11 +8,8 @@ const Notification = require('../../app/models/notification.js');
 const NotificationManager = require('../../app/chat_functions/notif_manager.js');
 const UserManager = require('../../app/models/user_manager.js');
 const UserCache = require('../../app/models/user_cache.js');
-const clean_client = require('../../app/cache/clean_client.js');
+const CleanClient = require('../../app/cache/clean_client.js');
 
-var redis = require("redis");
-var Bus = require('../../app/bus/bus.js');
-var BusManager = require('../../app/bus/bus_manager.js');
 var ChatRequest = require('../../microservices/chat/chat_requester.js');
 var NotifRequest = require('../../microservices/notifs/notif_request.js');
 var ChatSearchManager = require('../../app/search/chat_search_manager.js');
@@ -22,12 +19,11 @@ if(!manager) {
     manager = new Manager(new Chat());
 }
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    var clients = [];
-    var chatRequester = new ChatRequest(clean_client.genClient(clients));
+    var clean_client = new CleanClient();
+    var chatRequester = new ChatRequest(clean_client.genClient());
 
     chatRequester.loadChatListRequest(req.csrfToken(), req.user, function(channel, json) {
-        logger.info("num clients: ", clients.length);
-        clean_client.cleanup(clients);
+        clean_client.cleanup();
 
         logger.info("received in", req.user.username);
         logger.info("------------------------------------------------");
@@ -118,11 +114,11 @@ router.post('/verify_chat', authenticator.checkLoggedOut, function(req, res, nex
         });
     };
 
-    var clients = [];
-    var chatRequester = new ChatRequest(clean_client.genClient(clients));
+    var clean_client = new CleanClient();
+    var chatRequester = new ChatRequest(clean_client.genClient());
 
     chatRequester.joinChatRequest(req.user.username, req.body.code, function(channel, json) {
-        clean_client.cleanup(clients);
+        clean_client.cleanup();
         logger.info("checked specific chat");
         logger.info(json);
         if(json.join_error) {
@@ -168,11 +164,11 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         res.redirect('/chats/' + chatJSON.id);
     };
 
-    var clients = [];
-    var chatRequester = new ChatRequest(clean_client.genClient(clients));
+    var clean_client = new CleanClient();
+    var chatRequester = new ChatRequest(clean_client.genClient());
 
     chatRequester.joinChatRequest(req.user.username, req.body.joinChat, function(channel, json) {
-        clean_client.cleanup(clients);
+        clean_client.cleanup();
 
         logger.info("joined chat micro callback");
         if(json.join_error) {
@@ -185,12 +181,11 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    var clients = [];
-    var chatRequester = new ChatRequest(clean_client.genClient(clients));
+    var clean_client = new CleanClient();
+    var chatRequester = new ChatRequest(clean_client.genClient());
 
     chatRequester.createChatRequest(req.user.username, req.body.createChat, function(channel, chatInfo) {
-        logger.info('FINISHED CREATING CHAT', clients.length);
-        clean_client.cleanup(clients);
+        clean_client.cleanup();
 
         req.session.members[chatInfo.id] = chatInfo;
         logger.debug(chatInfo, "****chat infofooo****");
@@ -229,11 +224,11 @@ function chatRender(req, res, cachedCB, missCB) {
         //i dont think this will ever get reached since u join before this function is reached
         logger.info("post renderinfo not cached");
         //TODO use microservice
-        var clients = [];
-        var chatRequester = new ChatRequest(clean_client.genClient(clients));
+        var clean_client = new CleanClient();
+        var chatRequester = new ChatRequest(clean_client.genClient());
 
         chatRequester.loadChatRequest(req.user.username, req.params.chatID, function(channel, deepCopy) {
-            clean_client.cleanup(clients);
+            clean_client.cleanup();
             logger.info(req.user.username, req.params.chatID);
             logger.info(deepCopy);
             if(!deepCopy) {

@@ -6,25 +6,26 @@ var redis_options = require('./cache_config.js');
     //redis = require('fakeredis');
 //}
 
-var host = process.env.HOST;
-function genClient(clients) {
+var CleanClient = function() {
+    this._clients = [];
+};
+
+CleanClient.prototype.genClient = function() {
+    var that = this;
     return function() {
         var client = redis.createClient({
             host: process.env.HOST,
             port: 6379 
         });
-        clients.push(client);
+        that._clients.push(client);
         return client;
     };
-}
-
-function cleanup(clients) {
-    for(var i = 0; i < clients.length; i++)  {
-        clients[i].quit();
-    }
-}
-
-module.exports = {
-    genClient: genClient,
-    cleanup: cleanup
 };
+
+CleanClient.prototype.cleanup = function() {
+    for(var i = 0; i < this._clients.length; i++)  {
+        this._clients[i].quit();
+    }
+};
+
+module.exports = CleanClient;

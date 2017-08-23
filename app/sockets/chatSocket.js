@@ -7,7 +7,7 @@ const Notification = require('../models/notification.js');
 const NotificationManager = require('../chat_functions/notif_manager.js');
 const NotifRequest = require('../../microservices/notifs/notif_request.js');
 
-const clean_client = require('../cache/clean_client.js');
+const CleanClient = require('../cache/clean_client.js');
 
 var ChatSearchManager = require('../search/chat_search_manager.js');
 
@@ -79,11 +79,12 @@ ChatSocket.prototype.init = function() {
                     logger.info('incremented num message by one', res);
                 });
             });
-            var clients = [];
-            var notifRequest = new NotifRequest(clean_client.genClient(clients));
+
+            var clean_client = new CleanClient();
+            var notifRequest = new NotifRequest(clean_client.genClient());
 
             notifRequest.flushNotificationRequest(id, socket.request.session.user.username, function(channel, rows) {
-                clean_client.cleanup(clients);
+                clean_client.cleanup();
                 logger.info('flushed notifs after socket reply');
             });
         });

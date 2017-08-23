@@ -7,7 +7,7 @@ const Chat =  require('../../app/models/chat.js');
 const UserCache = require('../../app/models/user_cache.js');
 const UserManager = require('../../app/models/user_manager.js');
 var UserRequest = require('../../microservices/user/user_request.js');
-var clean_client = require('../../app/cache/clean_client.js');
+var CleanClient = require('../../app/cache/clean_client.js');
 
 var manager;
 if(!manager) {
@@ -29,8 +29,8 @@ router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUse
 });
 
 router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
-    var clients = [];
-    var userRequest = new UserRequest(clean_client.genClient(clients));
+    var clean_client = new CleanClient();
+    var userRequest = new UserRequest(clean_client.genClient());
     //var userManager = new UserManager(new UserCache(req.user.username).setJSON(req.user));
     //req.user will update automatically each request, no need to explicility set
     userRequest.updateUserProfileRequest(req.body, req.user, function(channel, jsonObj) {
@@ -39,31 +39,19 @@ router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator
         }
         req.session.user = jsonObj.jsonObj;
         logger.info(req.session.user, "updated req session put request");
-        clean_client.cleanup(clients);
+        clean_client.cleanup();
         res.status(200).send('done');
     });
-    //userManager.updateUserProfile(req.body, function(rows, jsonObj) {
-        //if(!jsonObj) {
-            //return res.status(400).send('error');
-        //}
-        //req.session.user = jsonObj;
-        //logger.info(req.session.user, "updated req session put request");
-        //res.status(200).send('done');
-    //});
 });
 
 router.put('/:username/updatedPassword', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
-    var clients = [];
-    var userRequest = new UserRequest(clean_client.genClient(clients));
+    var clean_client = new CleanClient();
+    var userRequest = new UserRequest(clean_client.genClient());
     userRequest.updatePasswordRequest(req.user, req.body.old_password, req.body.new_password, function(channel, jsonObj) {
         logger.debug('updated password', jsonObj);
         res.status(200).send(jsonObj);
-        clean_client.cleanup(clients);
+        clean_client.cleanup();
     });
-    //var userManager = new UserManager(new UserCache(req.user.username).setJSON(req.user));
-    //userManager.updatePassword(req.body.old_password, req.body.new_password, function(result) {
-        //res.status(200).send({changed: result});
-    //});
 });
 
 
