@@ -28,6 +28,18 @@ function execute(query, info=null, callback=function(result) {}, error=function(
     }).then(callback).catch(error);
 }
 
+function executePromise(query, info) {
+
+    var conn;
+    return pool.getConnection().then(function(connection) {
+        conn = connection;
+        return connection.query(query, info);
+    }).then(function(result) {
+        release(conn);
+        return result;
+    });
+}
+
 //more general form of execute function above
 function executePoolTransaction(transactions, error=function(err) {}, info=null) {
     var connected = pool.getConnection();
@@ -60,4 +72,4 @@ function release(connection) {
     pool.releaseConnection(connection);
 }
 
-module.exports = {getPool, execute, executePoolTransaction, release};
+module.exports = {executePromise, getPool, execute, executePoolTransaction, release};
