@@ -3372,9 +3372,9 @@
       "resolved": "https://registry.npmjs.org/normalize-path/-/normalize-path-2.1.1.tgz"
     },
     "notepack.io": {
-      "version": "2.0.1",
-      "from": "notepack.io@https://registry.npmjs.org/notepack.io/-/notepack.io-2.0.1.tgz",
-      "resolved": "https://registry.npmjs.org/notepack.io/-/notepack.io-2.0.1.tgz"
+      "version": "2.1.2",
+      "from": "notepack.io@>=2.1.2 <2.2.0",
+      "resolved": "https://registry.npmjs.org/notepack.io/-/notepack.io-2.1.2.tgz"
     },
     "npm-registry": {
       "version": "0.1.13",
@@ -4060,11 +4060,6 @@
       "from": "require-main-filename@>=1.0.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/require-main-filename/-/require-main-filename-1.0.1.tgz"
     },
-    "requirejs": {
-      "version": "2.3.4",
-      "from": "requirejs@2.3.4",
-      "resolved": "https://registry.npmjs.org/requirejs/-/requirejs-2.3.4.tgz"
-    },
     "requires-port": {
       "version": "1.0.0",
       "from": "requires-port@>=1.0.0 <2.0.0",
@@ -4401,19 +4396,14 @@
       }
     },
     "socket.io-redis": {
-      "version": "5.1.0",
-      "from": "socket.io-redis@https://registry.npmjs.org/socket.io-redis/-/socket.io-redis-5.1.0.tgz",
-      "resolved": "https://registry.npmjs.org/socket.io-redis/-/socket.io-redis-5.1.0.tgz",
+      "version": "5.2.0",
+      "from": "socket.io-redis@>=5.2.0 <6.0.0",
+      "resolved": "https://registry.npmjs.org/socket.io-redis/-/socket.io-redis-5.2.0.tgz",
       "dependencies": {
         "debug": {
           "version": "2.6.8",
           "from": "debug@>=2.6.8 <2.7.0",
           "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.8.tgz"
-        },
-        "redis": {
-          "version": "2.7.1",
-          "from": "redis@>=2.7.1 <2.8.0",
-          "resolved": "https://registry.npmjs.org/redis/-/redis-2.7.1.tgz"
         }
       }
     },

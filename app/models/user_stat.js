@@ -86,15 +86,4 @@ function getAllLines(chat_id) {
     });
 }
 
-var userstat = new UserStat();
-
-userstat.getNumLines('019274b44a472600').then(function(counts) {
-    logger.debug(counts);
-    return counts;
-}).then(function(counts) {
-return userstat.getUpVotes('019274b44a472600').then(function(result) {
-    logger.debug(result);
-});
-});
-
 module.exports = UserStat;

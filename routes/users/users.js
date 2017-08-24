@@ -8,6 +8,8 @@ const UserCache = require('../../app/models/user_cache.js');
 const UserManager = require('../../app/models/user_manager.js');
 var UserRequest = require('../../microservices/user/user_request.js');
 var CleanClient = require('../../app/cache/clean_client.js');
+var UserStatManager = require('../../app/chat_functions/user_stat_manager.js');
+var UserStat = require('../../app/models/user_stat.js');
 
 var manager;
 if(!manager) {
@@ -25,6 +27,14 @@ router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUse
             return res.status(200).send(userJSON);
         }
         return res.render('settings-profile', userJSON);
+    });
+});
+
+router.get('/stats', authenticator.checkLoggedOut, function(req, res, next) {
+    var user_stat_manager = new UserStatManager(new UserStat());
+
+    user_stat_manager.getStats(req.query.chat_id, function(counts, result) {
+        res.status(200).json(counts, result);
     });
 });
 
