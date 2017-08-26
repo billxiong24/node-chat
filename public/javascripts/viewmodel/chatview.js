@@ -111,7 +111,9 @@ var ChatView = (function() {
             viewUsername:  viewUsername, 
             active: active,
             message: msg.message,
-            line_id: msg.line_id
+            line_id: msg.line_id,
+            first: msg.first,
+            last: msg.last
         });
 
         //numMessages.text(this._notifview.getNotif());

@@ -309,9 +309,10 @@
 /* 10 */,
 /* 11 */,
 /* 12 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	//TODO organize this using some frontend framework
+	var chatAjaxService = __webpack_require__(1);
 
 	var ChatViewModel = (function() {
 	    var ChatViewModel = function(userid, roomID, handlebars) {
@@ -322,6 +323,19 @@
 	        this._handlebars = handlebars;
 	        this._userid = userid;
 
+	    };
+
+
+	    ChatViewModel.prototype.addStatsHandler = function(clickElement, chat_id, callback) {
+	        clickElement.on('click', function(evt) {
+	            evt.preventDefault();
+	            chatAjaxService.chatAjax('/users/stats', 'GET', {
+	                chat_id: chat_id
+
+	            }, function(data) {
+	                callback(data);
+	            });
+	        });
 	    };
 
 	    ChatViewModel.prototype.initChatNotifs = function(roomIDs, ChatInfo, SocketView) {
@@ -352,7 +366,7 @@
 	    };
 
 
-	    ChatViewModel.prototype.initChat = function(SocketView, ChatView, NotifView, OnlineView, DirectChatView) {
+	    ChatViewModel.prototype.initChat = function(SocketView, ChatView, NotifView, OnlineView, DirectChatView, LetterAvatar) {
 	        neonChat.init(new SocketView(this._roomID));
 	        var socketviewObj = new SocketView(this._roomID);
 	        var notifViewObj = new NotifView(new SocketView(this._roomID, '/notifications'));
@@ -374,6 +388,8 @@
 	            else {
 	                message = lineViewObj.renderTemplate(that._handlebars, 'message_response_template');
 	            }
+
+	            LetterAvatar.transform();
 
 	            lineViewObj.appendMessage(list, message);
 	            lineViewObj.scrollDown(history, history[0].scrollHeight);

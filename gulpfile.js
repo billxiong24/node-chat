@@ -44,6 +44,14 @@ var neon_js_src = [
     'public/stylesheets/assets/js/neon-demo.js'
 ];
 
+var charts = [
+    "public/stylesheets/assets/js/rickshaw/vendor/d3.v3.js",
+    "public/stylesheets/assets/js/rickshaw/rickshaw.min.js",
+    "public/stylesheets/assets/js/raphael-min.js",
+    "public/stylesheets/assets/js/morris.min.js",
+    'public/stylesheets/assets/js/neon-charts.js'
+];
+
 var home_js_src = [
     'public/stylesheets/assets/js/gsap/TweenMax.min.js',
     'public/stylesheets/assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js',
@@ -63,6 +71,9 @@ var neon_css_src = [
     'public/stylesheets/assets/css/font-icons/entypo/css/*.css',
     'public/stylesheets/assets/css/*.css'
 ];
+gulp.task('compress-charts', function() {
+    compress_js(charts, 'neon.min.charts.js');
+});
 
 gulp.task('compress-neon-css', function() {
     gulp.src(neon_css_src)

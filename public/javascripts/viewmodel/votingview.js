@@ -9,7 +9,6 @@ var VotingView = (function() {
 
     VotingView.prototype.setReceiveListener = function(displayVote) {
         this._socketview.addListener('vote', function(data) {
-            //console.log("received vote from", data);
             displayVote(data);
         });
     };

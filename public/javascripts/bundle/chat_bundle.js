@@ -49,6 +49,8 @@
 	//No idea why thsi happens
 	//make sure to use handlebars 4.0.10 for both global and local binary
 	const handlebars = Handlebars;
+	__webpack_require__(15)(Handlebars);
+	var LetterAvatar = __webpack_require__(16);
 	var chatAjaxService = __webpack_require__(1);
 	var OnlineView = __webpack_require__(2);
 	var LineView = __webpack_require__(4);
@@ -192,6 +194,7 @@
 	                });
 
 	                //TODO dont hardcode this, okay for now
+	                LetterAvatar.transform();
 	                chat.scrollTop(firstMessage.offset().top - curScroll);
 	        });
 	    });
@@ -211,14 +214,50 @@
 	}
 
 	function setup(roomID) {
-
+	    LetterAvatar.transform();
 	    var userid = sessionStorage.getItem('userid');
 
 	    var cvm = new ChatViewModel(userid, roomID, handlebars);
 	    cvm.initChatNotifs(roomIDs, ChatInfo, SocketView);
 	    cvm.initTyping(TypingView, SocketView);
-	    cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView);
+	    cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView, LetterAvatar);
 	    cvm.initVoting(SocketView, VotingView);
+	    cvm.addStatsHandler($('#stats'), parseID(window.location.pathname), function(data) {
+	        var html = handlebars.templates.user_stat();
+	        var counts = [];
+	        var votes = [];
+	        var sum = 0;
+	        Object.keys(data.counts).forEach(function(element) {
+	            counts.push({
+	                label: element, 
+	                value: data.counts[element]
+	            });
+	        });
+
+	        Object.keys(data.result).forEach(function(element) {
+	            if(!data.result[element]) {
+	                return;
+	            }
+
+	            votes.push({
+	                label: element,
+	                value: data.result[element]
+	            });
+	        });
+	        $('#members').html(html);
+				Morris.Donut({
+					element: 'chart5',
+	                data: votes,
+					labelColor: '#303641',
+					colors: ['#f26c4f', '#00a651', '#00bff3', '#0072bc']
+				});
+				Morris.Donut({
+					element: 'chart6',
+	                data: counts,
+					labelColor: '#303641',
+					colors: ['#f26c4f', '#00a651', '#00bff3', '#0072bc']
+				});
+	    });
 	}
 
 
@@ -329,6 +368,8 @@
 	    function LineView(jsonObj) {
 	        ViewRender.call(this, jsonObj.viewUsername);
 
+	        this._first = jsonObj.first;
+	        this._last = jsonObj.last;
 	        this._jsonObj = jsonObj;
 	        this._dir = jsonObj.direction;
 	        this._time = jsonObj.viewStamp;
@@ -736,7 +777,9 @@
 	            viewUsername:  viewUsername, 
 	            active: active,
 	            message: msg.message,
-	            line_id: msg.line_id
+	            line_id: msg.line_id,
+	            first: msg.first,
+	            last: msg.last
 	        });
 
 	        //numMessages.text(this._notifview.getNotif());
@@ -867,9 +910,10 @@
 
 /***/ }),
 /* 12 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	//TODO organize this using some frontend framework
+	var chatAjaxService = __webpack_require__(1);
 
 	var ChatViewModel = (function() {
 	    var ChatViewModel = function(userid, roomID, handlebars) {
@@ -880,6 +924,19 @@
 	        this._handlebars = handlebars;
 	        this._userid = userid;
 
+	    };
+
+
+	    ChatViewModel.prototype.addStatsHandler = function(clickElement, chat_id, callback) {
+	        clickElement.on('click', function(evt) {
+	            evt.preventDefault();
+	            chatAjaxService.chatAjax('/users/stats', 'GET', {
+	                chat_id: chat_id
+
+	            }, function(data) {
+	                callback(data);
+	            });
+	        });
 	    };
 
 	    ChatViewModel.prototype.initChatNotifs = function(roomIDs, ChatInfo, SocketView) {
@@ -910,7 +967,7 @@
 	    };
 
 
-	    ChatViewModel.prototype.initChat = function(SocketView, ChatView, NotifView, OnlineView, DirectChatView) {
+	    ChatViewModel.prototype.initChat = function(SocketView, ChatView, NotifView, OnlineView, DirectChatView, LetterAvatar) {
 	        neonChat.init(new SocketView(this._roomID));
 	        var socketviewObj = new SocketView(this._roomID);
 	        var notifViewObj = new NotifView(new SocketView(this._roomID, '/notifications'));
@@ -932,6 +989,8 @@
 	            else {
 	                message = lineViewObj.renderTemplate(that._handlebars, 'message_response_template');
 	            }
+
+	            LetterAvatar.transform();
 
 	            lineViewObj.appendMessage(list, message);
 	            lineViewObj.scrollDown(history, history[0].scrollHeight);
@@ -1027,7 +1086,6 @@
 
 	    VotingView.prototype.setReceiveListener = function(displayVote) {
 	        this._socketview.addListener('vote', function(data) {
-	            //console.log("received vote from", data);
 	            displayVote(data);
 	        });
 	    };
@@ -1052,6 +1110,126 @@
 	    return VotingView;
 	})();
 	module.exports = VotingView;
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+	function setHelpers(Handlebars) {
+	    Handlebars.registerHelper('if_eq', function(a, b, opts) {
+	        if (a == b) {
+	            return opts.fn(this);
+	        } else {
+	            return opts.inverse(this);
+	        }
+	    });
+	    Handlebars.registerHelper('firstLetter', function(str) {
+	        var theString = str.substring(0, 2);
+	        return new Handlebars.SafeString(theString);
+	    });
+	}
+
+	module.exports = setHelpers;
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	     * LetterAvatar
+	     * 
+	     * Artur Heinze
+	     * Create Letter avatar based on Initials
+	     * based on https://gist.github.com/leecrossley/6027780
+	     */
+	    (function(w, d){
+	     console.log(":howdy");
+
+
+	        function LetterAvatar (name, size) {
+
+	            name  = name || '';
+	            size  = size || 60;
+
+	            var colours = [
+	                    "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", 
+	                    "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"
+	                ],
+
+	                nameSplit = String(name).toUpperCase().split(' '),
+	                initials, charIndex, colourIndex, canvas, context, dataURI;
+
+
+	            //if (nameSplit.length == 1) {
+	                //initials = nameSplit[0] ? nameSplit[0].charAt(0):'?';
+	            //} else {
+	                //initials = nameSplit[0].charAt(0) + nameSplit[1].charAt(0);
+	            //}
+	            initials=name.substring(0, 4);
+
+	            if (w.devicePixelRatio) {
+	                size = (size * w.devicePixelRatio);
+	            }
+	                
+	            charIndex     = (initials == '?' ? 72 : initials.charCodeAt(0)) - 64;
+	            colourIndex   = charIndex % 20;
+	            canvas        = d.createElement('canvas');
+	            canvas.width  = size;
+	            canvas.height = size;
+	            context       = canvas.getContext("2d");
+	             
+	            context.fillStyle = colours[colourIndex - 1];
+	            context.fillRect (0, 0, canvas.width, canvas.height);
+	            context.font = Math.round(canvas.width/3)+"px Arial";
+	            context.textAlign = "center";
+	            context.fillStyle = "#FFF";
+	            context.fillText(initials, size / 2, size / 1.75);
+
+	            dataURI = canvas.toDataURL();
+	            canvas  = null;
+
+	            return dataURI;
+	        }
+
+	        LetterAvatar.transform = function() {
+
+	            Array.prototype.forEach.call(d.querySelectorAll('img[avatar]'), function(img, name) {
+	                name = img.getAttribute('avatar');
+	                img.src = LetterAvatar(name, img.getAttribute('width'));
+	                img.removeAttribute('avatar');
+	                img.setAttribute('alt', name);
+	            });
+	        };
+
+
+	        // AMD support
+	        if (true) {
+	            
+	            !(__WEBPACK_AMD_DEFINE_RESULT__ = function () { return LetterAvatar; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	        
+	        // CommonJS and Node.js module support.
+	        } else if (typeof exports !== 'undefined') {
+	            
+	            // Support Node.js specific `module.exports` (which can be a function)
+	            if (typeof module != 'undefined' && module.exports) {
+	                exports = module.exports = LetterAvatar;
+	            }
+
+	            // But always support CommonJS module 1.1.1 spec (`exports` cannot be a function)
+	            exports.LetterAvatar = LetterAvatar;
+
+	        } else {
+	            
+	            window.LetterAvatar = LetterAvatar;
+
+	            d.addEventListener('DOMContentLoaded', function(event) {
+	                LetterAvatar.transform();
+	            });
+	        }
+
+	    })(window, document);
 
 
 /***/ })

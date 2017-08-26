@@ -5,11 +5,12 @@ var connection = require('../database/config.js');
 var Vote = require('./vote.js');
 var VoteManager = require('../chat_functions/vote_manager.js');
 
-var UserStat = function() {
+var UserStat = function(chat_id) {
+    this._chat_id = chat_id;
     this._cache_lines = null;
 };
 
-UserStat.prototype.getNumLines = function(chat_id) {
+UserStat.prototype.getNumLines = function() {
     var that = this;
     var getLines = function(result) {
         logger.debug(result.length);
@@ -25,14 +26,14 @@ UserStat.prototype.getNumLines = function(chat_id) {
     };
 
     if(!this._cache_lines) {
-        return getAllLines.call(this, chat_id)
+        return getAllLines.call(this)
         .then(getLines);
     }
     return getLines(this._cache_lines);
 };
 
 UserStat.prototype.getUpVotes = function(chat_id) {
-    var vote_manager = new VoteManager(new Vote(chat_id));
+    var vote_manager = new VoteManager(new Vote(this._chat_id));
     var that = this;
 
     var getVotes = function(userLineCount) {
@@ -54,15 +55,15 @@ UserStat.prototype.getUpVotes = function(chat_id) {
 
     if(!this._cache_lines) {
         logger.debug('lines are null');
-        return getAllLines.call(this, chat_id).then(getVotes);
+        return getAllLines.call(this).then(getVotes);
     }
     return getVotes(this._cache_lines);
 };
 
-function getAllLines(chat_id) {
+function getAllLines() {
     var query = "SELECT username, line_id FROM ChatLines WHERE chat_id = ?"; 
     var that = this;
-    return cache_functions.retrieveArray(chat_id, 0, -1, null, true).then(function(result) {
+    return cache_functions.retrieveArray(this._chat_id, 0, -1, null, true).then(function(result) {
         if(!result) {
             logger.debug('result was null in line cahce');
             return [];
@@ -74,7 +75,7 @@ function getAllLines(chat_id) {
         return arr;
 
     }).then(function(arr) {
-        return connection.executePromise(query, [chat_id]).then(function(result) {
+        return connection.executePromise(query, [that._chat_id]).then(function(result) {
             if(!result) {
                 return [];
             }

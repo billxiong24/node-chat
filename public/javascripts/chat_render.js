@@ -3,6 +3,8 @@
 //No idea why thsi happens
 //make sure to use handlebars 4.0.10 for both global and local binary
 const handlebars = Handlebars;
+require('./helpers/hbs_helpers.js')(Handlebars);
+var LetterAvatar = require('./helpers/canvas.js');
 var chatAjaxService = require('./service/chatAjaxService.js');
 var OnlineView = require('./view/onlineview.js');
 var LineView = require('./view/lineview.js');
@@ -146,6 +148,7 @@ function setUpEvents(chatAjaxService, roomID, csrfTokenObj) {
                 });
 
                 //TODO dont hardcode this, okay for now
+                LetterAvatar.transform();
                 chat.scrollTop(firstMessage.offset().top - curScroll);
         });
     });
@@ -165,12 +168,48 @@ function renderLinesCB(data) {
 }
 
 function setup(roomID) {
-
+    LetterAvatar.transform();
     var userid = sessionStorage.getItem('userid');
 
     var cvm = new ChatViewModel(userid, roomID, handlebars);
     cvm.initChatNotifs(roomIDs, ChatInfo, SocketView);
     cvm.initTyping(TypingView, SocketView);
-    cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView);
+    cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView, LetterAvatar);
     cvm.initVoting(SocketView, VotingView);
+    cvm.addStatsHandler($('#stats'), parseID(window.location.pathname), function(data) {
+        var html = handlebars.templates.user_stat();
+        var counts = [];
+        var votes = [];
+        var sum = 0;
+        Object.keys(data.counts).forEach(function(element) {
+            counts.push({
+                label: element, 
+                value: data.counts[element]
+            });
+        });
+
+        Object.keys(data.result).forEach(function(element) {
+            if(!data.result[element]) {
+                return;
+            }
+
+            votes.push({
+                label: element,
+                value: data.result[element]
+            });
+        });
+        $('#members').html(html);
+			Morris.Donut({
+				element: 'chart5',
+                data: votes,
+				labelColor: '#303641',
+				colors: ['#f26c4f', '#00a651', '#00bff3', '#0072bc']
+			});
+			Morris.Donut({
+				element: 'chart6',
+                data: counts,
+				labelColor: '#303641',
+				colors: ['#f26c4f', '#00a651', '#00bff3', '#0072bc']
+			});
+    });
 }

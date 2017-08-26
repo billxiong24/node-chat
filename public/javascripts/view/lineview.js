@@ -3,6 +3,8 @@ var LineView = (function() {
     function LineView(jsonObj) {
         ViewRender.call(this, jsonObj.viewUsername);
 
+        this._first = jsonObj.first;
+        this._last = jsonObj.last;
         this._jsonObj = jsonObj;
         this._dir = jsonObj.direction;
         this._time = jsonObj.viewStamp;

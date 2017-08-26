@@ -16,6 +16,19 @@ if(!manager) {
     manager = new Manager(new Chat());
 }
 
+router.get('/stats', authenticator.checkLoggedOut, function(req, res, next) {
+    var user_stat_manager = new UserStatManager(new UserStat(req.query.chat_id));
+    logger.debug('in stats');
+    logger.debug(req.query.chat_id);
+    user_stat_manager.getStats(function(counts, result) {
+
+        res.status(200).json({
+            counts: counts,
+            result: result
+        });
+    });
+});
+
 //needs extra middleware to check if user is trying to access another user's profile
 router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
     manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {
@@ -30,13 +43,6 @@ router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUse
     });
 });
 
-router.get('/stats', authenticator.checkLoggedOut, function(req, res, next) {
-    var user_stat_manager = new UserStatManager(new UserStat());
-
-    user_stat_manager.getStats(req.query.chat_id, function(counts, result) {
-        res.status(200).json(counts, result);
-    });
-});
 
 router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
     var clean_client = new CleanClient();

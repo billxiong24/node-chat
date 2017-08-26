@@ -64,6 +64,8 @@ ChatSocket.prototype.init = function() {
             var message_info = {
                 message : message, 
                 username: socket.request.session.user.username,
+                first: socket.request.session.user.first,
+                last: socket.request.session.user.last,
                 /* cookie set should be same as userid */
                 cookie: socket.request.session.user.id,
                 line_id: line_id

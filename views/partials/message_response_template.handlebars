@@ -1,16 +1,40 @@
+{{#if viewStamp}}
+    <div class="message-data">
+        <span class="message-data-time" >{{viewStamp}}</span>
+    </div>
+{{else}}
+    <div class="message-data">
+    </div>
+{{/if}}
 <li class="clearfix group-message" id="{{line_id}}">
     <div class="message-data">
-        <span class="message-data-name pull-left">{{viewUsername}}</span>
-        <span class="message-data-time">{{viewStamp}}</span>
+        {{!-- <span class="message-data-time" style="height: 0px"></span> --}}
+        {{!-- <span class="message-data-name pull-left" style="margin-left: -10px">{{viewUsername}}</span> --}}
+        {{!-- <span class="message-data-name pull-left" style="margin-left: -11px;">{{viewUsername }}</span> --}}
+        {{#if viewUsername}}
+            <img class='round pull-left' style="margin-left: -10px" width="40" height="40" avatar="{{viewUsername}}" >
+        {{/if}}
     </div>
-    <div class="message my-message float-left">
+    {{#if viewUsername}}
+        <div class="message my-message float-left" style="margin-left: 9px">
+    {{else}}
+        <div class="message my-message float-left" style="margin-left: 30px">
+
+
+    {{/if}}
         {{message}}
     </div>
     <a class="voting" lineid="{{line_id}}" href="javascript:void(0);">
         <span class="float-left" style='margin-left: 5px;'><i class="entypo-heart-empty"></i></span>
-        <div class="float-left numVotes">
-            {{num_votes}}
-        </div>
+
+        {{#if_eq num_votes '0'}}
+            <div class="float-left numVotes">
+            </div>
+        {{else}}
+            <div class="float-left numVotes">
+                {{num_votes}}
+            </div>
+        {{/if_eq}}
     </a>
 
 </li>

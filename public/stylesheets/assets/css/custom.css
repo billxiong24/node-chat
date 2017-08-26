@@ -6,6 +6,17 @@
     overflow: visible;
     height: 100%;
 }
+.sidebar-collapsed #main-menu .make-overflow {
+    overflow: visible !important;
+    overflow-y: scroll !important;
+}
+
+.sidebar-collapsed #main-menu .make-height {
+    max-height: 350px !important;
+}
+#main-menu .make-overflow li div{
+    /*background-color: blue !important;*/
+}
 
 .chat-group {
     height: 100%;
@@ -18,6 +29,26 @@
 body {
     font: "Lato", Arial, sans-serif;
     /*color: white;*/
+}
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  pre {
+    margin: 20px 0;
+  padding: 20px;
+    background: #fafafa;
+}
+
+.round { border-radius: 50%; }
+pre {
+    margin: 20px 0;
+    padding: 20px;
+    background: #fafafa;
+}
+
+.round {
+    border-radius: 50%;
 }
 .container.clearfix.search-results-panes {
     padding: 10px 0px 0px 0px;
@@ -151,6 +182,9 @@ body {
 
 .chat .chat-history-group .message-data .message-data-name{
     color: #ACACAC;
+    padding: 20px;
+    background: black;
+    border-radius: 100px;
 }
 
 .pull-right {
