@@ -12,4 +12,6 @@ function setHelpers(Handlebars) {
     });
 }
 
+setHelpers(Handlebars);
+
 module.exports = setHelpers;

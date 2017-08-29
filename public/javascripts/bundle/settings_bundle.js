@@ -45,7 +45,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	//TODO need a password util to validate password
-	var chatAjaxService = __webpack_require__(1);
+	var chatAjaxService = __webpack_require__(3);
 	$(document).ready(function() {
 	    $('.validate').submit(function(event) {
 	        event.preventDefault();
@@ -93,7 +93,9 @@
 
 
 /***/ }),
-/* 1 */
+/* 1 */,
+/* 2 */,
+/* 3 */
 /***/ (function(module, exports) {
 
 	//chat ajax function

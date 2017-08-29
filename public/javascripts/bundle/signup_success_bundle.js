@@ -44,7 +44,7 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var chatAjaxService = __webpack_require__(1);
+	var chatAjaxService = __webpack_require__(3);
 	$(document).ready(function() {
 	    var validate = {
 	        _csrf: $('input[name=_csrf]').val()
@@ -63,7 +63,9 @@
 
 
 /***/ }),
-/* 1 */
+/* 1 */,
+/* 2 */,
+/* 3 */
 /***/ (function(module, exports) {
 
 	//chat ajax function
