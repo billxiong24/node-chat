@@ -12,6 +12,7 @@ var LineView = require('./view/lineview.js');
 var SocketView = require('./viewmodel/socketview.js');
 var ChatInfo= require('./viewmodel/chatinfo.js');
 var TypingView = require('./viewmodel/typingview.js');
+var FileView = require('./viewmodel/fileview.js');
 
 var NotifView = require('./viewmodel/notifview.js');
 var ChatView = require('./viewmodel/chatview.js');
@@ -51,36 +52,39 @@ function displayLines(chatList, handlebars, lines, display) {
     }
 }
 
-
-
 //XXX this is code is garbage and im sorry to anyone who has to read this 
 (function() {
     var reached = false;
 
     $(document).ready(function() {
-        //TODO organize ajax calls
+        document.getElementById('fileupload').onchange = function (event) {
+            var file = document.getElementById("fileupload").files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.addEventListener('load', function() {
+
+                    $("test").attr('src', reader.result);
+                });
+                reader.onerror = function (evt) {
+                    console.log("error");
+                };
+
+                reader.readAsDataUrl(file);
+            }
+        };
         var csrfTokenObj = {
             _csrf: $('input[name=_csrf]').val()
         };
         var roomID = parseID(window.location.pathname);
-        var dependencies = ['chatAjaxService', 'onlineview', 'lineview', 'socketview', 'chatinfo', 
-                        'typingview', 'notifview', 'chatview', 'chatviewmodel', 
-                        'directChatView', 'onlineviewModel', 'votingview'];
-
-        initializeData(roomID, csrfTokenObj, dependencies);
-
-        //HACK for some reason, require doesnt get called sometimes, so refresh the page if that's the case
+        initializeData(roomID, csrfTokenObj);
     });
 
-    function initializeData(roomID, csrfTokenObj, dependencies) {
-        console.log("inside require function");
+    function initializeData(roomID, csrfTokenObj) {
         reached = true;
         chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'GET', null, function(data) {
             $('.chat-header').remove();
             $('.chat').prepend(handlebars.templates.chatinfo(data));
             //zombie cookie
-            console.log("entered userid check");
-
             if(!sessionStorage.getItem('userid')) {
                 console.log("userid not set");
                 chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
@@ -176,6 +180,8 @@ function setup(roomID) {
     cvm.initTyping(TypingView, SocketView);
     cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView, LetterAvatar);
     cvm.initVoting(SocketView, VotingView);
+    cvm.addFileHandler(SocketView, FileView);
+    
     cvm.addStatsHandler($('#stats'), parseID(window.location.pathname), function(data) {
         var html = handlebars.templates.user_stat();
         var counts = [];

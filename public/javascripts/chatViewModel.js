@@ -12,6 +12,32 @@ var ChatViewModel = (function() {
 
     };
 
+    ChatViewModel.prototype.addFileHandler = function(SocketView, FileView) {
+        var fileView = new FileView(this._userid, new SocketView(null, '/file'));
+        fileView.deliverEventListener(function(delivery) {
+        document.getElementById('fileupload').onchange = function (event) {
+            var file = document.getElementById("fileupload").files[0];
+
+            if (file) {
+                delivery.send(file);
+                var reader = new FileReader();
+                reader.addEventListener('load', function() {
+                    //TODO for previewing the file??
+                }, false);
+                reader.onerror = function (evt) {
+                    console.log("error");
+                };
+
+                reader.readAsDataURL(file);
+            }
+        };
+
+        }, function(fileID) {
+            //TODO user confirmation
+            console.log("finished", fileID);
+        });
+    };
+
 
     ChatViewModel.prototype.addStatsHandler = function(clickElement, chat_id, callback) {
         clickElement.on('click', function(evt) {

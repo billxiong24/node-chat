@@ -6,8 +6,6 @@
      * based on https://gist.github.com/leecrossley/6027780
      */
     (function(w, d){
-     console.log(":howdy");
-
 
         function LetterAvatar (name, size) {
 
@@ -19,23 +17,23 @@
                     "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"
                 ],
 
-                nameSplit = String(name).toUpperCase().split(' '),
+                nameSplit = String(name).split(' '),
                 initials, charIndex, colourIndex, canvas, context, dataURI;
 
 
-            //if (nameSplit.length == 1) {
-                //initials = nameSplit[0] ? nameSplit[0].charAt(0):'?';
-            //} else {
-                //initials = nameSplit[0].charAt(0) + nameSplit[1].charAt(0);
-            //}
-            initials=name.substring(0, 4);
+            if (nameSplit.length == 1) {
+                initials = nameSplit[0] ? nameSplit[0].charAt(0):'?';
+            } else {
+                initials = nameSplit[0].charAt(0) + nameSplit[1].charAt(0);
+            }
+            //initials=name.substring(0, 4);
 
             if (w.devicePixelRatio) {
                 size = (size * w.devicePixelRatio);
             }
                 
             charIndex     = (initials == '?' ? 72 : initials.charCodeAt(0)) - 64;
-            colourIndex   = charIndex % 20;
+            colourIndex   = charIndex % (colours.length + 1);
             canvas        = d.createElement('canvas');
             canvas.width  = size;
             canvas.height = size;
@@ -43,10 +41,10 @@
              
             context.fillStyle = colours[colourIndex - 1];
             context.fillRect (0, 0, canvas.width, canvas.height);
-            context.font = Math.round(canvas.width/3)+"px Arial";
+            context.font = Math.round(canvas.width/2.5)+"px Arial";
             context.textAlign = "center";
             context.fillStyle = "#FFF";
-            context.fillText(initials, size / 2, size / 1.75);
+            context.fillText(initials, size / 2, size / 1.6);
 
             dataURI = canvas.toDataURL();
             canvas  = null;

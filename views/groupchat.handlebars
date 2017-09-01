@@ -32,7 +32,7 @@
 
     </head>
     <body class="page-body skin-white" data-url="http://neon.dev">
-        <div class="chat-visible page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
+        <div class="chat-visible page-container sidebar-collapsed"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
             {{> sidebar}} 
 
             <div class="main-content">
@@ -88,6 +88,8 @@
                                     <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
                                     <div class="file-uploads">
+                                        <input id="fileupload" type="file" name="" id="" value="upload" />
+                                        <label for="fileupload" id="labelfile"></label>
                                         <i class="fa fa-file-o"></i>
                                         <i class="fa fa-file-image-o"></i>
                                     </div>
@@ -99,6 +101,7 @@
                     <div class="search-results-pane" id="members">
                     </div> 
                     <div class="search-results-pane" id="messages">
+                        <img id="test" src="" alt="" />
 
                         messagessas	
 

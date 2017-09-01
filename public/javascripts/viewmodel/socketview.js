@@ -3,7 +3,11 @@ var SocketView =  (function() {
     function SocketView(roomID, namespace=null) {
         this._roomID = roomID;
         this._client = namespace === null ? new io() : new io(namespace);
+        Object.freeze(this);
     }
+    SocketView.prototype.getClient = function() {
+        return this._client;
+    };
 
     SocketView.prototype.joinRoom = function() {
         var roomID = this._roomID;

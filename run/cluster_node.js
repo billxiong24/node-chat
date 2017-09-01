@@ -1,3 +1,4 @@
+var logger = require('../util/logger.js')(module);
 function ipHash(ip, numProcesses) {
     var num = "";
     for(var i = 0; i < ip.length; i++) {
@@ -20,6 +21,7 @@ function addRespawnHandler(workers, cluster, index) {
 module.exports = function(cluster, http, httpHiddenServer, PORT) {
 
     if(cluster.isMaster) {
+        logger.debug('is master request');
         var workers = [];
         var numCPUs = require('os').cpus().length;
 
@@ -36,6 +38,7 @@ module.exports = function(cluster, http, httpHiddenServer, PORT) {
             conn.pause();
             if(conn.remoteAddress) {
                 var hashIndex = ipHash(conn.remoteAddress, numCPUs);
+                logger.debug('sending request to worker', hashIndex);
                 var worker = workers[hashIndex];
                 worker.send("sticky-session", conn);
             }
@@ -46,6 +49,7 @@ module.exports = function(cluster, http, httpHiddenServer, PORT) {
         //listen for message from master process
         process.on('message', function(message, conn) {
             if(message === 'sticky-session' && conn) {
+                logger.debug('in sticky session worker process');
 
                 httpHiddenServer.emit('connection', conn);
                 conn.resume();

@@ -47,7 +47,7 @@
 	const handlebars = Handlebars;
 	var SocketView = __webpack_require__(7);
 	var ChatInfo = __webpack_require__(9);
-	var ChatViewModel = __webpack_require__(14);
+	var ChatViewModel = __webpack_require__(16);
 	var chatAjaxService = __webpack_require__(3);
 
 	$(document).ready(function() {
@@ -205,7 +205,11 @@
 	    function SocketView(roomID, namespace=null) {
 	        this._roomID = roomID;
 	        this._client = namespace === null ? new io() : new io(namespace);
+	        Object.freeze(this);
 	    }
+	    SocketView.prototype.getClient = function() {
+	        return this._client;
+	    };
 
 	    SocketView.prototype.joinRoom = function() {
 	        var roomID = this._roomID;
@@ -310,7 +314,9 @@
 /* 11 */,
 /* 12 */,
 /* 13 */,
-/* 14 */
+/* 14 */,
+/* 15 */,
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//TODO organize this using some frontend framework
@@ -325,6 +331,32 @@
 	        this._handlebars = handlebars;
 	        this._userid = userid;
 
+	    };
+
+	    ChatViewModel.prototype.addFileHandler = function(SocketView, FileView) {
+	        var fileView = new FileView(this._userid, new SocketView(null, '/file'));
+	        fileView.deliverEventListener(function(delivery) {
+	        document.getElementById('fileupload').onchange = function (event) {
+	            var file = document.getElementById("fileupload").files[0];
+
+	            if (file) {
+	                delivery.send(file);
+	                var reader = new FileReader();
+	                reader.addEventListener('load', function() {
+	                    //TODO for previewing the file??
+	                }, false);
+	                reader.onerror = function (evt) {
+	                    console.log("error");
+	                };
+
+	                reader.readAsDataURL(file);
+	            }
+	        };
+
+	        }, function(fileID) {
+	            //TODO user confirmation
+	            console.log("finished", fileID);
+	        });
 	    };
 
 
