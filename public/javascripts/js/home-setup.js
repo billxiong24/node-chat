@@ -1,4 +1,5 @@
 const handlebars = Handlebars;
+var LetterAvatar = require('../helpers/canvas.js');
 var SocketView = require('../viewmodel/socketview.js');
 var ChatInfo = require('../viewmodel/chatinfo.js');
 var ChatViewModel = require('../chatViewModel.js');
@@ -29,6 +30,7 @@ $(document).ready(function() {
     });
     
     function setup(userid) {
+        LetterAvatar.transform();
         $('.search_results_container').on('submit', '.chat_code_specific', function(evt) {
             evt.preventDefault();
             var thisObj = $(this);

@@ -1,6 +1,8 @@
 //TODO need a password util to validate password
+var LetterAvatar = require('./helpers/canvas.js');
 var chatAjaxService = require('./service/chatAjaxService.js');
 $(document).ready(function() {
+    LetterAvatar.transform();
     $('.validate').submit(function(event) {
         event.preventDefault();
 

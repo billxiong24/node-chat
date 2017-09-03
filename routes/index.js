@@ -6,6 +6,7 @@ var home = require('./home/home.js');
 var chats = require('./chats/chats.js');
 var users = require('./users/users.js');
 var search = require('./search/search.js');
+var images = require('./images/images.js');
 var cache_functions = require('../app/cache/cache_functions.js');
 var email = require('../app/authentication/email.js');
 var UserManager = require('../app/models/user_manager.js');
@@ -98,6 +99,7 @@ module.exports = function(app, passport) {
     router.use('/chats', chats);
     router.use('/users', users);
     router.use('/search', search);
+    router.use('/images', images);
 
 
     function haltOnTimeout(req, res, next) {

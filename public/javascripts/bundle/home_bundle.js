@@ -45,6 +45,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	const handlebars = Handlebars;
+	var LetterAvatar = __webpack_require__(2);
 	var SocketView = __webpack_require__(7);
 	var ChatInfo = __webpack_require__(9);
 	var ChatViewModel = __webpack_require__(16);
@@ -75,6 +76,7 @@
 	    });
 	    
 	    function setup(userid) {
+	        LetterAvatar.transform();
 	        $('.search_results_container').on('submit', '.chat_code_specific', function(evt) {
 	            evt.preventDefault();
 	            var thisObj = $(this);
@@ -147,7 +149,103 @@
 
 /***/ }),
 /* 1 */,
-/* 2 */,
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	     * LetterAvatar
+	     * 
+	     * Artur Heinze
+	     * Create Letter avatar based on Initials
+	     * based on https://gist.github.com/leecrossley/6027780
+	     */
+	    (function(w, d){
+
+	        function LetterAvatar (name, size) {
+
+	            name  = name || '';
+	            size  = size || 60;
+
+	            var colours = [
+	                    "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", 
+	                    "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"
+	                ],
+
+	                nameSplit = String(name).split(' '),
+	                initials, charIndex, colourIndex, canvas, context, dataURI;
+
+
+	            if (nameSplit.length == 1) {
+	                initials = nameSplit[0] ? nameSplit[0].charAt(0):'?';
+	            } else {
+	                initials = nameSplit[0].charAt(0) + nameSplit[1].charAt(0);
+	            }
+	            //initials=name.substring(0, 4);
+
+	            if (w.devicePixelRatio) {
+	                size = (size * w.devicePixelRatio);
+	            }
+	                
+	            charIndex     = (initials == '?' ? 72 : initials.charCodeAt(0)) - 64;
+	            colourIndex   = charIndex % (colours.length + 1);
+	            canvas        = d.createElement('canvas');
+	            canvas.width  = size;
+	            canvas.height = size;
+	            context       = canvas.getContext("2d");
+	             
+	            context.fillStyle = colours[colourIndex - 1];
+	            context.fillRect (0, 0, canvas.width, canvas.height);
+	            context.font = Math.round(canvas.width/2.5)+"px Arial";
+	            context.textAlign = "center";
+	            context.fillStyle = "#FFF";
+	            context.fillText(initials, size / 2, size / 1.6);
+
+	            dataURI = canvas.toDataURL();
+	            canvas  = null;
+
+	            return dataURI;
+	        }
+
+	        LetterAvatar.transform = function() {
+
+	            Array.prototype.forEach.call(d.querySelectorAll('img[avatar]'), function(img, name) {
+	                name = img.getAttribute('avatar');
+	                img.src = LetterAvatar(name, img.getAttribute('width'));
+	                img.removeAttribute('avatar');
+	                img.setAttribute('alt', name);
+	            });
+	        };
+
+
+	        // AMD support
+	        if (true) {
+	            
+	            !(__WEBPACK_AMD_DEFINE_RESULT__ = function () { return LetterAvatar; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	        
+	        // CommonJS and Node.js module support.
+	        } else if (typeof exports !== 'undefined') {
+	            
+	            // Support Node.js specific `module.exports` (which can be a function)
+	            if (typeof module != 'undefined' && module.exports) {
+	                exports = module.exports = LetterAvatar;
+	            }
+
+	            // But always support CommonJS module 1.1.1 spec (`exports` cannot be a function)
+	            exports.LetterAvatar = LetterAvatar;
+
+	        } else {
+	            
+	            window.LetterAvatar = LetterAvatar;
+
+	            d.addEventListener('DOMContentLoaded', function(event) {
+	                LetterAvatar.transform();
+	            });
+	        }
+
+	    })(window, document);
+
+
+/***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
@@ -334,28 +432,23 @@
 	    };
 
 	    ChatViewModel.prototype.addFileHandler = function(SocketView, FileView) {
-	        var fileView = new FileView(this._userid, new SocketView(null, '/file'));
+	        //move this code elsewhere
+	        var fileView = new FileView(this._userid, new SocketView('wow', '/file'));
+
+	        fileView.storedImageListener(function(data) {
+	            //data.Location is url of new image
+	            console.log(data);
+	        });
 	        fileView.deliverEventListener(function(delivery) {
 	        document.getElementById('fileupload').onchange = function (event) {
 	            var file = document.getElementById("fileupload").files[0];
-
 	            if (file) {
 	                delivery.send(file);
-	                var reader = new FileReader();
-	                reader.addEventListener('load', function() {
-	                    //TODO for previewing the file??
-	                }, false);
-	                reader.onerror = function (evt) {
-	                    console.log("error");
-	                };
-
-	                reader.readAsDataURL(file);
 	            }
 	        };
 
 	        }, function(fileID) {
 	            //TODO user confirmation
-	            console.log("finished", fileID);
 	        });
 	    };
 

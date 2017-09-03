@@ -1,18 +1,30 @@
 require('dotenv').config({page: __dirname + '/../../.env'});
+var logger = require('../../util/logger.js')(module);
 var AWS = require('aws-sdk');
 //add promise support to aws-sdk functions
 AWS.config.setPromisesDependency(require('bluebird'));
 
 var Pic = function() {
+    setConfig();
+    this._extensions = ['png', 'jpg', 'jpeg'];
     this._bucket = 'scrible';
     this._s3 = new AWS.S3();
 };
 
+function getURL(key) {
+    return "https://scrible.s3.amazonaws.com/" + key;
+}
+
 Pic.prototype.savePic = function(id, file_name, file_buffer) {
-    setConfig();
+    var extension = file_name.split('.').pop().toLowerCase();
+    logger.debug(extension, "THIS IS THE EXTENSION FILE");
+    if(this._extensions.indexOf(extension) < 0) {
+        //throw some exception
+        throw new Error("Wrong file format");
+    }
     var params = {
         Bucket: this._bucket,
-        Key: id + "/" + file_name,
+        Key: id + "/profile_pic." + extension,
         ACL: 'public-read',
         Body: file_buffer
     };
@@ -23,29 +35,29 @@ Pic.prototype.savePic = function(id, file_name, file_buffer) {
 };
 
 Pic.prototype.loadPic = function(id) {
-    setConfig();
     var urlParams = {
         Bucket: this._bucket,
-        Key: id + '/' + "18279952_1503824712963832_701908839_n.jpg"
+        Delimiter: '/',
+        Prefix: id + '/'
     };
 
     var that = this;
 
     return new Promise(function(resolve,reject) {
-         that._s3.getSignedUrl('getObject', urlParams, function(err, url) { 
+         that._s3.listObjects(urlParams, function(err, data) { 
              if(err) {
                  return reject(err);
              }
-             resolve(url); 
+             if(!data || data.Contents.length === 0) {
+                 resolve({});
+             }
+             else {
+                 data.url = getURL(data.Contents[0].Key);
+                 resolve(data);
+             }
          });
     });
-
-    //p.then(function(url) {
-        //logger.info('url is here', url);
-    //});
 };
-
-
 
 function setConfig() {
     AWS.config.update({

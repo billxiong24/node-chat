@@ -729,6 +729,7 @@
 
 	function FileView(userid, socketview) {
 	    this._socketview = socketview;
+	    this._socketview.joinTargetRoom('profile_' + userid);
 	}
 
 	FileView.prototype.deliverEventListener = function(send, success) {
@@ -738,18 +739,19 @@
 	        deliv.on('delivery.connect', function(delivery) {
 	            console.log("sending");
 	            send(delivery);
-
 	        });
 
 	        deliv.on('send.success', function(fileID) {
-	            console.log("success");
-	            success(fileID);
+	            console.log("success sending file");
 	        });
-
 	    });
-
 	};
 
+	FileView.prototype.storedImageListener = function(callback) {
+	    this._socketview.addListener('storedImage', function(data) {
+	        callback(data);
+	    });
+	};
 
 	module.exports = FileView;
 
@@ -1287,28 +1289,23 @@
 	    };
 
 	    ChatViewModel.prototype.addFileHandler = function(SocketView, FileView) {
-	        var fileView = new FileView(this._userid, new SocketView(null, '/file'));
+	        //move this code elsewhere
+	        var fileView = new FileView(this._userid, new SocketView('wow', '/file'));
+
+	        fileView.storedImageListener(function(data) {
+	            //data.Location is url of new image
+	            console.log(data);
+	        });
 	        fileView.deliverEventListener(function(delivery) {
 	        document.getElementById('fileupload').onchange = function (event) {
 	            var file = document.getElementById("fileupload").files[0];
-
 	            if (file) {
 	                delivery.send(file);
-	                var reader = new FileReader();
-	                reader.addEventListener('load', function() {
-	                    //TODO for previewing the file??
-	                }, false);
-	                reader.onerror = function (evt) {
-	                    console.log("error");
-	                };
-
-	                reader.readAsDataURL(file);
 	            }
 	        };
 
 	        }, function(fileID) {
 	            //TODO user confirmation
-	            console.log("finished", fileID);
 	        });
 	    };
 

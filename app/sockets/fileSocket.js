@@ -2,8 +2,8 @@ require('dotenv').config({path: __dirname + '/../../.env'});
 var logger = require('../../util/logger.js')(module);
 var Socket = require('./socket.js');
 var deliv = require('delivery');
-var AWS = require('aws-sdk');
-AWS.config.setPromisesDependency(require('bluebird'));
+var Pic = require('../models/pic.js');
+var PicManager = require('../chat_functions/pic_manager.js');
 
 var FileSocket = function(io, namespace) {
     Socket.call(this, io, namespace);
@@ -16,41 +16,15 @@ FileSocket.prototype.constructor = FileSocket;
 FileSocket.prototype.init = function() {
     var that = this;
     this.addOnConnectionListener(function(socket) {
+        socket = Socket.prototype.addJoinLeaveListener.call(that, socket);
+        
         var delivery = deliv.listen(socket);
         delivery.on('receive.success', function(file) {
-            
-            AWS.config.update({
-                accessKeyId: process.env.AWS_ACCESS,
-                secretAccessKey: process.env.AWS_SEC
-            });
-            var s3 = new AWS.S3();
-            var id = socket.request.session.user.id;
-            var params = {
-                Bucket: 'scrible',
-                Key: id + "/" + file.name,
-                ACL: 'public-read',
-                Body: file.buffer
-            };
-            var urlParams = {
-                Bucket: 'scrible',
-                Key: id + '/' + "18279952_1503824712963832_701908839_n.jpg"
-            };
-
-            //var p = new Promise(function(resolve,reject) {
-                 //s3.getSignedUrl('getObject', urlParams, function(err, url) { 
-                     //if(err) {
-                         //return reject(err);
-                     //}
-                     //resolve(url); 
-                 //});
-            //});
-            //p.then(function(url) {
-                //logger.info('url is here', url);
-            //});
-
-            var prom = s3.upload(params).promise();
-            prom.then(function(data) {
+            var pic_manager = new PicManager(new Pic());
+            pic_manager.storeImage(socket.request.session.user.id, file.name, file.buffer)
+            .then(function(data) {
                 logger.info(data);
+                Socket.prototype.getIO.call(that).to('profile_'+socket.request.session.user.id).emit('storedImage', data); 
             });
         });
     });
