@@ -23,10 +23,13 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
     var user = new User(userObj.username, userObj.id, undefined, userObj.first, userObj.last);
     chatobj.loadLists(user, function(rows) {
         var userJSON = user.toJSON();
+        userJSON.email = userObj.email;
         //this is used for view rendering, will switch to clientside rendering soon
 
         var rowString = JSON.stringify(rows);
-        userJSON.list = notifRender(JSON.parse(rowString));
+        var notifRes = notifRender(JSON.parse(rowString));
+        userJSON.list = notifRes.notifs;
+        userJSON.total_notifs = notifRes.num_not_zero;
         userJSON.parseList = encodeURIComponent(rowString);
         userJSON.csrfToken = csrfToken;
 

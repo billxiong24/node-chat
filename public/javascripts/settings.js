@@ -1,8 +1,31 @@
 //TODO need a password util to validate password
+var SocketView = require('./viewmodel/socketview.js');
+var ChatViewModel = require('./chatViewModel.js');
+var FileView = require('./viewmodel/fileview.js');
+
 var LetterAvatar = require('./helpers/canvas.js');
 var chatAjaxService = require('./service/chatAjaxService.js');
+var retrieve_prof_pic = require('./helpers/retrieve_prof_pic.js');
+
 $(document).ready(function() {
     LetterAvatar.transform();
+    var cvm = new ChatViewModel();
+    if(!sessionStorage.getItem('userid')) {
+        chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
+        .then(function(data) {
+            Cookies.set('userid', data.cookie);
+            sessionStorage.setItem('userid', data.cookie);
+        })
+        .then(function(data) {
+            cvm = new ChatViewModel(sessionStorage.getItem('userid'), null, null);
+            cvm.addFileHandler(SocketView, FileView, 'prof-pic');
+        });
+    }
+    else {
+        cvm = new ChatViewModel(sessionStorage.getItem('userid'), null, null);
+        cvm.addFileHandler(SocketView, FileView, 'fileupload', 'img-pic');
+    }
+
     $('.validate').submit(function(event) {
         event.preventDefault();
 
@@ -44,5 +67,4 @@ $(document).ready(function() {
             }
         });
     });
-
 });

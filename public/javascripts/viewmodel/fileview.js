@@ -22,6 +22,7 @@ FileView.prototype.deliverEventListener = function(send, success) {
 
 FileView.prototype.storedImageListener = function(callback) {
     this._socketview.addListener('storedImage', function(data) {
+        console.log("howdy");
         callback(data);
     });
 };

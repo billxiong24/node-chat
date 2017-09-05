@@ -34,7 +34,6 @@ router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUse
     manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {
         //this is very bad
         req.session.members = members;
-        userJSON.email = req.user.email;
         userJSON.num_chats = userJSON.list.length;
         if(process.env.NODE_ENV === 'test') {
             return res.status(200).send(userJSON);
@@ -59,7 +58,6 @@ router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator
         res.status(200).send('done');
     });
 });
-
 router.put('/:username/updatedPassword', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
     var clean_client = new CleanClient();
     var userRequest = new UserRequest(clean_client.genClient());

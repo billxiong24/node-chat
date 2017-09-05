@@ -24,7 +24,7 @@
 
 	{{!-- <script src="assets/js/jquery-1.11.3.min.js"></script> --}}
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js'></script>
-    <link rel="stylesheet" href="/stylesheets/assets/css/skins/white.css">
+    {{!-- <link rel="stylesheet" href="/stylesheets/assets/css/skins/white.css"> --}}
 
 	<!--[if lt IE 9]><script src="assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
 	
@@ -36,9 +36,9 @@
 
 
 </head>
-<body class="page-body skin-white" data-url="http://neon.dev">
+<body class="page-body" data-url="http://neon.dev">
 
-<div class="page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
+<div class="page-container sidebar-collapsed"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
 	
     {{> sidebar}}	
 
@@ -54,8 +54,8 @@
 				
 				<div class="col-sm-2">
 					
-					<a href="#" class="profile-pic">
-            <img src="https://s3.us-east-2.amazonaws.com/scrible/b4b4b4e8201ea19c963b/High-resolution_desktop_wallpaper_1967_Ford_Galaxie_by_Brett_Schnacky.jpg" class="round" style="" width="125" height="125" alt="avatar" />
+					<a class="profile-pic" id="prof-pic">
+                        <img src="https://scrible.s3.us-east-2.amazonaws.com/ed48da0ecc35ed771bee/profile_pic.jpg" id="img-pic" class="round" style="" width="125" height="125" alt="avatar" />
 					</a>
 					
 				</div>
@@ -91,12 +91,22 @@
 				</div>
 				
 				<div class="col-sm-3">
+                    
 					
 					<div class="profile-buttons">
-						<a href="#" class="btn btn-default">
+                        <div class="fileinput fileinput-new" data-provides="fileinput">
+                            <span class="btn btn-info btn-file">
+                                <span class="fileinput-new">Update Profile Picture</span>
+                                <span class="fileinput-exists">Update Profile Picture</span>
+                                <input type="file" id="fileupload" name="...">
+                            </span>
+                            <!--<span class="fileinput-filename"></span>-->
+                            <!--<a href="#" class="close fileinput-exists" data-dismiss="fileinput" style="float: none">&times;</a>-->
+                        </div>
+						<!--<a href="#" class="btn btn-default">
 							<i class="entypo-user-add"></i>
-							Follow
-						</a>
+						    Change Profile Picture
+                        </a>-->
 						
 						<a href="#" class="btn btn-default">
 							<i class="entypo-mail"></i>
@@ -398,6 +408,7 @@
 		
 	<!-- Bottom scripts (common) -->
     <script src='http://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js'></script>
+	<script src="/stylesheets/assets/js/fileinput.js"></script>
     <script type="text/javascript" src="/javascripts/js-build/neon.min.js"></script>
     <script src="/javascripts/bundle/settings_bundle.js"> </script>
 

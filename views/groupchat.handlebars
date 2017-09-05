@@ -18,6 +18,7 @@
         <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic">
         <link rel="stylesheet" href="/stylesheets/style-build/neon.min.css">
         <script src="/javascripts/js/handlebars.min.js"></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js'></script>
 
         {{!-- <link rel="stylesheet" href="/stylesheets/assets/css/skins/white.css"> --}}
 
@@ -31,7 +32,7 @@
 
 
     </head>
-    <body class="page-body skin-white" data-url="http://neon.dev">
+    <body class="page-body sidebar-collapsed" data-url="http://neon.dev">
         <div class="chat-visible page-container sidebar-collapsed"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
             {{> sidebar}} 
 
@@ -89,7 +90,6 @@
 
                                     <div class="file-uploads">
                                         <input id="fileupload" type="file" name="" id="" value="upload" />
-                                        <label for="fileupload" id="labelfile"></label>
                                         <i class="fa fa-file-o"></i>
                                         <i class="fa fa-file-image-o"></i>
                                     </div>
@@ -117,7 +117,6 @@
 
                  <!-- end container -->
 
-                <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js'></script>
                 <script src='http://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js'></script>
 
                 <!--<footer class="main">-->

@@ -1,4 +1,5 @@
 var express = require('express');
+var logger = require('../../util/logger.js')(module);
 var router = express.Router();
 var authenticator = require('../../app/authentication/user-pass.js');
 const Manager = require('../../app/chat_functions/chat_manager.js');
@@ -26,6 +27,7 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
     var chatRequester = new ChatRequest(clean_client.genClient());
 
     chatRequester.loadChatListRequest(req.csrfToken(), req.user, function(channel, json) {
+        logger.debug(json.userJSON);
 
         clean_client.cleanup();
         req.session.members = json.members;

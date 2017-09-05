@@ -18,7 +18,8 @@
         <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic">
         <link rel="stylesheet" href="/stylesheets/style-build/neon.min.css">
         <link rel="stylesheet" href="/stylesheets/css/neon-home.css">
-        <link rel="stylesheet" href="/stylesheets/assets/css/skins/white.css">
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+        {{!-- <link rel="stylesheet" href="/stylesheets/assets/css/skins/white.css"> --}}
 
         <!--[if lt IE 9]><script src="/stylesheets/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
 
@@ -30,16 +31,15 @@
 
 
     </head>
-    <body class="page-body skin-white" data-url="http://neon.dev">
+    <body class="page-body" data-url="http://neon.dev">
 
-        <div class="chat-visible page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
+        <div class="chat-visible page-container sidebar-collapsed"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
             {{>sidebar}} 
 
             <div class="main-content">
 
                 {{> header}} 
 
-                <hr />
 
                 <div class="container clearfix title">
                     <div class="title-banner">
@@ -93,7 +93,6 @@
                     
                 </div>
 
-                <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
                 <script src="/javascripts/js/handlebars.min.js"></script>
                 <script src='http://cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js'></script>
 

@@ -30,24 +30,40 @@
         <div class="sidebar-user-info">
 
             <div class="sui-normal">
-                <a href="#" class="user-link">
-                    <img class="round" width="60" height="60" avatar="{{first}}"/>
-
+                <a href="#" class="user-link profile-pic">
+                    <div style="width: 60px; height: 60px">
+                        <img id="prof-pic" src="" class="round" style="width: 60px; height: 60px;" avatar="{{first}}"/>
+                    </div>
                     <strong>{{first}} {{last}}</strong>
                 </a>
             </div>
 
-            <div class="sui-hover inline-links animate-in"><!-- You can remove "inline-links" class to make links appear vertically, class "animate-in" will make A elements animateable when click on user profile -->
-                <a href="/users/{{username}}">
+            <div class="sui-hover animate-in"><!-- You can remove "inline-links" class to make links appear vertically, class "animate-in" will make A elements animateable when click on user profile -->
+                <!--<a href="/users/{{username}}">
+                    <i class="entypo-user"></i>
+                    {{first}} {{last}}
+                </a>-->
+
+                <a href="#" style="">
                     <i class="entypo-user"></i>
                     {{first}} {{last}}
                 </a>
-
-                <a href="extra-lockscreen.html">
-                    <i class="entypo-lock"></i>
-                    Log Out
+                <a href="#" style="">
+                    <div class="fileinput fileinput-new" data-provides="fileinput" >
+                        <i class="entypo-camera"></i>
+                        <span class="btn btn-file btn-info no-change-hover" style="padding-left: 0px">
+                            <span class="fileinput-new">Update Profile Picture</span>
+                            <span class="fileinput-exists">Update Profile Picture</span>
+                            <input type="file" id="fileupload" name="...">
+                        </span>
+                        <!--<span class="fileinput-filename"></span>-->
+                        <!--<a href="#" class="close fileinput-exists" data-dismiss="fileinput" style="float: none">&times;</a>-->
+                    </div>
                 </a>
-
+                <a href="#" id="logout-link" style="margin-top: -8px">
+                    <i class='entypo-logout'></i>
+                    Log out
+                </a>
                 <span class="close-sui-popup">&times;</span><!-- this is mandatory -->				</div>
         </div>
 
@@ -55,9 +71,26 @@
         <ul id="main-menu" class="main-menu">
             <!-- add class "multiple-expanded" to allow multiple submenus to open -->
             <!-- class "auto-inherit-active-class" will automatically add "active" class for parent elements who are marked already with class "active" -->
-            <li class="opened active has-sub">
+            <li class="active">
+                <a href="/home">
+                    <i class="entypo-home"></i>
+                    {{!-- <span class="title">Home</span> --}}
+                </a>
+                {{!-- <ul> --}}
+                    {{!-- <li> --}}
+                        {{!-- <a href="/users/{{username}}"> --}}
+                            {{!-- <i class="entypo-inbox"></i> --}}
+                            {{!-- <span class="title">Profile Settings</span> --}}
+                            {{!-- </a> --}}
+                        {{!-- </li> --}}
+                    {{!-- </ul> --}}
+            </li>
+            <li class="opened active has-sub notifications">
+                <span class="btn-danger round chat-notif total_notifs">{{total_notifs}}</span>
                 <a href="index.html">
+                    <span class="badge badge-secondary total_notifs">{{total_notifs}}</span>
                     <i class="entypo-chat"></i>
+                    
                     <span class="title">Chats</span>
                 </a>
                 <ul class="make-overflow make-height">
@@ -73,6 +106,10 @@
                                 {{!-- <span class="badge badge-success badge-roundless">{{num_notifications}}</span> --}}
                                 {{#if num_notifications}}
                                     <span class="badge badge-secondary">{{num_notifications}}</span>
+                                {{else}}
+                                    <span class="badge badge-secondary" style="display:none">{{num_notifications}}</span>
+                                    
+
                                 {{/if}}
                             </a>
 
@@ -83,22 +120,127 @@
 
                 </ul>
             </li>
-            <!--<li class="has-sub">
-                <a href="mailbox.html">
-                <i class="entypo-user"></i>
-                <span class="title">Profile</span>
-                </a>
-                <ul>
-                <li>
-                <a href="/users/{{username}}">
-                <i class="entypo-inbox"></i>
-                <span class="title">Profile Settings</span>
-                </a>
-                </li>
-                </ul>
-                </li>-->
+            <li class="active">
+                <a id="user-settings" href="javascript:;" onclick="jQuery('#modal-6').modal('show', {backdrop: 'static'});" ><i class="entypo-cog"></i></a>
+                
+
+            </li>
+            <li class="active">
+                <a href="javascript:;" onclick="jQuery('#modal-5').modal('show', {backdrop: 'static'});" ><i class="entypo-key"></i></a>
+            </li>
+            
         </ul>
 
     </div>
 
 </div>
+<div class="modal fade" id="modal-5">
+    <form class="password-submit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Password Settings</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">Old Password</label>
+
+                                <input type="password" class="form-control" name="old_password">
+                            </div>	
+
+                        </div>
+
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-2" class="control-label">New Password</label>
+
+                                <input type="password" class="form-control" name="new_password">
+                            </div>	
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-3" class="control-label">Confirm New Password</label>
+                                <input type="password" class="form-control" name="confirm_password">
+                            </div>	
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="close-button btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="password-submit btn btn-info">Save changes</button>
+                </div>
+            </div>
+        </div>
+        
+    </form>
+    
+</div>
+<div class="modal fade" id="modal-6">
+    <div class="modal-dialog">
+        <form class="validate">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">User Settings</h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">First Name</label>
+
+                                <input type="text" class="form-control" name="first" value="{{first}}">
+                            </div>	
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="form-group">
+                                <label for="field-2" class="control-label">Last Name</label>
+
+                                <input type="text" class="form-control" name="last" value="{{last}}">
+                            </div>	
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-3" class="control-label">Email</label>
+                                <input type="text" class="form-control" name="email" value="{{email}}">
+                            </div>	
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="close-button btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-info">Save changes</button>
+                </div>
+            </div>
+            
+        </form>
+        
+    </div>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+var username = '{{username}}';
+</script>
+<script src="/javascripts/bundle/sidebar_bundle.js" type="text/javascript" charset="utf-8"></script>

@@ -4,7 +4,8 @@ module.exports = {
         home_bundle: './public/javascripts/js/home-setup.js',
         signup_bundle: './public/javascripts/signupValidate.js',
         signup_success_bundle: './public/javascripts/js/signup_success.js',
-        settings_bundle: './public/javascripts/settings.js'
+        settings_bundle: './public/javascripts/settings.js',
+        sidebar_bundle: './public/javascripts/helpers/commonAjax.js'
     },
 
     output: {

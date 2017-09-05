@@ -12,22 +12,21 @@ var ChatViewModel = (function() {
 
     };
 
-    ChatViewModel.prototype.addFileHandler = function(SocketView, FileView) {
+    ChatViewModel.prototype.addFileHandler = function(SocketView, FileView, idElement, imgElement) {
         //move this code elsewhere
-        var fileView = new FileView(this._userid, new SocketView('wow', '/file'));
-
+        var fileView = new FileView(this._userid, new SocketView(this._userid, '/file'));
         fileView.storedImageListener(function(data) {
             //data.Location is url of new image
-            console.log(data);
+            //appending timestamp forces browser to reload image instead of caching
+            $('#'+imgElement).attr('src', data.Location + '?' + new Date().getTime());
         });
         fileView.deliverEventListener(function(delivery) {
-        document.getElementById('fileupload').onchange = function (event) {
-            var file = document.getElementById("fileupload").files[0];
+        document.getElementById(idElement).onchange = function (event) {
+            var file = document.getElementById(idElement).files[0];
             if (file) {
                 delivery.send(file);
             }
         };
-
         }, function(fileID) {
             //TODO user confirmation
         });
@@ -47,16 +46,28 @@ var ChatViewModel = (function() {
     };
 
     ChatViewModel.prototype.initChatNotifs = function(roomIDs, ChatInfo, SocketView) {
+        console.log(roomIDs);
         var inf = new ChatInfo(new SocketView(null, '/notifications'), roomIDs, this._userid);
+        var roomObj = {};
+        for (var i = 0, l = roomIDs.length; i < l; i++) {
+            roomObj[roomIDs[i].id] = roomIDs[i];
+        }
         inf.listenForNotifications(function(data) {
             var notif = $('#'+data.roomID + ' .badge');
+            var oldNum = $('.chat-notif.total_notifs').text();
+            if(roomObj[data.roomID].num_notifications === 0) {
+                $('.total_notifs').text(parseInt(oldNum) + 1);
+            }
             //previously seessionStorage
             if(data.userid !== sessionStorage.getItem('userid')) {
                 notif.text(inf.incrementGetNotif(data.roomID));
+                notif.show();
             }
             else {
                 inf.resetGetNotif(data.roomID);
-                notif.text(""); 
+                oldNum = $('.chat-notif.total_notifs').text();
+                $('.total_notifs').text(parseInt(oldNum) - 1);
+                notif.hide();
             }
         });
     };

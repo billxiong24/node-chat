@@ -57,21 +57,21 @@ function displayLines(chatList, handlebars, lines, display) {
     var reached = false;
 
     $(document).ready(function() {
-        document.getElementById('fileupload').onchange = function (event) {
-            var file = document.getElementById("fileupload").files[0];
-            if (file) {
-                var reader = new FileReader();
-                reader.addEventListener('load', function() {
+        //document.getElementById('fileupload').onchange = function (event) {
+            //var file = document.getElementById("fileupload").files[0];
+            //if (file) {
+                //var reader = new FileReader();
+                //reader.addEventListener('load', function() {
 
-                    $("test").attr('src', reader.result);
-                });
-                reader.onerror = function (evt) {
-                    console.log("error");
-                };
+                    //$("test").attr('src', reader.result);
+                //});
+                //reader.onerror = function (evt) {
+                    //console.log("error");
+                //};
 
-                reader.readAsDataUrl(file);
-            }
-        };
+                //reader.readAsDataUrl(file);
+            //}
+        //};
         var csrfTokenObj = {
             _csrf: $('input[name=_csrf]').val()
         };
@@ -180,7 +180,7 @@ function setup(roomID) {
     cvm.initTyping(TypingView, SocketView);
     cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView, LetterAvatar);
     cvm.initVoting(SocketView, VotingView);
-    cvm.addFileHandler(SocketView, FileView);
+    cvm.addFileHandler(SocketView, FileView, 'fileupload');
     
     cvm.addStatsHandler($('#stats'), parseID(window.location.pathname), function(data) {
         var html = handlebars.templates.user_stat();

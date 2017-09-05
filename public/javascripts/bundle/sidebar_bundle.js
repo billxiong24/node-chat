@@ -44,350 +44,111 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	//WHEN Handlebars IS LOADED BY REQUIRE.JS, Handlebars.templates, which loads
-	//precompiled templates, is undefined, so have to use this global variable for now.
-	//No idea why thsi happens
-	//make sure to use handlebars 4.0.10 for both global and local binary
-	const handlebars = Handlebars;
-	__webpack_require__(1)(Handlebars);
-	var LetterAvatar = __webpack_require__(2);
-	var chatAjaxService = __webpack_require__(3);
-	var OnlineView = __webpack_require__(4);
-	var LineView = __webpack_require__(6);
-
 	var SocketView = __webpack_require__(7);
-	var ChatInfo= __webpack_require__(9);
-	var TypingView = __webpack_require__(10);
+	var ChatViewModel = __webpack_require__(16);
 	var FileView = __webpack_require__(11);
-
-	var NotifView = __webpack_require__(13);
-	var ChatView = __webpack_require__(14);
+	var chatAjaxService = __webpack_require__(3);
 	var ChatViewModel = __webpack_require__(16);
 
-	var DirectChatView = __webpack_require__(17);
-	var OnlineViewModel = __webpack_require__(15);
-	var VotingView = __webpack_require__(18);
-
-	function parseID(url) {
-	    var str = url;
-	    if(str.charAt(str.length - 1) === '/') {
-	        str = str.substring(0, str.length - 1);
-	    }
-
-	    return str.split("/")[2];
-	}
-
-	function cutSlash(url) {
-	    var str = url;
-	    if(str.charAt(str.length - 1) === '/') {
-	        return str.substring(0, str.length - 1);
-	    }
-	    return str;
-	}
-
-	function displayLines(chatList, handlebars, lines, display) {
-	    for(var i = 0; i < lines.length; i++) {
-	        var html, template;
-	        if(lines[i].direction === "right") {
-	            template = handlebars.templates.message_template(lines[i]);
-	        }
-	        else {
-	            template = handlebars.templates.message_response_template(lines[i]);
-	        }
-	        display(template);
-	    }
-	}
-
-	//XXX this is code is garbage and im sorry to anyone who has to read this 
-	(function() {
-	    var reached = false;
-
+	(function init(username) {
 	    $(document).ready(function() {
-	        //document.getElementById('fileupload').onchange = function (event) {
-	            //var file = document.getElementById("fileupload").files[0];
-	            //if (file) {
-	                //var reader = new FileReader();
-	                //reader.addEventListener('load', function() {
-
-	                    //$("test").attr('src', reader.result);
-	                //});
-	                //reader.onerror = function (evt) {
-	                    //console.log("error");
-	                //};
-
-	                //reader.readAsDataUrl(file);
-	            //}
-	        //};
 	        var csrfTokenObj = {
 	            _csrf: $('input[name=_csrf]').val()
 	        };
-	        var roomID = parseID(window.location.pathname);
-	        initializeData(roomID, csrfTokenObj);
-	    });
 
-	    function initializeData(roomID, csrfTokenObj) {
-	        reached = true;
-	        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'GET', null, function(data) {
-	            $('.chat-header').remove();
-	            $('.chat').prepend(handlebars.templates.chatinfo(data));
-	            //zombie cookie
-	            if(!sessionStorage.getItem('userid')) {
-	                console.log("userid not set");
-	                chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
-	                .then(function(data) {
-	                    console.log("fetch_home post success");
-	                    Cookies.set('userid', data.cookie);
-	                    sessionStorage.setItem('userid', data.cookie);
-	                })
-	                .then(function(data) {
-	                    return ajaxRenderLines(chatAjaxService, csrfTokenObj);
-
-	                }).then(function(data) {
-	                    console.log("initLines post successful");
-	                    renderLinesCB(data);
-	                    setup(roomID);
-	                });
-	            }
-	            else {
-	                ajaxRenderLines(chatAjaxService, csrfTokenObj).then(function(data) {
-	                    renderLinesCB(data);
-	                    setup(roomID);
-	                });
-	            }
-	            setUpEvents(chatAjaxService, roomID, csrfTokenObj);
-	        });
-
-	    }
-
-	})();
-
-	function setUpEvents(chatAjaxService, roomID, csrfTokenObj) {
-	    $('.remove-user').submit(function(evt) {
-	        evt.preventDefault();
-	        var chat_id = $(this).parent().attr('id');
-
-	        var postObj = {
-	            _csrf: csrfTokenObj._csrf,
-	            chatID: chat_id 
-	        };
-	        chatAjaxService.chatAjax('/chats/remove_user', 'POST', JSON.stringify(postObj), 
-	            function(data) {
-	                $('#' + chat_id).remove();
-	                if(parseID(window.location.pathname) === chat_id) {
-	                    window.location.replace('/home');
-	                }
-	        });
-	    });
-
-	    $('.chat-history-group').scroll(function() {
-	        if($(this).scrollTop() !== 0) { return; }
-
-	        var firstMessage = $('.message-data:first');
-	        var curScroll = firstMessage.offset().top - $(document).scrollTop();
-	        chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/loadLines', 'GET', null, 
-	            function(data) {
-	                console.log(data);
-	                if(data.lines === null) {return;}
-
-	                var chat = $('.chat-history-group');
-	                var chatList = chat.find('ul');
-
-	                //we want to prepend to beginning of list, since scrolling up
-	                displayLines(chatList, handlebars, data.lines, function(line) {
-	                    chatList.prepend(line);
-	                });
-
-	                //TODO dont hardcode this, okay for now
-	                LetterAvatar.transform();
-	                chat.scrollTop(firstMessage.offset().top - curScroll);
-	        });
-	    });
-	}
-
-	function ajaxRenderLines(chatAjaxService, csrfTokenObj) {
-	    return chatAjaxService.chatAjaxPromise(cutSlash(window.location.pathname)+'/initLines', 'GET', null);
-	}
-
-	function renderLinesCB(data) {
-	    var chat = $('.chat-history-group');
-	    var chatList = chat.find('ul');
-	    displayLines(chatList, handlebars, data.lines, function(line) {
-	        chatList.append(line);
-	    });
-	    chat.scrollTop(chat[0].scrollHeight);
-	}
-
-	function setup(roomID) {
-	    LetterAvatar.transform();
-	    var userid = sessionStorage.getItem('userid');
-
-	    var cvm = new ChatViewModel(userid, roomID, handlebars);
-	    cvm.initChatNotifs(roomIDs, ChatInfo, SocketView);
-	    cvm.initTyping(TypingView, SocketView);
-	    cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView, LetterAvatar);
-	    cvm.initVoting(SocketView, VotingView);
-	    cvm.addFileHandler(SocketView, FileView, 'fileupload');
-	    
-	    cvm.addStatsHandler($('#stats'), parseID(window.location.pathname), function(data) {
-	        var html = handlebars.templates.user_stat();
-	        var counts = [];
-	        var votes = [];
-	        var sum = 0;
-	        Object.keys(data.counts).forEach(function(element) {
-	            counts.push({
-	                label: element, 
-	                value: data.counts[element]
+	        $('#logout-link').click(function(event) {
+	            event.preventDefault();
+	            chatAjaxService.chatAjaxPromise('/logout', 'POST', JSON.stringify(csrfTokenObj))
+	            .then(function(data) {
+	                window.location.replace('/login');
 	            });
 	        });
 
-	        Object.keys(data.result).forEach(function(element) {
-	            if(!data.result[element]) {
+	        if(!sessionStorage.getItem('userid')) {
+	            chatAjaxService.chatAjaxPromise('/home/fetch_home', 'POST', JSON.stringify(csrfTokenObj))
+	            .then(function(data) {
+	                Cookies.set('userid', data.cookie);
+	                sessionStorage.setItem('userid', data.cookie);
+	            })
+	            .then(function(data) {
+	                cvm = new ChatViewModel(sessionStorage.getItem('userid'), null, null);
+	                cvm.addFileHandler(SocketView, FileView, 'prof-pic');
+	            });
+	        }
+	        else {
+	            cvm = new ChatViewModel(sessionStorage.getItem('userid'), null, null);
+	            cvm.addFileHandler(SocketView, FileView, 'fileupload', 'prof-pic');
+	        }
+
+	        $('#change-picture').click(function(event) {
+	            event.preventDefault();
+	            $('#fileupload').click(function() {
+	            event.stopPropagation();
+	            });
+	            return false;
+	        });
+
+
+	        var oldFirst = $('input[name=first]').val();
+	        var oldLast = $('input[name=last]').val();
+	        var oldEmail = $('input[name=email]').val();
+	        $('.close-button').click(function(event) {
+	            $('input[name=first]').val(oldFirst);
+	            $('input[name=last]').val(oldLast);
+	            $('input[name=email]').val(oldEmail);
+	            $('input[name=old_password]').val("");
+	            $('input[name=new_password]').val("");
+	            $('input[name=confirm_password]').val("");
+	        });
+	        $('.validate').submit(function(event) {
+	            event.preventDefault();
+	            var obj = {
+	                first:$('input[name=first]').val(),
+	                last: $('input[name=last]').val(),
+	                email: $('input[name=email]').val(),
+	                _csrf: $('input[name=_csrf]').val()
+	            };
+	            chatAjaxService.chatAjax('/users/'+username+'/updatedInfo', 'PUT', JSON.stringify(obj),function(data) {
+	                //TODO update result in UI
+	                console.log("updated");
+	            });
+	        });
+
+	        $('.password-submit').submit(function(event) {
+	            //TODO update errors in UI, too lazy
+	            event.preventDefault();
+	            var obj = {
+	                old_password:$('input[name=old_password]').val(),
+	                new_password:$('input[name=new_password]').val(),
+	                _csrf: $('input[name=_csrf]').val()
+	            };
+	            
+	            if(obj.new_password.length < 6) {
+	                console.log("must be more than 6");
 	                return;
 	            }
 
-	            votes.push({
-	                label: element,
-	                value: data.result[element]
+	            if(obj.new_password !== $('input[name=confirm_password]').val()) {
+	                console.log("doesnt match");
+	                return;
+	            }
+
+	            chatAjaxService.chatAjax('/users/'+username+'/updatedPassword', 'PUT', JSON.stringify(obj), function(data) {
+	                if(data.changed) {
+	                    //update ui
+	                    return;
+	                }
 	            });
 	        });
-	        $('#members').html(html);
-				Morris.Donut({
-					element: 'chart5',
-	                data: votes,
-					labelColor: '#303641',
-					colors: ['#f26c4f', '#00a651', '#00bff3', '#0072bc']
-				});
-				Morris.Donut({
-					element: 'chart6',
-	                data: counts,
-					labelColor: '#303641',
-					colors: ['#f26c4f', '#00a651', '#00bff3', '#0072bc']
-				});
+
 	    });
-	}
+
+	})(username);
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-	function setHelpers(Handlebars) {
-	    Handlebars.registerHelper('if_eq', function(a, b, opts) {
-	        if (a == b) {
-	            return opts.fn(this);
-	        } else {
-	            return opts.inverse(this);
-	        }
-	    });
-	    Handlebars.registerHelper('firstLetter', function(str) {
-	        var theString = str.substring(0, 2);
-	        return new Handlebars.SafeString(theString);
-	    });
-	}
-
-	setHelpers(Handlebars);
-
-	module.exports = setHelpers;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*
-	     * LetterAvatar
-	     * 
-	     * Artur Heinze
-	     * Create Letter avatar based on Initials
-	     * based on https://gist.github.com/leecrossley/6027780
-	     */
-	    (function(w, d){
-
-	        function LetterAvatar (name, size) {
-
-	            name  = name || '';
-	            size  = size || 60;
-
-	            var colours = [
-	                    "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", 
-	                    "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"
-	                ],
-
-	                nameSplit = String(name).split(' '),
-	                initials, charIndex, colourIndex, canvas, context, dataURI;
-
-
-	            if (nameSplit.length == 1) {
-	                initials = nameSplit[0] ? nameSplit[0].charAt(0):'?';
-	            } else {
-	                initials = nameSplit[0].charAt(0) + nameSplit[1].charAt(0);
-	            }
-	            //initials=name.substring(0, 4);
-
-	            if (w.devicePixelRatio) {
-	                size = (size * w.devicePixelRatio);
-	            }
-	                
-	            charIndex     = (initials == '?' ? 72 : initials.charCodeAt(0)) - 64;
-	            colourIndex   = charIndex % (colours.length + 1);
-	            canvas        = d.createElement('canvas');
-	            canvas.width  = size;
-	            canvas.height = size;
-	            context       = canvas.getContext("2d");
-	             
-	            context.fillStyle = colours[colourIndex - 1];
-	            context.fillRect (0, 0, canvas.width, canvas.height);
-	            context.font = Math.round(canvas.width/2.5)+"px Arial";
-	            context.textAlign = "center";
-	            context.fillStyle = "#FFF";
-	            context.fillText(initials, size / 2, size / 1.6);
-
-	            dataURI = canvas.toDataURL();
-	            canvas  = null;
-
-	            return dataURI;
-	        }
-
-	        LetterAvatar.transform = function() {
-
-	            Array.prototype.forEach.call(d.querySelectorAll('img[avatar]'), function(img, name) {
-	                name = img.getAttribute('avatar');
-	                img.src = LetterAvatar(name, img.getAttribute('width'));
-	                img.removeAttribute('avatar');
-	                img.setAttribute('alt', name);
-	            });
-	        };
-
-
-	        // AMD support
-	        if (true) {
-	            
-	            !(__WEBPACK_AMD_DEFINE_RESULT__ = function () { return LetterAvatar; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	        
-	        // CommonJS and Node.js module support.
-	        } else if (typeof exports !== 'undefined') {
-	            
-	            // Support Node.js specific `module.exports` (which can be a function)
-	            if (typeof module != 'undefined' && module.exports) {
-	                exports = module.exports = LetterAvatar;
-	            }
-
-	            // But always support CommonJS module 1.1.1 spec (`exports` cannot be a function)
-	            exports.LetterAvatar = LetterAvatar;
-
-	        } else {
-	            
-	            window.LetterAvatar = LetterAvatar;
-
-	            d.addEventListener('DOMContentLoaded', function(event) {
-	                LetterAvatar.transform();
-	            });
-	        }
-
-	    })(window, document);
-
-
-/***/ }),
+/* 1 */,
+/* 2 */,
 /* 3 */
 /***/ (function(module, exports) {
 
@@ -434,103 +195,9 @@
 
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var ViewRender = __webpack_require__(5);
-	var OnlineView = (function() {
-	    function OnlineView(username, userid) {
-	        ViewRender.call(this, username);
-	        this._userid = userid;
-	    }
-
-	    OnlineView.prototype = Object.create(ViewRender.prototype);
-	    OnlineView.prototype.constructor = OnlineView;
-
-	    OnlineView.prototype.toJSON = function() {
-	        return {
-	            username: this.getUsername(),
-	            userid: this._userid
-	        };
-	    };
-
-	    return OnlineView;
-	})();
-	module.exports = OnlineView;
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-	var ViewRender = (function() {
-	    var ViewRender = function(username) {
-	        this._username = username;
-	    };
-
-	    ViewRender.prototype.renderTemplate = function(handlebars, partialObj) {
-	        return handlebars.templates[partialObj](this.toJSON());
-	    };
-
-	    ViewRender.prototype.getUsername = function() {
-	        return this._username;
-	    };
-	    //this method should be overriden
-	    ViewRender.prototype.toJSON = function() {
-	        return {}; 
-	    };
-
-	    return ViewRender;
-	})();
-	module.exports = ViewRender;
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var ViewRender = __webpack_require__(5);
-	var LineView = (function() {
-	    function LineView(jsonObj) {
-	        ViewRender.call(this, jsonObj.viewUsername);
-
-	        this._first = jsonObj.first;
-	        this._last = jsonObj.last;
-	        this._jsonObj = jsonObj;
-	        this._dir = jsonObj.direction;
-	        this._time = jsonObj.viewStamp;
-	        this._active = jsonObj.active;
-	        //this._username = username;
-	        this._message = jsonObj.message;
-	        this._line_id = jsonObj.line_id;
-	    }
-
-	    LineView.prototype = Object.create(ViewRender.prototype);
-	    LineView.prototype.constructor = LineView;
-
-	    //override
-	    LineView.prototype.toJSON = function() {
-	        return this._jsonObj;
-	    };
-
-	    LineView.prototype.getDirection = function() {
-	        return this._dir;
-	    };
-
-	    LineView.prototype.appendMessage = function(jqObj, message) {
-	        jqObj.append(message);
-	    };
-
-	    LineView.prototype.scrollDown = function(jqObj, scrollDistance) {
-	        jqObj.scrollTop(scrollDistance);
-	    };
-
-	    return LineView;
-	})();
-	module.exports = LineView;
-
-
-/***/ }),
+/* 4 */,
+/* 5 */,
+/* 6 */,
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -590,138 +257,8 @@
 	//# sourceMappingURL=socket.io.js.map
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var socketview = __webpack_require__(7);
-	var ChatInfo = (function() {
-
-	    function ChatInfo(socketview, roomInfo, userid) {
-	        this._client = socketview;
-	        this._userid = userid;
-
-	        var _this = this;
-	        this._notifObj = initMap(roomInfo, function(val) {
-	            _this._client.joinTargetRoom(val.id);
-	        });
-	    }
-
-	    //private method...uses up a lot of memory?
-	    function initMap(roomInfo, func=function(room) {}) {
-	        var notifObj = {};
-	        $.each(roomInfo, function(ind, val) {
-	            notifObj[val.id] = val;
-	            func(val);
-	        }); 
-
-	        return notifObj;
-	    }
-
-	    ChatInfo.prototype.getNumNotifs = function(roomID) {
-	        return this._notifObj[roomID];
-	    };
-
-	    ChatInfo.prototype.incrementGetNotif = function(roomID) {
-	        return ++this._notifObj[roomID].num_notifications;
-	    };
-
-	    ChatInfo.prototype.resetGetNotif = function(roomID) {
-	        this._notifObj[roomID].num_notifications = 0;
-	        return 0;
-	    };
-
-	    ChatInfo.prototype.getUserID = function() {
-	        return this._userid;    
-	    };
-
-	    ChatInfo.prototype.listenForNotifications = function(handler) {
-	        this._client.addListener('notify', handler);
-	    };
-
-	    return ChatInfo;
-	})();
-	module.exports = ChatInfo;
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-	var TypingView = (function() {
-
-	    function TypingView(userid, socketview, isTyping=false, timer=null) {
-	        this._userid = userid;
-	        this._socketview = socketview;
-	        this._socketview.joinRoom();
-	        this._isTyping = isTyping; 
-	        this._timer = timer;
-	    }
-
-	    //ratchet as fuck, need to pass "this" as parameter because
-	    //of scoping issues with timer function
-	    function timeoutTyping(that) {
-	        return function() {
-	            that._isTyping = false;
-
-	            var isTyping = that._isTyping;
-	            var roomID = that._socketview.getRoomID();
-
-	            that._socketview.send('typing', {
-	                userid: that._userid, 
-	                roomID: roomID,
-	                isTyping: isTyping 
-	            });
-	        };
-	    }
-
-	    TypingView.prototype.listenForTyping = function() {
-
-	        this._socketview.addListener('typing', function(data) {
-	            var history = $('.chat-history-group');
-	            var userEl = history.find('ul');
-	            //var userEl = $('img[target='+data.userid+']');
-	            if(data.isTyping) {
-	                $('#typing').show();
-	                history.scrollTop(history[0].scrollHeight);
-	            }
-	            else {
-	                resetTyping(data.userid);
-	            }
-	        });
-	    };
-
-	    function resetTyping(userid) {
-	        $('#typing').hide();
-	    }
-
-	    TypingView.prototype.keyUpEvent = function(element, timerClearOut) {
-	        var that = this;
-	        element.keyup(function(event) {
-	            event.preventDefault();
-	            var code = event.which;
-	            if(code == 9 || code === 0) {
-	                console.log("dont want to trigger typing event with 0 and 9");
-	                return;
-	            }
-	            if(!that._isTyping && event.keyCode !== 13) {
-	                that._isTyping = true;
-	                that._socketview.send('typing', {
-	                    userid: that._userid,
-	                    roomID: that._socketview.getRoomID(),
-	                    isTyping: that._isTyping
-	                });
-	            }
-	            clearTimeout(that._timer);
-	            that._timer = setTimeout(timeoutTyping(that), timerClearOut);
-	        });
-	    };
-
-	    return TypingView;
-	})();
-	module.exports = TypingView;
-
-
-/***/ }),
+/* 9 */,
+/* 10 */,
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -955,323 +492,9 @@
 
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports) {
-
-	var NotifView = (function() {
-
-	    function NotifView(socketview, notifications=0) {
-	        this._socketview = socketview;
-	        this._notifications = notifications;
-	    }
-
-	    NotifView.prototype.getRoomID = function() {
-	        return this._socketview.getRoomID();    
-	    };
-	    NotifView.prototype.incrementNotif = function() {
-	        this._notifications++; 
-	    };
-
-	    NotifView.prototype.resetNotif = function() {
-	        this._notifications = 0;
-
-	    };
-
-	    NotifView.prototype.setNotif = function(notif) {
-	        this._notifications = notif; 
-	    };
-
-	    NotifView.prototype.getNotif = function() {
-	        return this._notifications; 
-	    };
-
-
-	    NotifView.prototype.cacheNotification = function(userid) {
-
-	        var notifications = this._notifications;
-	        var roomID = this._socketview.getRoomID();
-
-	        //this._socketview.send('cacheNotifications', {
-	        //userid: userid,
-	        //notif: notifications,
-	        //roomID: roomID
-	        //});
-	    };
-	    NotifView.prototype.sendNotification = function(userid) {
-	        this.resetNotif();
-	        var notifications = this._notifications;
-	        var roomID = this._socketview.getRoomID();
-
-	        this._socketview.send('notify', {
-	            userid: userid,
-	            notif: notifications,
-	            roomID: roomID
-	        });
-
-	    };
-
-	    function toJSON(that, userid) {
-	        return {
-	            userid: userid,
-	            notif: that._notifications,
-	            roomID: that._socketview.roomID()
-	        };
-	    }
-
-	    return NotifView;
-	})();
-	module.exports = NotifView;
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var LineView = __webpack_require__(6);
-	var OnlineView = __webpack_require__(15);
-
-	var ChatView = (function() {
-	    function ChatView(userid, socketview, notifview) {
-	        this._userid = userid;
-	        this._lastMessage = null;
-	        this._notifview = notifview;
-	        this._socketview = socketview;
-	        this._onlineview = new OnlineView(userid, socketview, notifview);
-	    }
-
-	    ChatView.prototype.init = function() {
-	        //TODO refactor joinRoom in chatview to a super class or something
-	        this._socketview.joinRoom();
-	        this._socketview.connect();
-	    };
-
-	    ChatView.prototype.getSocketView = function() {
-	        return this._socketview;
-	    };
-
-	    ChatView.prototype.getUsername = function() {
-	        return this._onlineview.getUsername();
-	    };
-
-	    ChatView.prototype.getConnectedSockets = function() {
-	        return this._onlineview.getConnectedSockets();
-	    };
-
-	    ChatView.prototype.getUserID = function() {
-	        return this._userid;
-	    };
-
-	    ChatView.prototype.initOnlineView = function(onlineList, numOnlineObj, renderList) {
-	        this._onlineview.listenForOnlineUsers(onlineList, numOnlineObj, renderList);
-	    };
-
-	    ChatView.prototype.setReceiveListener = function(displayLine) {
-	        var that = this;
-	        this._socketview.addListener('message', function(msg) {
-	            //holy shit this is bad- reset cookie if user deletes it lmao
-	            displayMessage.call(that, msg, that._userid, displayLine);
-	            //that._notifview.sendNotification(that._userid);
-	        });
-	    };
-
-	    ChatView.prototype.setDirectListener = function($textarea) {
-	        var that = this;
-	        $textarea.keydown(function(e) {
-	            if(e.keyCode == 13 && !e.shiftKey) {
-	                e.preventDefault();
-	                neonChat.submitMessage(that._socketview, that._onlineview.getConnectedSockets(), that._onlineview.getUsername(), that._userid);
-	                return false;
-	            }
-	            else if(e.keyCode == 27) {
-	                neonChat.close();
-	            }
-	        });
-	    };
-
-	    ChatView.prototype.setSubmitListener = function(textareaObj, submitForm) {
-	        var that = this;
-	        var textobj = textareaObj;
-	        submitForm.submit(function(event) {
-	            var message = textobj.val().trim();
-	            textobj.val('');
-	            if(message.length > 0) {
-	                that._socketview.send('message', message);
-	                that._notifview.sendNotification(that._userid);
-	            }
-
-	            return false;
-	        });
-	        textobj.keyup(function(event) {
-	            var message = textobj.val();
-	            if(event.keyCode == 13) {
-	                submitForm.submit();
-	            }
-	        });
-	    };
-
-	    //this message is cancerous
-	    function displayMessage(msg, userid, displayLine) {
-	        if(msg.message.length === 0) {
-	            return;
-	        }
-	        //var numMessages = $('.numMessages');
-	        var time = "";
-	        var dir;
-	        var active;
-
-	        if(msg.cookie === userid){
-	            dir = "right";
-	            active = "active";
-	        }
-	        else {
-	            dir = "left";
-	            active = "";
-	            this._notifview.incrementNotif();
-	        }
-
-	        var viewUsername = (!this._lastMessage || this._lastMessage !== msg.cookie) ? msg.username : "";
-	        var viewStamp = "";
-
-
-	        lineViewObj = new LineView({
-	            direction: dir,
-	            //TODO fix dis timestamp
-	            viewStamp: "",
-	            viewUsername:  viewUsername, 
-	            active: active,
-	            message: msg.message,
-	            line_id: msg.line_id,
-	            first: msg.first,
-	            last: msg.last
-	        });
-
-	        //numMessages.text(this._notifview.getNotif());
-	        //that._notifview.cacheNotification(userid);
-
-	        var message = displayLine(lineViewObj);
-	        this._lastMessage = msg.cookie;
-	    }
-
-	    return ChatView;
-	})();
-	module.exports = ChatView;
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports) {
-
-	var OnlineView = (function(socketview, notifview) {
-	    function OnlineView(userid, socketview, notifview) {
-	        this._userid = userid;
-	        this._notifview = notifview;
-	        this._socketview = socketview;
-	        this._userSockets = {};
-	        this._connectedSockets = {};
-
-	        //to be determined
-	        this._username = "";
-	        this._nativeSocketID = null;
-	        this._socketID = generateID(); 
-	        this._ownSocketIDs = {};
-	        this._ownSocketIDs[this._socketID] = null;
-
-	    }
-
-	    OnlineView.prototype.getConnectedSockets = function() {
-	        return this._connectedSockets;    
-	    };
-
-	    OnlineView.prototype.getUsername = function() {
-	        return this._username;    
-	    };
-
-	    OnlineView.prototype.listenForOnlineUsers = function(onlineList, numOnlineObj, renderList) {
-	        var that = this;
-
-	        //TODO numMessages should be extracted from here
-	        var numMessages = $('.numMessages');
-	        this._socketview.addListener('online', function(data) {
-	            //its my specific socket
-	            if(data.user.id === that._userid && that._socketID === data.socketID) {
-	                //if i connect, and new term is > -1, then another tab is connected
-	                that._nativeSocketID = data.nativeSocketID;
-	                that._username = data.user.username;
-	                console.log("set native socket id ", that._nativeSocketID);
-	            }
-
-	            if(!(data.user.id in that._userSockets)) {
-	                //TODO clean this up
-	                that._connectedSockets[data.user.id] = data.nativeSocketID;
-	                console.log(that._connectedSockets);
-
-	                that._userSockets[data.user.id] = 1;
-	                onlineList.append(renderList(data.user.username, data.user.id));
-	                updateNumOnlineUsers(Object.keys(that._userSockets).length, numOnlineObj);
-	                //this._notifview.getNotif will have been set in "connected" event
-	                //numMessages.text(that._notifview.getNotif());
-	            }
-	            if(!(data.socketID in that._ownSocketIDs)){ //some other tab has opened
-	                that._ownSocketIDs[data.socketID] = null;
-	                that._userSockets[data.user.id]++;
-	            }
-
-	            //how many of same users are in the same chat
-	            console.log("own uesrs ", that._userSockets[data.user.id]);
-	        });
-
-	        this._socketview.addListener('connected', function(data) {
-	            //if the socket response is you and not some other guy
-	            if(that._userid === data.user.id) {
-	                that._notifview.setNotif(data.notifs);
-	            }
-	            var term = (data.user.id in that._userSockets) ? that._userSockets[data.user.id] : -1;
-	            that._socketview.send('online', {
-	                socketID: that._socketID,
-	                term: term
-	            });
-	        }); 
-
-	        this._socketview.addListener('disconnected', function(data) {
-	            console.log("disconnecting, ", that._nativeSocketID, data.socketID);
-	            //FIXME sometimes socket drops connection for whatever fukcing reason
-	            if(!data.user) {
-	                console.log("error with data.user.id");
-	                console.log(data);
-	                return;
-	            }
-	            if(data.user.id in that._userSockets && that._socketID !== data.socketID) { 
-	                that._userSockets[data.user.id]--;
-	                console.log("own usersin loop: ", that._userSockets[data.user.id]);
-	                if(that._userSockets[data.user.id] === 0) {
-	                    delete that._userSockets[data.user.id];
-	                    $('#'+data.user.id).remove();
-	                }
-	            }
-	            console.log("own users: ", that._userSockets[data.user.id]);
-	            updateNumOnlineUsers(Object.keys(that._userSockets).length, numOnlineObj);
-	        });
-	    };
-
-	    function updateNumOnlineUsers(num, numOnlineObj) {
-	        numOnlineObj.text(num);
-	    }
-
-	    function generateID() {
-	        var time = new Date().getTime();
-	        return 'xxxyxyxyxyxyyyx4xxxyxxyyyxxyxyxx'.replace(/[xy]/g, function(match) {
-	            var r = (time + Math.random()*16)%16 | 0;
-	            time = Math.floor(time/16);
-	            return (match == 'x' ? r : (r&0x3|0x8)).toString(32);
-	        });
-	    }
-
-	    return OnlineView;
-	})();
-	module.exports = OnlineView;
-
-
-/***/ }),
+/* 13 */,
+/* 14 */,
+/* 15 */,
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1434,77 +657,6 @@
 	    return ChatViewModel;
 	})();
 	module.exports = ChatViewModel;
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var ChatView = __webpack_require__(14);
-	var DirectChatView = (function() {
-	    function DirectChatView(userid, socketview, notifview) {
-	        ChatView.call(this, userid, socketview, notifview);
-	    }
-
-	    DirectChatView.prototype = Object.create(ChatView.prototype);
-	    DirectChatView.prototype.constructor = DirectChatView;
-
-	    DirectChatView.prototype.listenForDM = function() {
-	        this.getSocketView().addListener('direct_message', function(data) {
-	            var msg = data.message;
-	            neonChat.pushMessage(data.senderID, msg.replace( /<.*?>/g, '' ), data.username, new Date(), true, true);
-	            if($('#'+data.senderID).hasClass('active')) {
-	                neonChat.renderMessages(data.senderID);
-	            }
-	            $('#'+data.senderID).children('.badge').remove();
-	            $('#'+data.senderID).append("<span class='badge badge-info badge-roundless'>New messages</span>");
-	        });
-	    };
-
-	    return DirectChatView;
-	})();
-	module.exports = DirectChatView;
-
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports) {
-
-	var VotingView = (function() {
-
-	    function VotingView(userid, socketview) {
-	        this._userid = userid;
-	        this._socketview = socketview;
-	        //TODO refactor joinRoom in voteview to a super class or something
-	        this._socketview.joinRoom();
-	    }
-
-	    VotingView.prototype.setReceiveListener = function(displayVote) {
-	        this._socketview.addListener('vote', function(data) {
-	            displayVote(data);
-	        });
-	    };
-
-	    VotingView.prototype.setSubmitListener = function(voteElement, selector) {
-	        var that = this;
-	        console.log(selector);
-
-	        voteElement.on('click', selector, function(event) {
-	            //FIXME this is ratchet as fuck omg
-	            var line_id = $(event.target).closest('.voting').attr('lineid');
-	            console.log(line_id + " voting with lineid");
-	            event.preventDefault();
-
-	            that._socketview.send('vote', {
-	                userid: that._userid,
-	                line_id: line_id
-	            });
-	        });
-	    };
-
-	    return VotingView;
-	})();
-	module.exports = VotingView;
 
 
 /***/ })

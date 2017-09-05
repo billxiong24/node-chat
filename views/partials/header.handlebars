@@ -163,7 +163,6 @@
 
             <!-- Message Notifications -->
             <li class="notifications dropdown">
-
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                     <i class="entypo-mail"></i>
                     <span class="badge badge-secondary">10</span>
@@ -407,12 +406,12 @@
                     </a>-->
                 </li>
 
-                <li>
-                    <form method="post" action="/logout">
-                        <input name="logout" type="submit" class="btn small-buttons" value="Log out"/>
-                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-                    </form>
-                </li>
+                {{!-- <li> --}}
+                    {{!-- <form method="post" action="/logout"> --}}
+                        {{!-- <input name="logout" type="submit" class="btn small-buttons" value="Log out"/> --}}
+                        {{!-- <input type="hidden" name="_csrf" value="{{csrfToken}}" /> --}}
+                    {{!-- </form> --}}
+                {{!-- </li> --}}
         </ul>
 
     </div>
