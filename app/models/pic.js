@@ -1,6 +1,7 @@
 require('dotenv').config({page: __dirname + '/../../.env'});
 var logger = require('../../util/logger.js')(module);
 var AWS = require('aws-sdk');
+var connection = require('../database/config.js');
 //add promise support to aws-sdk functions
 AWS.config.setPromisesDependency(require('bluebird'));
 
@@ -27,10 +28,10 @@ Pic.prototype.savePic = function(id, file_name, file_buffer) {
         ACL: 'public-read',
         Body: file_buffer
     };
-    return this._s3.upload(params).promise();
-    //prom.then(function(data) {
-        //logger.info(data);
-    //});
+    var that = this;
+    return this._s3.upload(params).promise().then(function(data) {
+        return connection.executePromise('UPDATE User WHERE username=? SET profile_url=?', [id, that.getURL(params.Key)]);
+    });
 };
 
 Pic.prototype.loadPic = function(id) {

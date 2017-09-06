@@ -2,25 +2,26 @@
 | Filename | line # | TODO
 |:------|:------:|:------
 | gulpfile.js | 25 | precompile handlebars,
-| routes/index.js | 69 | test this extensively
-| routes/index.js | 71 | set confirmed to true in both cache and database
-| routes/index.js | 75 | render some error page
+| routes/index.js | 70 | test this extensively
+| routes/index.js | 72 | set confirmed to true in both cache and database
+| routes/index.js | 76 | render some error page
 | test/models.js | 31 | create testing database environment
 | test/models.js | 45 | check cache to see exists
 | test/models.js | 65 | check cache to see exists
 | test/testfile.js | 103 | check for accuracy, too lazy rn
 | test/testfile.js | 128 | test 1 with memberof, and one without
-| app/authentication/user-pass.js | 39 | verify session token as well
-| app/authentication/user-pass.js | 181 | add stronger password checker
-| app/authentication/user-pass.js | 183 | less lazy error message lmao
+| app/authentication/user-pass.js | 41 | verify session token as well
+| app/authentication/user-pass.js | 185 | add stronger password checker
+| app/authentication/user-pass.js | 187 | less lazy error message lmao
 | app/cache/cache_store.js | 1 | Look into issue: Asynchronous AOF fsync is taking too long (disk is busy?). Writing the AOF buffer without
 | app/chat_functions/chat_manager.js | 13 | use async library to make things more asynchronous
 | app/chat_functions/chat_manager.js | 21 | error checking
-| app/chat_functions/chat_manager.js | 65 | error message
-| app/chat_functions/chat_manager.js | 89 | add error message here
-| app/chat_functions/chat_manager.js | 121 | Pass in callback here
+| app/chat_functions/chat_manager.js | 72 | error message
+| app/chat_functions/chat_manager.js | 96 | add error message here
+| app/chat_functions/chat_manager.js | 128 | Pass in callback here
+| app/chat_functions/pic_manager.js | 3 | store url in database feelsbad
 | app/database/config.js | 3 | need to consolidate release connections in connection.js
-| app/database/connection.js | 34 | release connection in one place
+| app/database/connection.js | 46 | release connection in one place
 | app/models/chat.js | 215 | need real error handling here
 | app/models/line_cache.js | 19 | maybe throw custom exception
 | app/models/line_cache.js | 28 | test this method, it most likely does not work
@@ -33,7 +34,7 @@
 | app/search/search_info_generate.js | 19 | generate index and types for user data
 | app/search/search_manager.js | 43 | error handle
 | app/search/search_manager.js | 49 | override in subclass
-| app/sockets/chatSocket.js | 92 | refactor back into above method, quick hack
+| app/sockets/chatSocket.js | 95 | refactor back into above method, quick hack
 | app/sockets/notifSocket.js | 22 | add this data to cache- contains {userid, notif, roomID}
 | app/sockets/voteSocket.js | 23 | fix check if user voted already
 | app/sockets/voteSocket.js | 35 | update vote value in redis if user did not vote yet
@@ -41,31 +42,43 @@
 | app/workers/process_queue.js | 100 | use reduce to take in an array of callbacks
 | microservices/chat/chat_service.js | 26 | error check for null
 | public/javascripts/chatViewModel.js | 1 | organize this using some frontend framework
-| public/javascripts/chat_render.js | 59 | organize ajax calls
-| public/javascripts/chat_render.js | 148 | dont hardcode this, okay for now
+| public/javascripts/chatViewModel.js | 40 | user confirmation
+| public/javascripts/chat_render.js | 136 | dont hardcode this, okay for now
 | public/javascripts/settings.js | 1 | need a password util to validate password
-| public/javascripts/settings.js | 14 | update result in UI
-| public/javascripts/settings.js | 20 | update errors in UI, too lazy
+| public/javascripts/settings.js | 39 | update result in UI
+| public/javascripts/settings.js | 45 | update errors in UI, too lazy
 | routes/chats/chats.js | 103 | include error message to pass to view
 | routes/chats/chats.js | 134 | find a way to test this, since we are resetting members every time in the test
 | routes/chats/chats.js | 149 | include error message to pass to view
 | routes/chats/chats.js | 226 | use microservice
-| public/javascripts/bundle/chat_bundle.js | 105 | organize ajax calls
-| public/javascripts/bundle/chat_bundle.js | 194 | dont hardcode this, okay for now
-| public/javascripts/bundle/chat_bundle.js | 639 | refactor joinRoom in chatview to a super class or something
-| public/javascripts/bundle/chat_bundle.js | 734 | fix dis timestamp
-| public/javascripts/bundle/chat_bundle.js | 786 | numMessages should be extracted from here
-| public/javascripts/bundle/chat_bundle.js | 798 | clean this up
-| public/javascripts/bundle/chat_bundle.js | 872 | organize this using some frontend framework
-| public/javascripts/bundle/chat_bundle.js | 1024 | refactor joinRoom in voteview to a super class or something
-| public/javascripts/bundle/home_bundle.js | 68 | set up other important information, such as chat lists
-| public/javascripts/bundle/home_bundle.js | 85 | ajax call to server
-| public/javascripts/bundle/home_bundle.js | 99 | some success here
-| public/javascripts/bundle/home_bundle.js | 314 | organize this using some frontend framework
+| public/javascripts/bundle/chat_bundle.js | 182 | dont hardcode this, okay for now
+| public/javascripts/bundle/chat_bundle.js | 943 | server
+| public/javascripts/bundle/chat_bundle.js | 1036 | refactor joinRoom in chatview to a super class or something
+| public/javascripts/bundle/chat_bundle.js | 1131 | fix dis timestamp
+| public/javascripts/bundle/chat_bundle.js | 1186 | numMessages should be extracted from here
+| public/javascripts/bundle/chat_bundle.js | 1198 | clean this up
+| public/javascripts/bundle/chat_bundle.js | 1272 | organize this using some frontend framework
+| public/javascripts/bundle/chat_bundle.js | 1311 | user confirmation
+| public/javascripts/bundle/chat_bundle.js | 1480 | refactor joinRoom in voteview to a super class or something
+| public/javascripts/bundle/home_bundle.js | 69 | set up other important information, such as chat lists
+| public/javascripts/bundle/home_bundle.js | 87 | ajax call to server
+| public/javascripts/bundle/home_bundle.js | 101 | some success here
+| public/javascripts/bundle/home_bundle.js | 432 | organize this using some frontend framework
+| public/javascripts/bundle/home_bundle.js | 471 | user confirmation
 | public/javascripts/bundle/settings_bundle.js | 47 | need a password util to validate password
-| public/javascripts/bundle/settings_bundle.js | 60 | update result in UI
-| public/javascripts/bundle/settings_bundle.js | 66 | update errors in UI, too lazy
+| public/javascripts/bundle/settings_bundle.js | 85 | update result in UI
+| public/javascripts/bundle/settings_bundle.js | 91 | update errors in UI, too lazy
+| public/javascripts/bundle/settings_bundle.js | 564 | server
+| public/javascripts/bundle/settings_bundle.js | 578 | organize this using some frontend framework
+| public/javascripts/bundle/settings_bundle.js | 617 | user confirmation
+| public/javascripts/bundle/sidebar_bundle.js | 131 | update result in UI
+| public/javascripts/bundle/sidebar_bundle.js | 137 | update errors in UI, too lazy
+| public/javascripts/bundle/sidebar_bundle.js | 613 | server
+| public/javascripts/bundle/sidebar_bundle.js | 627 | organize this using some frontend framework
+| public/javascripts/bundle/sidebar_bundle.js | 666 | user confirmation
 | public/javascripts/bundle/signup_success_bundle.js | 57 | update the view here
+| public/javascripts/helpers/commonAjax.js | 85 | update result in UI
+| public/javascripts/helpers/commonAjax.js | 91 | update errors in UI, too lazy
 | public/javascripts/viewmodel/chatview.js | 14 | refactor joinRoom in chatview to a super class or something
 | public/javascripts/viewmodel/chatview.js | 109 | fix dis timestamp
 | public/javascripts/viewmodel/onlineview.js | 29 | numMessages should be extracted from here
@@ -79,24 +92,26 @@
 ### FIXMEs
 | Filename | line # | FIXME
 |:------|:------:|:------
-| gulpfile.js | 127 | ({
-| gulpfile.js | 170 | local host password shouldnot be here, but o well
-| routes/index.js | 86 | check email verified middleware
+| gulpfile.js | 138 | ({
+| gulpfile.js | 181 | local host password shouldnot be here, but o well
+| routes/index.js | 87 | check email verified middleware
 | run/app.js | 138 | load testing does not work anymore because of csrf token
 | test/models.js | 223 | for some reason this test does not work well with others
 | test/testfile.js | 229 | should redirect home, but don't know how to tell if home is reached
 | app/models/line.js | 74 | duplicated code here but im too lazy
 | app/models/user_cache.js | 219 | assuming user in cache, since user has just logged in- risky but low chance of anything otherwise
-| app/models/user_manager.js | 22 | refactor this to use redis promises (bluebird)
-| app/sockets/chatSocket.js | 75 | violates open close principle
+| app/models/user_manager.js | 24 | refactor this to use redis promises (bluebird)
+| app/sockets/chatSocket.js | 78 | violates open close principle
 | app/workers/process_queue.js | 16 | accessing this from cache_store throws error- as usual, no idea why
-| public/javascripts/chatViewModel.js | 87 | quick hack, since no viewmodel currently holds votes
-| public/javascripts/bundle/chat_bundle.js | 831 | sometimes socket drops connection for whatever fukcing reason
-| public/javascripts/bundle/chat_bundle.js | 958 | quick hack, since no viewmodel currently holds votes
-| public/javascripts/bundle/chat_bundle.js | 1040 | this is ratchet as fuck omg
-| public/javascripts/bundle/home_bundle.js | 400 | quick hack, since no viewmodel currently holds votes
+| public/javascripts/chatViewModel.js | 143 | quick hack, since no viewmodel currently holds votes
+| public/javascripts/bundle/chat_bundle.js | 1231 | sometimes socket drops connection for whatever fukcing reason
+| public/javascripts/bundle/chat_bundle.js | 1414 | quick hack, since no viewmodel currently holds votes
+| public/javascripts/bundle/chat_bundle.js | 1495 | this is ratchet as fuck omg
+| public/javascripts/bundle/home_bundle.js | 574 | quick hack, since no viewmodel currently holds votes
+| public/javascripts/bundle/settings_bundle.js | 720 | quick hack, since no viewmodel currently holds votes
+| public/javascripts/bundle/sidebar_bundle.js | 769 | quick hack, since no viewmodel currently holds votes
 | public/javascripts/viewmodel/onlineview.js | 74 | sometimes socket drops connection for whatever fukcing reason
-| public/javascripts/viewmodel/votingview.js | 22 | this is ratchet as fuck omg
+| public/javascripts/viewmodel/votingview.js | 21 | this is ratchet as fuck omg
 | public/javascripts/socket.io-adapter/node_modules/debug/node.js | 181 | Should probably have an option in net.Socket to create a
 | public/javascripts/socket.io-adapter/node_modules/debug/node.js | 189 | Hack to have stream not keep the event loop alive.
 | public/javascripts/socket.io/node_modules/debug/src/node.js | 198 | Should probably have an option in net.Socket to create a
