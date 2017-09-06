@@ -74,6 +74,10 @@ UserManager.prototype.authenticate = function(password, loginResult) {
             return null;
         }
         //return sqlUser;
+        if(process.env.NODE_ENV === 'test') {
+            console.log("tesitng");
+            return sqlUser;
+        }
         return picManager.loadImage(sqlUser.username).then(function(data) {
             if(data && data.url && sqlUser) {
                 sqlUser.url = data.url;

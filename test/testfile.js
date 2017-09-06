@@ -311,7 +311,6 @@ describe('authentication routes', function() {
         password: 'jones'
     }, function(result) {
         result.body.should.have.property('login_error');
-        //console.log(result.body.login_error);
         expect(result.body.login_error).to.equal(false);
         expect(addToCacheSpy.calledOnce).to.equal(true);
     });
