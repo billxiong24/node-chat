@@ -10,10 +10,10 @@
 | test/models.js | 65 | check cache to see exists
 | test/testfile.js | 110 | check for accuracy, too lazy rn
 | test/testfile.js | 135 | test 1 with memberof, and one without
+| app/cache/cache_store.js | 1 | Look into issue: Asynchronous AOF fsync is taking too long (disk is busy?). Writing the AOF buffer without
 | app/authentication/user-pass.js | 41 | verify session token as well
 | app/authentication/user-pass.js | 185 | add stronger password checker
 | app/authentication/user-pass.js | 187 | less lazy error message lmao
-| app/cache/cache_store.js | 1 | Look into issue: Asynchronous AOF fsync is taking too long (disk is busy?). Writing the AOF buffer without
 | app/chat_functions/chat_manager.js | 13 | use async library to make things more asynchronous
 | app/chat_functions/chat_manager.js | 21 | error checking
 | app/chat_functions/chat_manager.js | 72 | error message

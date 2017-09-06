@@ -73,14 +73,12 @@ UserManager.prototype.authenticate = function(password, loginResult) {
         if(!sqlUser) {
             return null;
         }
-        //HACK "stub"
-        if(proess.env.NODE_ENV == 'test') {
-            return sqlUser;
-        }
+        //return sqlUser;
         return picManager.loadImage(sqlUser.username).then(function(data) {
             if(data && data.url && sqlUser) {
                 sqlUser.url = data.url;
             }
+            console.log(sqlUser);
             return sqlUser;
         });
     };
