@@ -73,13 +73,12 @@ UserManager.prototype.authenticate = function(password, loginResult) {
         if(!sqlUser) {
             return null;
         }
-        return sqlUser;
-        //return picManager.loadImage(sqlUser.username).then(function(data) {
-            //if(data && data.url && sqlUser) {
-                //sqlUser.url = data.url;
-            //}
-            //return sqlUser;
-        //});
+        return picManager.loadImage(sqlUser.username).then(function(data) {
+            if(data && data.url && sqlUser) {
+                sqlUser.url = data.url;
+            }
+            return sqlUser;
+        });
     };
     connection.executePoolTransaction([setConn, checkDB, validate, retrievePassword, loginValidate, retrievePic, loginResult], function(err) {logger.error(err);});
 };

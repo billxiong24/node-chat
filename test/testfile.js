@@ -314,7 +314,7 @@ describe('authentication routes', function() {
         expect(result.body.login_error).to.equal(false);
 
         expect(addToCacheSpy.calledOnce).to.equal(true);
-    });
+    }, 100000);
 
     authenticateTest('/POST should reject auth because password is wrong, user should be in cache', '/login', {
         username: 'jj45',
@@ -502,9 +502,12 @@ function signupTest(message, route, data, callback) {
     });
 }
 
-function authenticateTest(message, route, data, callback) {
+function authenticateTest(message, route, data, callback, timeout=null) {
     var obj = {};
     it(message, function(done) {
+        if(timeout) {
+            this.timeout(timeout);
+        }
         agent.get(route).then(function(result) {
             result.body.should.have.property('csrfToken');
             obj._csrf = result.body.csrfToken;
