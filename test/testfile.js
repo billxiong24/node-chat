@@ -51,10 +51,12 @@ beforeEach(function() {
             return next(); 
         });
 
-    //var loadImageStub = sinon.stub(PicManager.prototype, 'loadImage')
-    //.callsFake(function(id) {
-        //return {};
-    //});
+    var loadImageStub = sinon.stub(PicManager.prototype, 'loadImage')
+    .callsFake(function(id) {
+        return new Promise(function(resolve,reject) {
+            resolve({});
+        });
+    });
 
 
     //monitor that every db request releases its connection 
@@ -73,7 +75,7 @@ afterEach(function() {
     connection.release.restore();
     UserCache.prototype.addToCache.restore();
     UserCache.prototype.insert.restore();
-    //PicManager.prototype.loadImage.restore();
+    PicManager.prototype.loadImage.restore();
     //Chat.prototype.loadLists.restore();
 
 });

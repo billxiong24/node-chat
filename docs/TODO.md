@@ -8,8 +8,8 @@
 | test/models.js | 31 | create testing database environment
 | test/models.js | 45 | check cache to see exists
 | test/models.js | 65 | check cache to see exists
-| test/testfile.js | 110 | check for accuracy, too lazy rn
-| test/testfile.js | 135 | test 1 with memberof, and one without
+| test/testfile.js | 113 | check for accuracy, too lazy rn
+| test/testfile.js | 138 | test 1 with memberof, and one without
 | app/authentication/user-pass.js | 41 | verify session token as well
 | app/authentication/user-pass.js | 185 | add stronger password checker
 | app/authentication/user-pass.js | 187 | less lazy error message lmao
@@ -97,7 +97,7 @@
 | routes/index.js | 87 | check email verified middleware
 | run/app.js | 138 | load testing does not work anymore because of csrf token
 | test/models.js | 223 | for some reason this test does not work well with others
-| test/testfile.js | 236 | should redirect home, but don't know how to tell if home is reached
+| test/testfile.js | 239 | should redirect home, but don't know how to tell if home is reached
 | app/models/line.js | 74 | duplicated code here but im too lazy
 | app/models/user_cache.js | 219 | assuming user in cache, since user has just logged in- risky but low chance of anything otherwise
 | app/models/user_manager.js | 24 | refactor this to use redis promises (bluebird)
