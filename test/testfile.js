@@ -16,6 +16,7 @@ var loadLists;
 var addToCacheSpy;
 var userCacheInsertSpy;
 var UserCache = require('../app/models/user_cache.js');
+var PicManager = require('../app/chat_functions/pic_manager.js');
 
 var Chat = require('../app/models/chat.js');
 var connection = require('../app/database/config.js');
@@ -50,6 +51,11 @@ beforeEach(function() {
             return next(); 
         });
 
+    //var loadImageStub = sinon.stub(PicManager.prototype, 'loadImage')
+    //.callsFake(function(id) {
+        //return {};
+    //});
+
 
     //monitor that every db request releases its connection 
     releaseSpy = sinon.spy(connection, 'release');
@@ -67,6 +73,7 @@ afterEach(function() {
     connection.release.restore();
     UserCache.prototype.addToCache.restore();
     UserCache.prototype.insert.restore();
+    //PicManager.prototype.loadImage.restore();
     //Chat.prototype.loadLists.restore();
 
 });
