@@ -11,13 +11,12 @@ var Pic = function() {
     this._s3 = new AWS.S3();
 };
 
-function getURL(key) {
+Pic.prototype.getURL = function(key) {
     return "https://scrible.s3.amazonaws.com/" + key;
-}
+};
 
 Pic.prototype.savePic = function(id, file_name, file_buffer) {
     var extension = file_name.split('.').pop().toLowerCase();
-    logger.debug(extension, "THIS IS THE EXTENSION FILE");
     if(this._extensions.indexOf(extension) < 0) {
         //throw some exception
         throw new Error("Wrong file format");
@@ -52,7 +51,7 @@ Pic.prototype.loadPic = function(id) {
                  resolve({});
              }
              else {
-                 data.url = getURL(data.Contents[0].Key);
+                 data.url = that.getURL(data.Contents[0].Key);
                  resolve(data);
              }
          });

@@ -15,14 +15,10 @@ router.get('/user_profile', authenticator.checkLoggedOut, function(req, res, nex
 });
 
 router.post('/new_user_profile', authenticator.checkLoggedOut, function(req, res, next) {
-    var picManager = new PicManager(new Pic());
-    var buffer = req.body.buffer;
-    var name = req.body.name;
-
-    picManager.storeImage(id, name, buffer).then(function(data) {
-        res.json({
-            success: true
-        });
+    req.user.url = req.body.url;
+    req.session.user.url = req.body.url;
+    res.json({
+        success: true
     });
 });
 

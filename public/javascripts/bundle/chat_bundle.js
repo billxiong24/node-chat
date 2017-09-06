@@ -100,24 +100,7 @@
 
 	//XXX this is code is garbage and im sorry to anyone who has to read this 
 	(function() {
-	    var reached = false;
-
 	    $(document).ready(function() {
-	        //document.getElementById('fileupload').onchange = function (event) {
-	            //var file = document.getElementById("fileupload").files[0];
-	            //if (file) {
-	                //var reader = new FileReader();
-	                //reader.addEventListener('load', function() {
-
-	                    //$("test").attr('src', reader.result);
-	                //});
-	                //reader.onerror = function (evt) {
-	                    //console.log("error");
-	                //};
-
-	                //reader.readAsDataUrl(file);
-	            //}
-	        //};
 	        var csrfTokenObj = {
 	            _csrf: $('input[name=_csrf]').val()
 	        };
@@ -143,7 +126,6 @@
 	                    return ajaxRenderLines(chatAjaxService, csrfTokenObj);
 
 	                }).then(function(data) {
-	                    console.log("initLines post successful");
 	                    renderLinesCB(data);
 	                    setup(roomID);
 	                });
@@ -198,7 +180,7 @@
 	                });
 
 	                //TODO dont hardcode this, okay for now
-	                LetterAvatar.transform();
+	                LetterAvatar.transformOther();
 	                chat.scrollTop(firstMessage.offset().top - curScroll);
 	        });
 	    });
@@ -218,7 +200,7 @@
 	}
 
 	function setup(roomID) {
-	    LetterAvatar.transform();
+	    LetterAvatar.transformOther();
 	    var userid = sessionStorage.getItem('userid');
 
 	    var cvm = new ChatViewModel(userid, roomID, handlebars);
@@ -226,7 +208,6 @@
 	    cvm.initTyping(TypingView, SocketView);
 	    cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView, LetterAvatar);
 	    cvm.initVoting(SocketView, VotingView);
-	    cvm.addFileHandler(SocketView, FileView, 'fileupload');
 	    
 	    cvm.addStatsHandler($('#stats'), parseID(window.location.pathname), function(data) {
 	        var html = handlebars.templates.user_stat();
@@ -358,6 +339,18 @@
 	            });
 	        };
 
+	        LetterAvatar.transformOther = function() {
+
+	            Array.prototype.forEach.call(d.querySelectorAll('img[alternate]'), function(img, name) {
+	                if(!img.getAttribute('src')) {
+	                    name = img.getAttribute('alternate');
+	                    img.src = LetterAvatar(name, img.getAttribute('width'));
+	                    img.removeAttribute('alternate');
+	                    img.setAttribute('alt', name);
+	                }
+	            });
+	        };
+
 
 	        // AMD support
 	        if (true) {
@@ -380,7 +373,7 @@
 	            window.LetterAvatar = LetterAvatar;
 
 	            d.addEventListener('DOMContentLoaded', function(event) {
-	                LetterAvatar.transform();
+	                //LetterAvatar.transform();
 	            });
 	        }
 
@@ -502,6 +495,7 @@
 	        this._active = jsonObj.active;
 	        //this._username = username;
 	        this._message = jsonObj.message;
+	        this._url = jsonObj.url;
 	        this._line_id = jsonObj.line_id;
 	    }
 
@@ -737,7 +731,6 @@
 	    this._socketview.addListener('connect', function() {
 	        var deliv = new Delivery(that._socketview.getClient());
 	        deliv.on('delivery.connect', function(delivery) {
-	            console.log("sending");
 	            send(delivery);
 	        });
 
@@ -1132,7 +1125,7 @@
 	        var viewUsername = (!this._lastMessage || this._lastMessage !== msg.cookie) ? msg.username : "";
 	        var viewStamp = "";
 
-
+	        console.log(msg.url);
 	        lineViewObj = new LineView({
 	            direction: dir,
 	            //TODO fix dis timestamp
@@ -1142,7 +1135,8 @@
 	            message: msg.message,
 	            line_id: msg.line_id,
 	            first: msg.first,
-	            last: msg.last
+	            last: msg.last,
+	            url: msg.url
 	        });
 
 	        //numMessages.text(this._notifview.getNotif());
@@ -1292,15 +1286,24 @@
 	    ChatViewModel.prototype.addFileHandler = function(SocketView, FileView, idElement, imgElement) {
 	        //move this code elsewhere
 	        var fileView = new FileView(this._userid, new SocketView(this._userid, '/file'));
+	        var that = this;
 	        fileView.storedImageListener(function(data) {
 	            //data.Location is url of new image
 	            //appending timestamp forces browser to reload image instead of caching
+	            console.log(data);
 	            $('#'+imgElement).attr('src', data.Location + '?' + new Date().getTime());
+	            //HACK ratchet af
+	            chatAjaxService.chatAjaxPromise('/images/new_user_profile', 'POST', JSON.stringify({
+	                url: data.Location + '?' + new Date().getTime(),
+	                _csrf: that._csrfTokenObj._csrf
+	            }), function(data) {
+	                console.log("done session");
+	            });
 	        });
 	        fileView.deliverEventListener(function(delivery) {
 	        document.getElementById(idElement).onchange = function (event) {
 	            var file = document.getElementById(idElement).files[0];
-	            if (file) {
+	            if(file) {
 	                delivery.send(file);
 	            }
 	        };
@@ -1315,7 +1318,6 @@
 	            evt.preventDefault();
 	            chatAjaxService.chatAjax('/users/stats', 'GET', {
 	                chat_id: chat_id
-
 	            }, function(data) {
 	                callback(data);
 	            });
@@ -1385,7 +1387,7 @@
 	                message = lineViewObj.renderTemplate(that._handlebars, 'message_response_template');
 	            }
 
-	            LetterAvatar.transform();
+	            LetterAvatar.transformOther();
 
 	            lineViewObj.appendMessage(list, message);
 	            lineViewObj.scrollDown(history, history[0].scrollHeight);

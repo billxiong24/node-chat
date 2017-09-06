@@ -1,5 +1,6 @@
 //var Pic = require('../models/pic.js');
 var logger = require('../../util/logger.js')(module);
+//TODO store url in database feelsbad
 
 var PicManager = function(picObj) {
     this._pic = picObj;

@@ -103,7 +103,7 @@ var ChatView = (function() {
         var viewUsername = (!this._lastMessage || this._lastMessage !== msg.cookie) ? msg.username : "";
         var viewStamp = "";
 
-
+        console.log(msg.url);
         lineViewObj = new LineView({
             direction: dir,
             //TODO fix dis timestamp
@@ -113,7 +113,8 @@ var ChatView = (function() {
             message: msg.message,
             line_id: msg.line_id,
             first: msg.first,
-            last: msg.last
+            last: msg.last,
+            url: msg.url
         });
 
         //numMessages.text(this._notifview.getNotif());

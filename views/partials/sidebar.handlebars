@@ -32,7 +32,12 @@
             <div class="sui-normal">
                 <a href="#" class="user-link profile-pic">
                     <div style="width: 60px; height: 60px">
-                        <img id="prof-pic" src="" class="round" style="width: 60px; height: 60px;" avatar="{{first}}"/>
+                        {{#if url}}
+                            <img id="prof-pic" src="{{url}}" class="round" style="width: 60px; height: 60px;" alternate="{{first}}"/>
+                        {{else}}
+                            <img id="prof-pic" class="round" style="width: 60px; height: 60px;" alternate="{{first}}"/>
+
+                        {{/if}}
                     </div>
                     <strong>{{first}} {{last}}</strong>
                 </a>
@@ -242,5 +247,6 @@
 
 <script type="text/javascript" charset="utf-8">
 var username = '{{username}}';
+var userid = '{{id}}'
 </script>
 <script src="/javascripts/bundle/sidebar_bundle.js" type="text/javascript" charset="utf-8"></script>

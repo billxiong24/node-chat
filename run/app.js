@@ -1,4 +1,5 @@
 require('dotenv').config();
+var winston = require('../util/logger.js')(module);
 const http = require('http');
 const express = require('express');
 const path = require('path');
@@ -99,7 +100,6 @@ function init(port) {
 
     require('../app/authentication/user-pass.js').passportAuth(passport);
     require('../routes')(app, passport);
-
     // catch 404 and forward to error handler
     app.use(function(req, res, next) {
         var err = new Error('Not Found');

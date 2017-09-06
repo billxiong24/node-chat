@@ -30,7 +30,7 @@ $(document).ready(function() {
     });
     
     function setup(userid) {
-        LetterAvatar.transform();
+        //LetterAvatar.transform();
         $('.search_results_container').on('submit', '.chat_code_specific', function(evt) {
             evt.preventDefault();
             var thisObj = $(this);

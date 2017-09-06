@@ -49,12 +49,31 @@
 	var FileView = __webpack_require__(11);
 	var chatAjaxService = __webpack_require__(3);
 	var ChatViewModel = __webpack_require__(16);
+	var LetterAvatar = __webpack_require__(2);
 
-	(function init(username) {
+	(function init(username, userid) {
 	    $(document).ready(function() {
+	        console.log(userid);
 	        var csrfTokenObj = {
 	            _csrf: $('input[name=_csrf]').val()
 	        };
+
+	        LetterAvatar.transformOther();
+
+
+	        //chatAjaxService.chatAjaxPromise('/images/user_profile', 'GET', {
+	            //userid: userid
+	        //}).then(function(data) {
+	            //console.log(data);
+	            //if(data.url) {
+	                //$('#prof-pic').attr('src', data.url + '?' + new Date().getTime());
+	                //console.log($('#prof-pic').attr('src'));
+	            //}
+	            //else {
+	                //console.log("no prof pic");
+	                //LetterAvatar.transform();
+	            //}
+	        //});
 
 	        $('#logout-link').click(function(event) {
 	            event.preventDefault();
@@ -72,7 +91,7 @@
 	            })
 	            .then(function(data) {
 	                cvm = new ChatViewModel(sessionStorage.getItem('userid'), null, null);
-	                cvm.addFileHandler(SocketView, FileView, 'prof-pic');
+	                cvm.addFileHandler(SocketView, FileView, 'fileupload', 'prof-pic');
 	            });
 	        }
 	        else {
@@ -143,12 +162,120 @@
 
 	    });
 
-	})(username);
+	})(username, userid);
 
 
 /***/ }),
 /* 1 */,
-/* 2 */,
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	     * LetterAvatar
+	     * 
+	     * Artur Heinze
+	     * Create Letter avatar based on Initials
+	     * based on https://gist.github.com/leecrossley/6027780
+	     */
+	    (function(w, d){
+
+	        function LetterAvatar (name, size) {
+
+	            name  = name || '';
+	            size  = size || 60;
+
+	            var colours = [
+	                    "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", 
+	                    "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"
+	                ],
+
+	                nameSplit = String(name).split(' '),
+	                initials, charIndex, colourIndex, canvas, context, dataURI;
+
+
+	            if (nameSplit.length == 1) {
+	                initials = nameSplit[0] ? nameSplit[0].charAt(0):'?';
+	            } else {
+	                initials = nameSplit[0].charAt(0) + nameSplit[1].charAt(0);
+	            }
+	            //initials=name.substring(0, 4);
+
+	            if (w.devicePixelRatio) {
+	                size = (size * w.devicePixelRatio);
+	            }
+	                
+	            charIndex     = (initials == '?' ? 72 : initials.charCodeAt(0)) - 64;
+	            colourIndex   = charIndex % (colours.length + 1);
+	            canvas        = d.createElement('canvas');
+	            canvas.width  = size;
+	            canvas.height = size;
+	            context       = canvas.getContext("2d");
+	             
+	            context.fillStyle = colours[colourIndex - 1];
+	            context.fillRect (0, 0, canvas.width, canvas.height);
+	            context.font = Math.round(canvas.width/2.5)+"px Arial";
+	            context.textAlign = "center";
+	            context.fillStyle = "#FFF";
+	            context.fillText(initials, size / 2, size / 1.6);
+
+	            dataURI = canvas.toDataURL();
+	            canvas  = null;
+
+	            return dataURI;
+	        }
+
+	        LetterAvatar.transform = function() {
+
+	            Array.prototype.forEach.call(d.querySelectorAll('img[avatar]'), function(img, name) {
+	                name = img.getAttribute('avatar');
+	                img.src = LetterAvatar(name, img.getAttribute('width'));
+	                img.removeAttribute('avatar');
+	                img.setAttribute('alt', name);
+	            });
+	        };
+
+	        LetterAvatar.transformOther = function() {
+
+	            Array.prototype.forEach.call(d.querySelectorAll('img[alternate]'), function(img, name) {
+	                if(!img.getAttribute('src')) {
+	                    name = img.getAttribute('alternate');
+	                    img.src = LetterAvatar(name, img.getAttribute('width'));
+	                    img.removeAttribute('alternate');
+	                    img.setAttribute('alt', name);
+	                }
+	            });
+	        };
+
+
+	        // AMD support
+	        if (true) {
+	            
+	            !(__WEBPACK_AMD_DEFINE_RESULT__ = function () { return LetterAvatar; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	        
+	        // CommonJS and Node.js module support.
+	        } else if (typeof exports !== 'undefined') {
+	            
+	            // Support Node.js specific `module.exports` (which can be a function)
+	            if (typeof module != 'undefined' && module.exports) {
+	                exports = module.exports = LetterAvatar;
+	            }
+
+	            // But always support CommonJS module 1.1.1 spec (`exports` cannot be a function)
+	            exports.LetterAvatar = LetterAvatar;
+
+	        } else {
+	            
+	            window.LetterAvatar = LetterAvatar;
+
+	            d.addEventListener('DOMContentLoaded', function(event) {
+	                //LetterAvatar.transform();
+	            });
+	        }
+
+	    })(window, document);
+
+
+/***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
@@ -274,7 +401,6 @@
 	    this._socketview.addListener('connect', function() {
 	        var deliv = new Delivery(that._socketview.getClient());
 	        deliv.on('delivery.connect', function(delivery) {
-	            console.log("sending");
 	            send(delivery);
 	        });
 
@@ -515,15 +641,24 @@
 	    ChatViewModel.prototype.addFileHandler = function(SocketView, FileView, idElement, imgElement) {
 	        //move this code elsewhere
 	        var fileView = new FileView(this._userid, new SocketView(this._userid, '/file'));
+	        var that = this;
 	        fileView.storedImageListener(function(data) {
 	            //data.Location is url of new image
 	            //appending timestamp forces browser to reload image instead of caching
+	            console.log(data);
 	            $('#'+imgElement).attr('src', data.Location + '?' + new Date().getTime());
+	            //HACK ratchet af
+	            chatAjaxService.chatAjaxPromise('/images/new_user_profile', 'POST', JSON.stringify({
+	                url: data.Location + '?' + new Date().getTime(),
+	                _csrf: that._csrfTokenObj._csrf
+	            }), function(data) {
+	                console.log("done session");
+	            });
 	        });
 	        fileView.deliverEventListener(function(delivery) {
 	        document.getElementById(idElement).onchange = function (event) {
 	            var file = document.getElementById(idElement).files[0];
-	            if (file) {
+	            if(file) {
 	                delivery.send(file);
 	            }
 	        };
@@ -538,7 +673,6 @@
 	            evt.preventDefault();
 	            chatAjaxService.chatAjax('/users/stats', 'GET', {
 	                chat_id: chat_id
-
 	            }, function(data) {
 	                callback(data);
 	            });
@@ -608,7 +742,7 @@
 	                message = lineViewObj.renderTemplate(that._handlebars, 'message_response_template');
 	            }
 
-	            LetterAvatar.transform();
+	            LetterAvatar.transformOther();
 
 	            lineViewObj.appendMessage(list, message);
 	            lineViewObj.scrollDown(history, history[0].scrollHeight);

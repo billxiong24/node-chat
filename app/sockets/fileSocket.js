@@ -21,9 +21,8 @@ FileSocket.prototype.init = function() {
         var delivery = deliv.listen(socket);
         delivery.on('receive.success', function(file) {
             var pic_manager = new PicManager(new Pic());
-            pic_manager.storeImage(socket.request.session.user.id, file.name, file.buffer)
+            pic_manager.storeImage(socket.request.session.user.username, file.name, file.buffer)
             .then(function(data) {
-                logger.info(data);
                 Socket.prototype.getIO.call(that).to('profile_'+socket.request.session.user.id).emit('storedImage', data); 
             });
         });

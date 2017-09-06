@@ -62,6 +62,18 @@
             });
         };
 
+        LetterAvatar.transformOther = function() {
+
+            Array.prototype.forEach.call(d.querySelectorAll('img[alternate]'), function(img, name) {
+                if(!img.getAttribute('src')) {
+                    name = img.getAttribute('alternate');
+                    img.src = LetterAvatar(name, img.getAttribute('width'));
+                    img.removeAttribute('alternate');
+                    img.setAttribute('alt', name);
+                }
+            });
+        };
+
 
         // AMD support
         if (typeof define === 'function' && define.amd) {
@@ -84,7 +96,7 @@
             window.LetterAvatar = LetterAvatar;
 
             d.addEventListener('DOMContentLoaded', function(event) {
-                LetterAvatar.transform();
+                //LetterAvatar.transform();
             });
         }
 

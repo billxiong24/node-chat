@@ -23,7 +23,11 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
     var user = new User(userObj.username, userObj.id, undefined, userObj.first, userObj.last);
     chatobj.loadLists(user, function(rows) {
         var userJSON = user.toJSON();
-        userJSON.email = userObj.email;
+        //HACK need to refactor this shit
+        //to avoid caching image in case user changes prof pic
+        userJSON.email = userObj.email; 
+        userJSON.url = !userObj.url ? undefined : userObj.url + '?'+ new Date().getTime();
+        logger.debug(userJSON.url);
         //this is used for view rendering, will switch to clientside rendering soon
 
         var rowString = JSON.stringify(rows);

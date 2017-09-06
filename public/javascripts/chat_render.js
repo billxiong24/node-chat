@@ -54,24 +54,7 @@ function displayLines(chatList, handlebars, lines, display) {
 
 //XXX this is code is garbage and im sorry to anyone who has to read this 
 (function() {
-    var reached = false;
-
     $(document).ready(function() {
-        //document.getElementById('fileupload').onchange = function (event) {
-            //var file = document.getElementById("fileupload").files[0];
-            //if (file) {
-                //var reader = new FileReader();
-                //reader.addEventListener('load', function() {
-
-                    //$("test").attr('src', reader.result);
-                //});
-                //reader.onerror = function (evt) {
-                    //console.log("error");
-                //};
-
-                //reader.readAsDataUrl(file);
-            //}
-        //};
         var csrfTokenObj = {
             _csrf: $('input[name=_csrf]').val()
         };
@@ -97,7 +80,6 @@ function displayLines(chatList, handlebars, lines, display) {
                     return ajaxRenderLines(chatAjaxService, csrfTokenObj);
 
                 }).then(function(data) {
-                    console.log("initLines post successful");
                     renderLinesCB(data);
                     setup(roomID);
                 });
@@ -152,7 +134,7 @@ function setUpEvents(chatAjaxService, roomID, csrfTokenObj) {
                 });
 
                 //TODO dont hardcode this, okay for now
-                LetterAvatar.transform();
+                LetterAvatar.transformOther();
                 chat.scrollTop(firstMessage.offset().top - curScroll);
         });
     });
@@ -172,7 +154,7 @@ function renderLinesCB(data) {
 }
 
 function setup(roomID) {
-    LetterAvatar.transform();
+    LetterAvatar.transformOther();
     var userid = sessionStorage.getItem('userid');
 
     var cvm = new ChatViewModel(userid, roomID, handlebars);
@@ -180,7 +162,6 @@ function setup(roomID) {
     cvm.initTyping(TypingView, SocketView);
     cvm.initChat(SocketView, ChatView, NotifView, OnlineView, DirectChatView, LetterAvatar);
     cvm.initVoting(SocketView, VotingView);
-    cvm.addFileHandler(SocketView, FileView, 'fileupload');
     
     cvm.addStatsHandler($('#stats'), parseID(window.location.pathname), function(data) {
         var html = handlebars.templates.user_stat();

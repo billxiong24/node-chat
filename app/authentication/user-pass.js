@@ -19,7 +19,8 @@ const params = {
 };
 //middleware need to return next function
 function checkLoggedOut(req, res, next) {
-    logger.debug(req.user, "user after each request");
+    logger.debug(req.user);
+    logger.debug(req.session.user);
     if(!req.isAuthenticated()) {
         res.redirect('/');
     }
@@ -27,6 +28,7 @@ function checkLoggedOut(req, res, next) {
         return res.redirect('/signup_success');
     }
     else {
+        req.user.url = req.session.user.url;
         delete req.session.user.hash;
         delete req.user.hash;
         //need to return next to pass on to the next function,
@@ -37,6 +39,7 @@ function checkLoggedOut(req, res, next) {
 }
 function checkOwnUser(req, res, next) {
     //TODO verify session token as well
+    req.user.url = req.session.user.url;
     if(req.user.username !== req.params.username) {
         return res.redirect('/users/'+req.user.username);
     }
@@ -45,6 +48,7 @@ function checkOwnUser(req, res, next) {
 }
 function checkLoggedIn(req, res, next) {
     if(req.isAuthenticated()) {
+        req.user.url = req.session.user.url;
         res.redirect('/home');
     }
     else {

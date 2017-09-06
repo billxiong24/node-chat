@@ -3,6 +3,8 @@ var UserCache = require('./user_cache.js');
 var cache_functions = require('../cache/cache_functions.js');
 var connection = require('../database/config.js');
 var password_util = require('../authentication/password_util.js');
+var PicManager = require('../chat_functions/pic_manager.js');
+var Pic = require('./pic.js');
 
 var UserManager = function(userObj) {
     this._userObj = userObj;
@@ -65,7 +67,20 @@ UserManager.prototype.authenticate = function(password, loginResult) {
         delete sqlUser.password;
         return sqlUser;
     };
-    connection.executePoolTransaction([setConn, checkDB, validate, retrievePassword, loginValidate, loginResult], function(err) {logger.error(err);});
+
+    var retrievePic = function(sqlUser) {
+        var picManager = new PicManager(new Pic());
+        if(!sqlUser) {
+            return null;
+        }
+        return picManager.loadImage(sqlUser.username).then(function(data) {
+            if(data && data.url && sqlUser) {
+                sqlUser.url = data.url;
+            }
+            return sqlUser;
+        });
+    };
+    connection.executePoolTransaction([setConn, checkDB, validate, retrievePassword, loginValidate, retrievePic, loginResult], function(err) {logger.error(err);});
 };
 
 UserManager.prototype.authenticateEmail = function(userJSON, hash, callback) {

@@ -10,7 +10,6 @@ FileView.prototype.deliverEventListener = function(send, success) {
     this._socketview.addListener('connect', function() {
         var deliv = new Delivery(that._socketview.getClient());
         deliv.on('delivery.connect', function(delivery) {
-            console.log("sending");
             send(delivery);
         });
 

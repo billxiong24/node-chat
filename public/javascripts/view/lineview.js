@@ -11,6 +11,7 @@ var LineView = (function() {
         this._active = jsonObj.active;
         //this._username = username;
         this._message = jsonObj.message;
+        this._url = jsonObj.url;
         this._line_id = jsonObj.line_id;
     }
 

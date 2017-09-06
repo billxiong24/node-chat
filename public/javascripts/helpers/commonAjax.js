@@ -3,12 +3,31 @@ var ChatViewModel = require('../chatViewModel.js');
 var FileView = require('../viewmodel/fileview.js');
 var chatAjaxService = require('../service/chatAjaxService.js');
 var ChatViewModel = require('../chatViewModel');
+var LetterAvatar = require('../helpers/canvas.js');
 
-(function init(username) {
+(function init(username, userid) {
     $(document).ready(function() {
+        console.log(userid);
         var csrfTokenObj = {
             _csrf: $('input[name=_csrf]').val()
         };
+
+        LetterAvatar.transformOther();
+
+
+        //chatAjaxService.chatAjaxPromise('/images/user_profile', 'GET', {
+            //userid: userid
+        //}).then(function(data) {
+            //console.log(data);
+            //if(data.url) {
+                //$('#prof-pic').attr('src', data.url + '?' + new Date().getTime());
+                //console.log($('#prof-pic').attr('src'));
+            //}
+            //else {
+                //console.log("no prof pic");
+                //LetterAvatar.transform();
+            //}
+        //});
 
         $('#logout-link').click(function(event) {
             event.preventDefault();
@@ -26,7 +45,7 @@ var ChatViewModel = require('../chatViewModel');
             })
             .then(function(data) {
                 cvm = new ChatViewModel(sessionStorage.getItem('userid'), null, null);
-                cvm.addFileHandler(SocketView, FileView, 'prof-pic');
+                cvm.addFileHandler(SocketView, FileView, 'fileupload', 'prof-pic');
             });
         }
         else {
@@ -97,4 +116,4 @@ var ChatViewModel = require('../chatViewModel');
 
     });
 
-})(username);
+})(username, userid);

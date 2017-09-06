@@ -5,7 +5,6 @@ module.exports = function (notifs) {
             element.num_notifications = "";
         }
         else {
-            console.log("incr not z");
             num_not_zero++;
         }
     });
