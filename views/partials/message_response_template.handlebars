@@ -12,12 +12,7 @@
         {{!-- <span class="message-data-name pull-left" style="margin-left: -10px">{{viewUsername}}</span> --}}
         {{!-- <span class="message-data-name pull-left" style="margin-left: -11px;">{{viewUsername }}</span> --}}
         {{#if viewUsername}}
-            {{#if url}}
-                <img src="{{url}}" class="round pull-left" style="margin-left: -10px" width="35" height="35" alternate="{{username}}"/>
-            {{else}}
-                <img class="round pull-left" style="margin-left: -10px" width="35" height="35" alternate="{{username}}"/>
-
-            {{/if}}
+            <img src="https://scrible.s3.amazonaws.com/{{viewUsername}}/profile_pic.png" class="round pull-left" style="margin-left: -10px" width="35" height="35" alt="/images/default.png" alternate="{{username}}"/>
             {{!-- <img class='round pull-left' style="margin-left: -10px" width="40" height="40" avatar="{{viewUsername}}" > --}}
         {{/if}}
     </div>

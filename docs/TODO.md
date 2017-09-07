@@ -8,27 +8,20 @@
 | test/models.js | 31 | create testing database environment
 | test/models.js | 45 | check cache to see exists
 | test/models.js | 65 | check cache to see exists
-| test/testfile.js | 113 | check for accuracy, too lazy rn
-| test/testfile.js | 138 | test 1 with memberof, and one without
+| test/testfile.js | 120 | check for accuracy, too lazy rn
+| test/testfile.js | 145 | test 1 with memberof, and one without
 | app/authentication/user-pass.js | 41 | verify session token as well
-| app/authentication/user-pass.js | 185 | add stronger password checker
-| app/authentication/user-pass.js | 187 | less lazy error message lmao
-| app/cache/cache_store.js | 1 | Look into issue: Asynchronous AOF fsync is taking too long (disk is busy?). Writing the AOF buffer without
+| app/authentication/user-pass.js | 186 | add stronger password checker
+| app/authentication/user-pass.js | 188 | less lazy error message lmao
 | app/chat_functions/chat_manager.js | 13 | use async library to make things more asynchronous
 | app/chat_functions/chat_manager.js | 21 | error checking
 | app/chat_functions/chat_manager.js | 72 | error message
 | app/chat_functions/chat_manager.js | 96 | add error message here
 | app/chat_functions/chat_manager.js | 128 | Pass in callback here
 | app/chat_functions/pic_manager.js | 3 | store url in database feelsbad
+| app/cache/cache_store.js | 1 | Look into issue: Asynchronous AOF fsync is taking too long (disk is busy?). Writing the AOF buffer without
 | app/database/config.js | 3 | need to consolidate release connections in connection.js
 | app/database/connection.js | 46 | release connection in one place
-| app/models/chat.js | 215 | need real error handling here
-| app/models/line_cache.js | 19 | maybe throw custom exception
-| app/models/line_cache.js | 28 | test this method, it most likely does not work
-| app/models/user_cache.js | 12 | USE TRANSACTION for multiple redis commands for atomicity
-| app/models/user_cache.js | 30 | avoid having to open a connection(small optimization)
-| app/models/user_cache.js | 80 | need real error handling here
-| app/models/user_cache.js | 130 | function works, add user back to cache if not in
 | app/search/chat_search_manager.js | 17 | add suggestions to body
 | app/search/chat_search_manager.js | 79 | need to check if elastic search is running, other wise returns undefined
 | app/search/search_info_generate.js | 19 | generate index and types for user data
@@ -38,6 +31,13 @@
 | app/sockets/notifSocket.js | 22 | add this data to cache- contains {userid, notif, roomID}
 | app/sockets/voteSocket.js | 23 | fix check if user voted already
 | app/sockets/voteSocket.js | 35 | update vote value in redis if user did not vote yet
+| app/models/chat.js | 215 | need real error handling here
+| app/models/line_cache.js | 19 | maybe throw custom exception
+| app/models/line_cache.js | 28 | test this method, it most likely does not work
+| app/models/user_cache.js | 12 | USE TRANSACTION for multiple redis commands for atomicity
+| app/models/user_cache.js | 30 | avoid having to open a connection(small optimization)
+| app/models/user_cache.js | 80 | need real error handling here
+| app/models/user_cache.js | 130 | function works, add user back to cache if not in
 | app/workers/message_cache_monitor.js | 19 | changed max number of completed jobs before cleaning
 | app/workers/process_queue.js | 100 | use reduce to take in an array of callbacks
 | microservices/chat/chat_service.js | 26 | error check for null
@@ -97,11 +97,11 @@
 | routes/index.js | 87 | check email verified middleware
 | run/app.js | 138 | load testing does not work anymore because of csrf token
 | test/models.js | 223 | for some reason this test does not work well with others
-| test/testfile.js | 239 | should redirect home, but don't know how to tell if home is reached
+| test/testfile.js | 246 | should redirect home, but don't know how to tell if home is reached
+| app/sockets/chatSocket.js | 78 | violates open close principle
 | app/models/line.js | 74 | duplicated code here but im too lazy
 | app/models/user_cache.js | 219 | assuming user in cache, since user has just logged in- risky but low chance of anything otherwise
-| app/models/user_manager.js | 24 | refactor this to use redis promises (bluebird)
-| app/sockets/chatSocket.js | 78 | violates open close principle
+| app/models/user_manager.js | 26 | refactor this to use redis promises (bluebird)
 | app/workers/process_queue.js | 16 | accessing this from cache_store throws error- as usual, no idea why
 | public/javascripts/chatViewModel.js | 143 | quick hack, since no viewmodel currently holds votes
 | public/javascripts/bundle/chat_bundle.js | 1231 | sometimes socket drops connection for whatever fukcing reason

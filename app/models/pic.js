@@ -24,13 +24,14 @@ Pic.prototype.savePic = function(id, file_name, file_buffer) {
     }
     var params = {
         Bucket: this._bucket,
-        Key: id + "/profile_pic." + extension,
+        Key: id + "/profile_pic.png",
         ACL: 'public-read',
         Body: file_buffer
     };
     var that = this;
     return this._s3.upload(params).promise().then(function(data) {
-        return connection.executePromise('UPDATE User WHERE username=? SET profile_url=?', [id, that.getURL(params.Key)]);
+        return data;
+        //return connection.executePromise('UPDATE User SET profile_url=? WHERE username=? ', [id, that.getURL(params.Key)]);
     });
 };
 
@@ -65,6 +66,7 @@ function setConfig() {
         secretAccessKey: process.env.AWS_SEC
     });
 }
+
 
 
 module.exports = Pic;

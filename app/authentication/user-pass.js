@@ -59,6 +59,7 @@ function checkLoggedIn(req, res, next) {
 function passportSignupCallback(passport, req, res, next) {
     passport.authenticate('signup', function(err, user, info) {
         if(err) {
+            logger.error(err);
             res.status(200).json({
                 signup_error : true,
                 error: err

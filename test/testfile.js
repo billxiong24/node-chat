@@ -58,6 +58,13 @@ beforeEach(function() {
         });
     });
 
+    var storeImage = sinon.stub(PicManager.prototype, 'storeImage')
+    .callsFake(function(id) {
+        return new Promise(function(resolve,reject) {
+            resolve({});
+        });
+    });
+
 
     //monitor that every db request releases its connection 
     releaseSpy = sinon.spy(connection, 'release');
@@ -76,6 +83,7 @@ afterEach(function() {
     UserCache.prototype.addToCache.restore();
     UserCache.prototype.insert.restore();
     PicManager.prototype.loadImage.restore();
+    PicManager.prototype.storeImage.restore();
     //Chat.prototype.loadLists.restore();
 
 });

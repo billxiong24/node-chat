@@ -5,6 +5,8 @@ var connection = require('../database/config.js');
 var password_util = require('../authentication/password_util.js');
 var PicManager = require('../chat_functions/pic_manager.js');
 var Pic = require('./pic.js');
+var bluebird = require('bluebird');
+var fs = bluebird.promisifyAll(require('fs'));
 
 var UserManager = function(userObj) {
     this._userObj = userObj;
@@ -29,7 +31,13 @@ UserManager.prototype.signup = function(password, signupFailure, signupSuccess) 
         that._userObj.insert(function(userObj) {
             var jsonObj = userObj;
             delete jsonObj.password;
-            return signupSuccess(jsonObj);
+            getImgData('../public/images/default.png').then(function(data) {
+                var picManager = new PicManager(new Pic());
+                return picManager.storeImage(jsonObj.username, 'profile_pic.png', data);
+            }).then(function(data) {
+                signupSuccess(jsonObj);
+                return null;
+            });
         },
         function(err) {
             return signupFailure();
@@ -118,5 +126,23 @@ UserManager.prototype.updateUserProfile = function(infoObj, callback) {
         }
     });
 };
+
+function getImgData(path) {
+    //HACK super ugly and need to find a way to stub this for testing
+    if(process.env.NODE_ENV === 'test') {
+        return new Promise(function(resolve, reject) {
+            resolve({});
+        });
+    }
+    return new Promise(function(resolve, reject){
+        fs.readFile(path, function(err, data) {
+            if(err) {
+                return reject(err);
+            }
+            var buffer = new Buffer(data, 'binary');
+            return resolve(buffer);
+        });
+    });
+}
 
 module.exports = UserManager;
