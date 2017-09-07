@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "async": "^2.5.0",
-    "aws-sdk": "^2.107.0",
+    "aws-sdk": "^2.110.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.17.2",
     "chai": "^4.1.2",
@@ -34,7 +34,7 @@
     "fs": "0.0.1-security",
     "grunt-cli": "^1.2.0",
     "gulp": "^3.9.1",
-    "gulp-clean-css": "^3.7.0",
+    "gulp-clean-css": "^3.8.0",
     "gulp-concat": "^2.6.1",
     "gulp-declare": "^0.3.0",
     "gulp-define-module": "^0.1.5",

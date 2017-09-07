@@ -208,9 +208,9 @@
       "resolved": "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
     },
     "aws-sdk": {
-      "version": "2.107.0",
-      "from": "aws-sdk@2.107.0",
-      "resolved": "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.107.0.tgz",
+      "version": "2.110.0",
+      "from": "aws-sdk@2.110.0",
+      "resolved": "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.110.0.tgz",
       "dependencies": {
         "crypto-browserify": {
           "version": "1.0.9",
@@ -1865,14 +1865,14 @@
       }
     },
     "gulp-clean-css": {
-      "version": "3.7.0",
-      "from": "gulp-clean-css@3.7.0",
-      "resolved": "https://registry.npmjs.org/gulp-clean-css/-/gulp-clean-css-3.7.0.tgz",
+      "version": "3.8.0",
+      "from": "gulp-clean-css@3.8.0",
+      "resolved": "https://registry.npmjs.org/gulp-clean-css/-/gulp-clean-css-3.8.0.tgz",
       "dependencies": {
         "clean-css": {
-          "version": "4.1.7",
-          "from": "clean-css@4.1.7",
-          "resolved": "https://registry.npmjs.org/clean-css/-/clean-css-4.1.7.tgz"
+          "version": "4.1.8",
+          "from": "clean-css@4.1.8",
+          "resolved": "https://registry.npmjs.org/clean-css/-/clean-css-4.1.8.tgz"
         }
       }
     },
