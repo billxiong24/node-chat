@@ -28,6 +28,7 @@ router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
         logger.info("received in", req.user.username);
         logger.info("------------------------------------------------");
         req.session.members = json.members;
+        logger.debug("*************", json.userJSON, "*******************8");
         if(process.env.NODE_ENV === 'test') {
             if(!json.inChat) {
                 return res.redirect('/home');

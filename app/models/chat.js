@@ -85,7 +85,7 @@ Chat.prototype.load = function(user, transport) {
     var getChat = function(poolConnection) {
         conn = poolConnection;
         logger.debug(username, chatID);
-        return poolConnection.query('SELECT Chat.code, Chat.chat_name FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?', [username, chatID]);
+        return poolConnection.query('SELECT Chat.code, Chat.chat_name, MemberOf.creator FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?', [username, chatID]);
     };
 
     var transferChat = function(result) {
@@ -208,7 +208,7 @@ Chat.prototype.insert = function(user, callback=function(result) {}) {
     };
 
     var insertMember = function(result) {
-        return conn.query('INSERT INTO MemberOf SET ?', {chat_id: chatInfo.id, username: userTemp});
+        return conn.query('INSERT INTO MemberOf SET ?', {chat_id: chatInfo.id, username: userTemp, creator : 1});
     };
 
     var err = function(err) {
@@ -232,7 +232,6 @@ Chat.prototype.insert = function(user, callback=function(result) {}) {
 Chat.prototype.join = function(user, callback, verify=false) {
     var that = this;
     var username = user.getUsername();
-    //var chatLine = new Line();
 
     var startTrans = function(poolConnection) {
         connect = poolConnection;
@@ -241,7 +240,6 @@ Chat.prototype.join = function(user, callback, verify=false) {
     };
     
     var retrieveChat = function(poolConnection) {
-        logger.debug("this is verifyy", verify);
         if(verify) {
             return poolConnection.query('SELECT * FROM Chat WHERE Chat.code = ? AND Chat.id = ?', [that._code, that._id]);
         }
@@ -250,6 +248,7 @@ Chat.prototype.join = function(user, callback, verify=false) {
 
     var validateChat = function(result) {
         if(result.length === 0) {
+            logger.debug('the chat did not exist ***********************');
             return null;
         }
         that._name = result[0].chat_name;
@@ -263,8 +262,17 @@ Chat.prototype.join = function(user, callback, verify=false) {
         if(result === null) {
             return null;
         }
-        connect.query('INSERT IGNORE INTO MemberOf SET ?', {chat_id: result.id, username});
-        return result;
+        return connection.executePromise('SELECT MemberOf.creator FROM MemberOf WHERE username=? AND chat_id = ? ', [username, that._id]).then(function(rows) {
+            if(rows.length === 0) {
+                connect.query('INSERT INTO MemberOf SET ?', {chat_id: result.id, username});
+                return result;
+            }
+            else {
+                result.creator = rows[0].creator;
+                logger.debug('THIS IS CREATOR ********************', result.creator);
+                return result;
+            }
+        });
     };
 
     var commit = function(result) {
@@ -289,7 +297,7 @@ Chat.prototype.join = function(user, callback, verify=false) {
 };
 
 Chat.prototype.loadLists = function(user, callback=function(rows) {}, error=function(err) {logger.error(err);}) {
-    var query = 'SELECT Chat.chat_name, Chat.id, Chat.code, Notifications.num_notifications, MemberOf.username FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
+    var query = 'SELECT Chat.chat_name, Chat.id, Chat.code, Notifications.num_notifications, MemberOf.username, MemberOf.creator FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
 
     connection.execute(query, [user.getUsername(), user.getUsername()], callback, error);
     

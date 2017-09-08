@@ -27,8 +27,6 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
         //to avoid caching image in case user changes prof pic
         userJSON.email = userObj.email; 
         userJSON.url = !userObj.url ? undefined : userObj.url + '?'+ new Date().getTime();
-        logger.debug(userJSON.url);
-        //this is used for view rendering, will switch to clientside rendering soon
 
         var rowString = JSON.stringify(rows);
         var notifRes = notifRender(JSON.parse(rowString));
@@ -40,17 +38,18 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
         var list = rows;
         var inSpecificChat = false;
         var members = {};
+        userJSON.creator = null;
         //cache all chats in members
         for(var i = 0; i < list.length; i++) {
             if(chatID === list[i].id) {
+                logger.debug('FOUND THE SPECIFIC CHAT --------------------------------');
                 inSpecificChat = true;
+                userJSON.creator = list[i].creator;
             }
             members[list[i].id] = new Chat(list[i].id, list[i].chat_name, list[i].code)
                 .toJSON(list[i].username, list[i].num_notifications, null);
+            members[list[i].id].creator = list[i].creator;
         }
-
-        logger.info('members after loading list', members);
-
         callback(userJSON, inSpecificChat, members);
     });
 };
@@ -76,7 +75,6 @@ ChatManager.prototype.joinChat = function(username, chatCode, failure, success, 
             }
 
             var chatobjJSON = chatobj.toJSON(username, 0, null);
-            logger.debug("chat joined", chatobjJSON);
             success(chatobjJSON);
         };
     };
@@ -138,6 +136,7 @@ ChatManager.prototype.createChat = function(username, chatName, callback) {
     chat.insert(new User(username), function(result) {
         //just created chat, lines will be null
         var info = chat.toJSON(username, 0, null);
+        info.creator = 1;
         logger.info("chat created successfully", info);
         callback(info);
 

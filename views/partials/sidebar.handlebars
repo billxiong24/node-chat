@@ -109,9 +109,11 @@
                                 {{#if num_notifications}}
                                     <span class="badge badge-secondary">{{num_notifications}}</span>
                                 {{else}}
-                                    <span class="badge badge-secondary" style="display:none">{{num_notifications}}</span>
-                                    
+                                    <span class="badge badge-secondary" style="display: none;">{{num_notifications}}</span>
+                                {{/if}}
 
+                                {{#if creator}}
+                                    <span class="badge badge-success" style="margin-right: 8px;"><i class="entypo-users"></i></span>
                                 {{/if}}
                             </a>
 

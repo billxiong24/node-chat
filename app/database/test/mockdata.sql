@@ -1291,7 +1291,8 @@ DELIMITER ;
 
 CREATE TABLE `MemberOf` (
   `chat_id` varchar(256) NOT NULL,
-  `username` varchar(256) NOT NULL
+  `username` varchar(256) NOT NULL,
+  `creator` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
