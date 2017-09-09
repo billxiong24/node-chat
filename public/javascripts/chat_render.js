@@ -22,6 +22,7 @@ var DirectChatView = require('./viewmodel/directChatView.js');
 var OnlineViewModel = require('./viewmodel/onlineview.js');
 var VotingView = require('./viewmodel/votingview.js');
 
+
 function parseID(url) {
     var str = url;
     if(str.charAt(str.length - 1) === '/') {
@@ -67,6 +68,9 @@ function displayLines(chatList, handlebars, lines, display) {
         chatAjaxService.chatAjax(cutSlash(window.location.pathname)+'/renderInfo', 'GET', null, function(data) {
             $('.chat-header').remove();
             $('.chat').prepend(handlebars.templates.chatinfo(data));
+
+            var chat_settings = require('./helpers/chat-settings.js');
+            
             //zombie cookie
             if(!sessionStorage.getItem('userid')) {
                 console.log("userid not set");
@@ -200,3 +204,4 @@ function setup(roomID) {
 			});
     });
 }
+

@@ -24,6 +24,15 @@
     border: none !important;
 }
 
+.chat-header .logo-chat-edit {
+    
+}
+
+.chat-about .change-code-link {
+    margin-left: 10px !important;
+    /*color: #c00 !important;*/
+}
+
 .profile-env > header .profile-pic {
   position: relative;
 }

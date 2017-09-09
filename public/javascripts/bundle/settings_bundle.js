@@ -51,7 +51,7 @@
 
 	var LetterAvatar = __webpack_require__(2);
 	var chatAjaxService = __webpack_require__(3);
-	var retrieve_prof_pic = __webpack_require__(19);
+	var retrieve_prof_pic = __webpack_require__(20);
 
 	$(document).ready(function() {
 	    LetterAvatar.transform();
@@ -747,7 +747,8 @@
 /***/ }),
 /* 17 */,
 /* 18 */,
-/* 19 */
+/* 19 */,
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var chatAjaxService = __webpack_require__(3);

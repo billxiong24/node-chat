@@ -35,6 +35,10 @@
                         {{#if url}}
                             <img id="prof-pic" src="https://scrible.s3.amazonaws.com/{{username}}/profile_pic.png" class="round" style="width: 60px; height: 60px;" alternate="{{first}}"/>
                         {{/if}}
+                        <script type="text/javascript" charset="utf-8">
+                            var link = "https://scrible.s3.amazonaws.com/{{username}}/profile_pic.png"
+                            document.getElementById("prof-pic").src = link + '?' + new Date().getTime();
+                        </script>
                     </div>
                     <strong>{{first}} {{last}}</strong>
                 </a>

@@ -1,12 +1,34 @@
 <div class="chat-header clearfix">
-    <img class="round" width="50" height="50" alternate="{{name}}"/>
+    <a href="#" class="logo-chat-edit"><img class="round" width="50" height="50" alternate="{{name}}"/></a>
+    
 
     <div class="chat-about">
-        <div class="chat-with">{{name}}</div>
-        <div class="chat-num-messages">Code: {{code}}</div>
+        <div class="chat-with"><span class="change-name">{{name}}</span>
+            {{#if creator}}
+                <div class="btn-group">
+                    <button type="button" class="btn btn-xs btn-default dropdown-toggle change-code-link" data-toggle="dropdown" aria-expanded="false">
+                        <i class="entypo-pencil"></i>
+                    </button>
+                    <ul class="dropdown-menu custom-drop" role="menu">
+                        <li id="name-change"><a href="#" id="">Change name</a>
+                        </li>
+                        <li id="code-change"><a href="#" >Change code</a>
+                        </li>
+                        <li id="description-change"><a href="#" >Add description</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li id="block-user"><a href="#" >Block user</a>
+                        </li>
+                    </ul>
+                </div>
+            {{/if}}
+        </div>
+            <div class="chat-num-messages code">Code: <span class="chat-code">{{code}}</span></div>
     </div>
     <i class="fa fa-star"></i>
     <div class="pull-right">
         {{!-- New messages: <span class="numMessages pull-right"></span> --}}
     </div>
 </div> <!-- end chat-header -->
+
+            
