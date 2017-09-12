@@ -82,6 +82,9 @@ router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res
 
 router.put('/:chatID/updatedName', authenticator.checkLoggedOut, function(req, res, next) {
     manager.changeName(req.params.chatID, req.body.newName, function(rows) {
+        new ChatSearchManager().update(req.params.chatID, 'chat_name', req.body.newName, function(err, response) {
+            logger.info('updated chat name');
+        });
         res.status(200).send({
             success: true
         });
@@ -229,8 +232,6 @@ router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, nex
 });
 
 function chatRender(req, res, cachedCB, missCB) {
-    var notif_manager = new NotificationManager(new Notification(req.params.chatID, req.user.username, -1));
-
     if(req.params.chatID in req.session.members) {
         logger.info("post renderinfo cached");
         req.session.members[req.params.chatID].csrfToken = req.csrfToken();

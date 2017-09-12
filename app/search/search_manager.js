@@ -71,6 +71,7 @@ SearchManager.prototype.incrementField = function(id, field, incrementBy, callba
 SearchManager.prototype.update = function(id, field, value, callback) {
     var obj = {};
     obj[field] = value;
+    var that = this;
 
     search_client.update({
         index: that._index,

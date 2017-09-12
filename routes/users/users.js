@@ -30,17 +30,17 @@ router.get('/stats', authenticator.checkLoggedOut, function(req, res, next) {
 });
 
 //needs extra middleware to check if user is trying to access another user's profile
-router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
-    manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {
-        //this is very bad
-        req.session.members = members;
-        userJSON.num_chats = userJSON.list.length;
-        if(process.env.NODE_ENV === 'test') {
-            return res.status(200).send(userJSON);
-        }
-        return res.render('settings-profile', userJSON);
-    });
-});
+//router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
+    //manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {
+        ////this is very bad
+        //req.session.members = members;
+        //userJSON.num_chats = userJSON.list.length;
+        //if(process.env.NODE_ENV === 'test') {
+            //return res.status(200).send(userJSON);
+        //}
+        //return res.render('settings-profile', userJSON);
+    //});
+//});
 
 
 router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {

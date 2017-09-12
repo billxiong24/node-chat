@@ -100,11 +100,12 @@ function init(port) {
 
     require('../app/authentication/user-pass.js').passportAuth(passport);
     require('../routes')(app, passport);
+
     // catch 404 and forward to error handler
     app.use(function(req, res, next) {
-        var err = new Error('Not Found');
-        err.status = 404;
-        next(err);
+        res.send("404 not found.");
+        //next(err);
+        next();
     });
 
     // error handler
@@ -129,11 +130,11 @@ function init(port) {
 //to disable clustering and ip hashing, comment below line and just call init(3000);
 if(process.env.NODE_ENV === "test") {
     console.log("testing environment...");
-    init(3000);
+    init(PORT);
 }
 else {
     //require('./cluster_node.js')(cluster, http, init(0), PORT);
-    init(3000);
+    init(PORT);
 }
 
 //FIXME load testing does not work anymore because of csrf token
