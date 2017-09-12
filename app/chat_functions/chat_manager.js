@@ -153,4 +153,20 @@ ChatManager.prototype.loadMoreLines = function(username, chatID, lastTimeStamp, 
     });
 };
 
+ChatManager.prototype.changeCode = function(id, newCode, callback) {
+    var chat = new Chat(id);
+    chat.updateCode(newCode, function(rows) {
+        callback(rows);
+    });
+};
+
+ChatManager.prototype.changeName = function(id, newName, callback) {
+    var chat = new Chat(id);
+    chat.updateName(newName, function(rows) {
+        callback(rows);
+    });
+    
+};
+
+
 module.exports = ChatManager;

@@ -68,6 +68,22 @@ SearchManager.prototype.incrementField = function(id, field, incrementBy, callba
     });
 };
 
+SearchManager.prototype.update = function(id, field, value, callback) {
+    var obj = {};
+    obj[field] = value;
+
+    search_client.update({
+        index: that._index,
+        type: that._type,
+        id: id,
+        body: {
+            doc: obj
+        }
+    }, function(err, response) {
+        callback(err, response);
+    });
+};
+
 //NOTE expect this functionality to be overriden in subclasses
 SearchManager.prototype.search = function(searchTerm, callback) {};
 

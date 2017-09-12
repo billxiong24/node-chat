@@ -82,23 +82,4 @@ ChatSearchManager.prototype.search = function(searchTerm, from, callback) {
     });
 };
 
-//var csm = new ChatSearchManager();
-
-//csm.createDocument({
-    //id: 345345,
-    //chat_name: "hjowdy",
-    //num_messages: 0,
-    //num_members: 1
-//}, function(err, res) {
-    //logger.info("hi");
-//});
-//csm.incrementField(345345, 'num_messages', 1, function(err, res) {
-    //logger.info(res);
-    //logger.info('increment');
-//});
-//csm.search('hjowdy', function(err, res) {
-    //logger.info(res);
-//});
-
-
 module.exports = ChatSearchManager;

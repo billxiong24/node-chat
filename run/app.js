@@ -132,7 +132,8 @@ if(process.env.NODE_ENV === "test") {
     init(3000);
 }
 else {
-    require('./cluster_node.js')(cluster, http, init(0), PORT);
+    //require('./cluster_node.js')(cluster, http, init(0), PORT);
+    init(3000);
 }
 
 //FIXME load testing does not work anymore because of csrf token

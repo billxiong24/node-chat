@@ -1520,20 +1520,29 @@
 
 	var chatAjaxService = __webpack_require__(3);
 	const handlebars = Handlebars;
+	//HACK refactor duplicate code
+	function parseID(url) {
+	    var str = url;
+	    if(str.charAt(str.length - 1) === '/') {
+	        str = str.substring(0, str.length - 1);
+	    }
 
-	                        //<li><a href="#" id="name-change">Change name</a>
-	                        //</li>
-	                        //<li><a href="#" id="code-change">Change code</a>
-	                        //</li>
-	                        //<li><a href="#" id="description-change">Add description</a>
-	                        //</li>
-	                        //<li class="divider"></li>
-	                        //<li><a href="#" id="block-user">Block user</a>
-
+	    return str.split("/")[2];
+	}
+	function cutSlash(url) {
+	    var str = url;
+	    if(str.charAt(str.length - 1) === '/') {
+	        return str.substring(0, str.length - 1);
+	    }
+	    return str;
+	}
 	module.exports = (function() {
 	    var chatName = $('.change-name').text();
 	    var codeName = $(".chat-num-messages.code .chat-code").text();
 	    $(document).ready(function() {
+	        var csrfTokenObj = {
+	            _csrf: $('input[name=_csrf]').val()
+	        };
 
 	        $('#name-change').click(function(e) {
 	            e.preventDefault();
@@ -1563,11 +1572,30 @@
 
 	        $('.chat-code').on('submit', '.code-form', function(evt) {
 	            evt.preventDefault();
-	            //TODO PUT REQUEST
+	            var val = $('.code-input').val();
+	            return chatAjaxService.chatAjaxPromise(cutSlash(window.location.pathname)+'/updatedCode',
+	            'PUT', JSON.stringify({
+	                _csrf: csrfTokenObj._csrf,
+	                newCode: val
+	            }))
+	            .then(function(data) {
+	                codeName = val;
+	                $('.chat-code').html('<span class="chat-code">'+codeName+'</span>');
+	            });
 	        });
 
 	        $('.change-name').on('submit', '.name-form', function(evt) {
 	            evt.preventDefault();
+	            var val = $('.name-input').val();
+	            return chatAjaxService.chatAjaxPromise(cutSlash(window.location.pathname)+'/updatedName',
+	            'PUT', JSON.stringify({
+	                _csrf: csrfTokenObj._csrf,
+	                newName: val
+	            }))
+	            .then(function(data) {
+	                chatName = val;
+	                $('.change-name').html('<span class="change-name">'+chatName+'</span>');
+	            });
 	            //TODO PUT REQUEST
 	        });
 	        $('.change-name').on('blur', '.name-input', function(evt) {

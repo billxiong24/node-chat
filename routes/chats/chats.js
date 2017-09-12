@@ -80,6 +80,22 @@ router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res
     });
 });
 
+router.put('/:chatID/updatedName', authenticator.checkLoggedOut, function(req, res, next) {
+    manager.changeName(req.params.chatID, req.body.newName, function(rows) {
+        res.status(200).send({
+            success: true
+        });
+    });
+});
+
+router.put('/:chatID/updatedCode', authenticator.checkLoggedOut, function(req, res, next) {
+    manager.changeCode(req.params.chatID, req.body.newCode, function(rows) {
+        res.status(200).send({
+            success: true
+        });
+    });
+});
+
 router.post('/verify_chat', authenticator.checkLoggedOut, function(req, res, next) {
     var chat_id = req.body.chat_id;
     var code = req.body.code;

@@ -32,13 +32,7 @@
             <div class="sui-normal">
                 <a href="#" class="user-link profile-pic">
                     <div style="width: 60px; height: 60px">
-                        {{#if url}}
-                            <img id="prof-pic" src="https://scrible.s3.amazonaws.com/{{username}}/profile_pic.png" class="round" style="width: 60px; height: 60px;" alternate="{{first}}"/>
-                        {{/if}}
-                        <script type="text/javascript" charset="utf-8">
-                            var link = "https://scrible.s3.amazonaws.com/{{username}}/profile_pic.png"
-                            document.getElementById("prof-pic").src = link + '?' + new Date().getTime();
-                        </script>
+                        <img id="prof-pic" src="{{url}}" class="round" style="width: 60px; height: 60px; display: none" alternate="{{first}}"/>
                     </div>
                     <strong>{{first}} {{last}}</strong>
                 </a>
@@ -251,5 +245,11 @@
 <script type="text/javascript" charset="utf-8">
 var username = '{{username}}';
 var userid = '{{id}}'
+
+$(document).ready(function() {
+    var link = "https://scrible.s3.amazonaws.com/{{username}}/profile_pic.png"
+    {{!-- $("#prof-pic").attr('src', link + '?' + new Date().getTime()); --}}
+    $("#prof-pic").show();
+});
 </script>
 <script src="/javascripts/bundle/sidebar_bundle.js" type="text/javascript" charset="utf-8"></script>

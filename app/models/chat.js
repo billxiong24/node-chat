@@ -303,4 +303,24 @@ Chat.prototype.loadLists = function(user, callback=function(rows) {}, error=func
     
 };
 
+Chat.prototype.updateCode = function(value, callback) {
+    var query = 'UPDATE Chat SET code = ? WHERE id = ?';
+    update.call(this, query, value, callback);
+};
+
+Chat.prototype.updateName = function(value, callback) {
+    var query = 'UPDATE Chat SET chat_name = ? WHERE id = ?';
+    update.call(this, query, value, callback);
+};
+
+function update(query, value, callback) {
+    var that = this;
+    connection.execute(query, [value, this._id], function(rows) {
+        that._id = value;
+        callback(rows);
+    }, function(err) {
+        logger.error(err);
+    });
+}
+
 module.exports = Chat;
