@@ -43,23 +43,24 @@
 | microservices/chat/chat_service.js | 26 | error check for null
 | public/javascripts/chatViewModel.js | 1 | organize this using some frontend framework
 | public/javascripts/chatViewModel.js | 40 | user confirmation
-| public/javascripts/chat_render.js | 136 | dont hardcode this, okay for now
+| public/javascripts/chat_render.js | 140 | dont hardcode this, okay for now
 | public/javascripts/settings.js | 1 | need a password util to validate password
 | public/javascripts/settings.js | 39 | update result in UI
 | public/javascripts/settings.js | 45 | update errors in UI, too lazy
-| routes/chats/chats.js | 104 | include error message to pass to view
-| routes/chats/chats.js | 135 | find a way to test this, since we are resetting members every time in the test
-| routes/chats/chats.js | 150 | include error message to pass to view
-| routes/chats/chats.js | 227 | use microservice
-| public/javascripts/bundle/chat_bundle.js | 182 | dont hardcode this, okay for now
-| public/javascripts/bundle/chat_bundle.js | 943 | server
-| public/javascripts/bundle/chat_bundle.js | 1036 | refactor joinRoom in chatview to a super class or something
-| public/javascripts/bundle/chat_bundle.js | 1131 | fix dis timestamp
-| public/javascripts/bundle/chat_bundle.js | 1186 | numMessages should be extracted from here
-| public/javascripts/bundle/chat_bundle.js | 1198 | clean this up
-| public/javascripts/bundle/chat_bundle.js | 1272 | organize this using some frontend framework
-| public/javascripts/bundle/chat_bundle.js | 1311 | user confirmation
-| public/javascripts/bundle/chat_bundle.js | 1480 | refactor joinRoom in voteview to a super class or something
+| routes/chats/chats.js | 123 | include error message to pass to view
+| routes/chats/chats.js | 154 | find a way to test this, since we are resetting members every time in the test
+| routes/chats/chats.js | 169 | include error message to pass to view
+| routes/chats/chats.js | 244 | use microservice
+| public/javascripts/bundle/chat_bundle.js | 186 | dont hardcode this, okay for now
+| public/javascripts/bundle/chat_bundle.js | 948 | server
+| public/javascripts/bundle/chat_bundle.js | 1041 | refactor joinRoom in chatview to a super class or something
+| public/javascripts/bundle/chat_bundle.js | 1136 | fix dis timestamp
+| public/javascripts/bundle/chat_bundle.js | 1191 | numMessages should be extracted from here
+| public/javascripts/bundle/chat_bundle.js | 1203 | clean this up
+| public/javascripts/bundle/chat_bundle.js | 1277 | organize this using some frontend framework
+| public/javascripts/bundle/chat_bundle.js | 1316 | user confirmation
+| public/javascripts/bundle/chat_bundle.js | 1485 | refactor joinRoom in voteview to a super class or something
+| public/javascripts/bundle/chat_bundle.js | 1599 | PUT REQUEST
 | public/javascripts/bundle/home_bundle.js | 69 | set up other important information, such as chat lists
 | public/javascripts/bundle/home_bundle.js | 87 | ajax call to server
 | public/javascripts/bundle/home_bundle.js | 101 | some success here
@@ -77,6 +78,7 @@
 | public/javascripts/bundle/sidebar_bundle.js | 627 | organize this using some frontend framework
 | public/javascripts/bundle/sidebar_bundle.js | 666 | user confirmation
 | public/javascripts/bundle/signup_success_bundle.js | 57 | update the view here
+| public/javascripts/helpers/chat-settings.js | 79 | PUT REQUEST
 | public/javascripts/helpers/commonAjax.js | 85 | update result in UI
 | public/javascripts/helpers/commonAjax.js | 91 | update errors in UI, too lazy
 | public/javascripts/viewmodel/chatview.js | 14 | refactor joinRoom in chatview to a super class or something
@@ -95,7 +97,7 @@
 | gulpfile.js | 138 | ({
 | gulpfile.js | 181 | local host password shouldnot be here, but o well
 | routes/index.js | 87 | check email verified middleware
-| run/app.js | 138 | load testing does not work anymore because of csrf token
+| run/app.js | 140 | load testing does not work anymore because of csrf token
 | test/models.js | 223 | for some reason this test does not work well with others
 | test/testfile.js | 246 | should redirect home, but don't know how to tell if home is reached
 | app/models/line.js | 74 | duplicated code here but im too lazy
@@ -104,9 +106,9 @@
 | app/sockets/chatSocket.js | 78 | violates open close principle
 | app/workers/process_queue.js | 16 | accessing this from cache_store throws error- as usual, no idea why
 | public/javascripts/chatViewModel.js | 143 | quick hack, since no viewmodel currently holds votes
-| public/javascripts/bundle/chat_bundle.js | 1231 | sometimes socket drops connection for whatever fukcing reason
-| public/javascripts/bundle/chat_bundle.js | 1414 | quick hack, since no viewmodel currently holds votes
-| public/javascripts/bundle/chat_bundle.js | 1495 | this is ratchet as fuck omg
+| public/javascripts/bundle/chat_bundle.js | 1236 | sometimes socket drops connection for whatever fukcing reason
+| public/javascripts/bundle/chat_bundle.js | 1419 | quick hack, since no viewmodel currently holds votes
+| public/javascripts/bundle/chat_bundle.js | 1500 | this is ratchet as fuck omg
 | public/javascripts/bundle/home_bundle.js | 574 | quick hack, since no viewmodel currently holds votes
 | public/javascripts/bundle/settings_bundle.js | 720 | quick hack, since no viewmodel currently holds votes
 | public/javascripts/bundle/sidebar_bundle.js | 769 | quick hack, since no viewmodel currently holds votes

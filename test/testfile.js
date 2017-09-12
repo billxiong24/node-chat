@@ -438,58 +438,58 @@ describe('authentication routes', function() {
 });
 
 
-describe('test user profile route', function() {
-    it('should get user profile page correctly', function(done) {
-        agent.get('/users/jj45').then(function(result) {
-            result.should.have.status(200);
-            result.body.should.have.property('csrfToken');
-            result.body.should.have.property('email');
-            result.body.should.have.property('parseList');
-            result.body.should.have.property('list');
+//describe('test user profile route', function() {
+    //it('should get user profile page correctly', function(done) {
+        //agent.get('/users/jj45').then(function(result) {
+            //result.should.have.status(200);
+            //result.body.should.have.property('csrfToken');
+            //result.body.should.have.property('email');
+            //result.body.should.have.property('parseList');
+            //result.body.should.have.property('list');
 
-            return done();
-        });
-    });
+            //return done();
+        //});
+    //});
 
-    it('should redirect to users own profile, since accessing invalid profile', function(done) {
-        agent.get('/users/bx69').then(function(result) {
-            expect(result).to.redirect;
-            return done();
-        });
-    });
+    //it('should redirect to users own profile, since accessing invalid profile', function(done) {
+        //agent.get('/users/bx69').then(function(result) {
+            //expect(result).to.redirect;
+            //return done();
+        //});
+    //});
 
-    it('should correctly update users info', function(done) {
-        agent.get('/users/jj45').then(function(result) {
-            result.body.should.have.property('csrfToken');
+    //it('should correctly update users info', function(done) {
+        //agent.get('/users/jj45').then(function(result) {
+            //result.body.should.have.property('csrfToken');
 
-            return agent.put('/users/jj45/updatedInfo')
-            .send({
-                first: 'ernie',
-                last: 'johnson',
-                email: 'willxiong@duke.edu',
-                _csrf: result.body.csrfToken
-            }).then(function(result) {
-                return done();
-            });
-        });
-    });
+            //return agent.put('/users/jj45/updatedInfo')
+            //.send({
+                //first: 'ernie',
+                //last: 'johnson',
+                //email: 'willxiong@duke.edu',
+                //_csrf: result.body.csrfToken
+            //}).then(function(result) {
+                //return done();
+            //});
+        //});
+    //});
 
-    it('should correctly update users password', function(done) {
-        agent.get('/users/jj45').then(function(result) {
-            result.body.should.have.property('csrfToken');
+    //it('should correctly update users password', function(done) {
+        //agent.get('/users/jj45').then(function(result) {
+            //result.body.should.have.property('csrfToken');
 
-            return agent.put('/users/jj45/updatedPassword')
-            .send({
-                old_password: 'jones',
-                new_password: 'newpass',
-                _csrf: result.body.csrfToken
-            }).then(function(result) {
-                return done();
-            });
-        });
-    });
+            //return agent.put('/users/jj45/updatedPassword')
+            //.send({
+                //old_password: 'jones',
+                //new_password: 'newpass',
+                //_csrf: result.body.csrfToken
+            //}).then(function(result) {
+                //return done();
+            //});
+        //});
+    //});
 
-});
+//});
 
 function signupTest(message, route, data, callback) {
     var obj = {};
