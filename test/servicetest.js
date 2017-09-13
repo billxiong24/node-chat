@@ -86,7 +86,6 @@ describe('testing chat microservice', function() {
             expect(json.userJSON.csrfToken).to.equal('12345');
             expect(json.userJSON.id).to.equal('46f5a4a0d226b7e15cd3');
             clean_client.cleanup();
-
             return done();
         });
     });

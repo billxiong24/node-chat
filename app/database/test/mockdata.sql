@@ -43,7 +43,8 @@ CREATE TABLE `Chat` (
   `id` varchar(256) NOT NULL,
   `chat_name` varchar(256) NOT NULL,
   `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `code` varchar(20) NOT NULL
+  `code` varchar(20) NOT NULL,
+  `description` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
