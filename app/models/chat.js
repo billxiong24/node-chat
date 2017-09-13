@@ -13,6 +13,8 @@ var Chat = function Chat(id=null, name=null, code=null, stamp=null) {
     this._name = name;
     this._code = code;
     this._stamp = stamp;
+    this._description = undefined;
+    this._creator = undefined;
 
 };
 
@@ -55,7 +57,9 @@ Chat.prototype.toJSON = function(username, notifs, lines) {
         code: this._code,
         notifs: notifs,
         username: username,
-        lines: lines
+        lines: lines,
+        description: this._description,
+        creator: this._creator
     };
 };
 
@@ -85,7 +89,7 @@ Chat.prototype.load = function(user, transport) {
     var getChat = function(poolConnection) {
         conn = poolConnection;
         logger.debug(username, chatID);
-        return poolConnection.query('SELECT Chat.code, Chat.chat_name, MemberOf.creator FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?', [username, chatID]);
+        return poolConnection.query('SELECT Chat.code, Chat.description, Chat.chat_name, MemberOf.creator FROM Chat JOIN MemberOf ON Chat.id = MemberOf.chat_id AND MemberOf.username = ? AND MemberOf.chat_id = ?', [username, chatID]);
     };
 
     var transferChat = function(result) {
@@ -248,7 +252,6 @@ Chat.prototype.join = function(user, callback, verify=false) {
 
     var validateChat = function(result) {
         if(result.length === 0) {
-            logger.debug('the chat did not exist ***********************');
             return null;
         }
         that._name = result[0].chat_name;
@@ -297,7 +300,7 @@ Chat.prototype.join = function(user, callback, verify=false) {
 };
 
 Chat.prototype.loadLists = function(user, callback=function(rows) {}, error=function(err) {logger.error(err);}) {
-    var query = 'SELECT Chat.chat_name, Chat.id, Chat.code, Notifications.num_notifications, MemberOf.username, MemberOf.creator FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
+    var query = 'SELECT Chat.chat_name, Chat.id, Chat.code, Chat.description, Notifications.num_notifications, MemberOf.username, MemberOf.creator FROM Chat INNER JOIN MemberOf ON Chat.id = MemberOf.chat_id INNER JOIN Notifications ON Chat.id = Notifications.chat_id WHERE MemberOf.username = ? AND Notifications.username = ?';
 
     connection.execute(query, [user.getUsername(), user.getUsername()], callback, error);
     
@@ -322,5 +325,15 @@ function update(query, value, callback) {
         logger.error(err);
     });
 }
+
+Chat.prototype.addDescription = function(description) {
+    var that = this;
+    var query = 'UPDATE CHAT SET description = ? WHERE id = ?';
+    connection.execute(query, [description, this._id], function(rows) {
+        callback(rows);
+    }, function(err) {
+        logger.error(err);
+    });
+};
 
 module.exports = Chat;

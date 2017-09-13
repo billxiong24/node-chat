@@ -48,7 +48,9 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
             }
             members[list[i].id] = new Chat(list[i].id, list[i].chat_name, list[i].code)
                 .toJSON(list[i].username, list[i].num_notifications, null);
+            //FIXME add to part of JSON
             members[list[i].id].creator = list[i].creator;
+            members[list[i].id].description = list[i].description;
         }
         callback(userJSON, inSpecificChat, members);
     });
@@ -57,13 +59,10 @@ ChatManager.prototype.loadChatLists = function (csrfToken, userObj, callback, ch
 ChatManager.prototype.joinChat = function(username, chatCode, failure, success, chatID=null) {
     var chatobj = new Chat();
     //fake builder pattern again
-    logger.debug(chatID, 'THIS IS CHAT ID');
     if(chatID) {
         chatobj.setID(chatID);
     }
-    logger.info("joining code", chatCode);
     chatobj.setCode(chatCode);
-
     var sessionStore = function(chatobj) {
         return function(result) {
             if(result === null) {
@@ -75,6 +74,8 @@ ChatManager.prototype.joinChat = function(username, chatCode, failure, success, 
             }
 
             var chatobjJSON = chatobj.toJSON(username, 0, null);
+            chatobjJSON.description = result.description;
+            chatobjJSON.creator = result.creator;
             success(chatobjJSON);
         };
     };
@@ -166,6 +167,13 @@ ChatManager.prototype.changeName = function(id, newName, callback) {
         callback(rows);
     });
     
+};
+
+ChatManager.prototype.changeDescription = function(id, description, callback) {
+    var chat = new Chat(id);
+    chat.addDescription(description, function(rows) {
+        callback(rows);
+    });
 };
 
 

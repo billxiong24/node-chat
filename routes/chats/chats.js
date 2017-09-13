@@ -99,6 +99,14 @@ router.put('/:chatID/updatedCode', authenticator.checkLoggedOut, function(req, r
     });
 });
 
+router.post('/:chatID/newDescription', authenticator.checkLoggedOut, function(req, res, next) {
+    manager.addDescription(req.params.chatID, req.body.description, function(rows) {
+        res.status(200).send({
+            success: true
+        });
+    });
+});
+
 router.post('/verify_chat', authenticator.checkLoggedOut, function(req, res, next) {
     var chat_id = req.body.chat_id;
     var code = req.body.code;

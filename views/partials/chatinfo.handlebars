@@ -14,7 +14,8 @@
                         </li>
                         <li id="code-change"><a href="#" >Change code</a>
                         </li>
-                        <li id="description-change"><a href="#" >Add description</a>
+                        <li id="description-change">
+                            <a href="javascript:;" onclick="jQuery('#modal-12').modal('show', {backdrop: 'static'});" >Edit description</a>
                         </li>
                         <li class="divider"></li>
                         <li id="block-user"><a href="#" >Block user</a>
@@ -26,9 +27,45 @@
             <div class="chat-num-messages code">Code: <span class="chat-code">{{code}}</span></div>
     </div>
     <i class="fa fa-star"></i>
+    <span class="pull-right" style="margin-top: 15px;">
+        <a href="#" style="">Description</a>
+    </span>
     <div class="pull-right">
+
         {{!-- New messages: <span class="numMessages pull-right"></span> --}}
     </div>
 </div> <!-- end chat-header -->
+<div class="modal fade" id="modal-12">
+    <form class="description-submit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add a Description (400 characters max)</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">Description</label>
+
+                                <textarea type="text" class="form-control" name="description"/>
+                            </div>	
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="close-button btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="password-submit btn btn-info">Update Description</button>
+                </div>
+            </div>
+        </div>
+        
+    </form>
+    
+</div>
 
             

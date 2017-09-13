@@ -24,6 +24,19 @@ module.exports = (function() {
             _csrf: $('input[name=_csrf]').val()
         };
 
+        $('.description-submit').submit(function(e) {
+            e.preventDefault();
+            var val = $('textarea[name=description]').val();
+
+            chatAjaxService.chatAjaxPromise(cutSlash(window.location.pathname) + '/newDescription', 'POST', JSON.stringify({
+                description: val,
+                _csrf: csrfTokenObj._csrf
+            }))
+            .then(function(data) {
+                //TODO some ui change here
+            });
+        });
+
         $('#name-change').click(function(e) {
             e.preventDefault();
             var html = handlebars.templates.chat_settings({
