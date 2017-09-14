@@ -9,6 +9,7 @@
   "dependencies": {
     "async": "^2.5.0",
     "aws-sdk": "^2.114.0",
+    "axios": "^0.16.2",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.1",
     "chai": "^4.1.2",
@@ -75,6 +76,7 @@
     "promise-mysql": "^3.0.2",
     "redis": "^2.8.0",
     "redlock": "^3.0.0",
+    "request": "https://registry.npmjs.org/request/-/request-2.81.0.tgz",
     "run-sequence": "^2.1.0",
     "serve-favicon": "^2.4.4",
     "shrinkwrap": "^0.4.0",

@@ -51,8 +51,8 @@ router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator
         if(!jsonObj || !jsonObj.jsonObj || jsonObj.affectedRows === 0) {
             return res.status(400).send('error');
         }
-        req.session.user = jsonObj.jsonObj;
-        logger.info(req.session.user, "updated req session put request");
+        //req.session.user = jsonObj.jsonObj;
+        //logger.info(req.session.user, "updated req session put request");
         clean_client.cleanup();
         res.status(200).send('done');
     });
@@ -61,7 +61,6 @@ router.put('/:username/updatedPassword', authenticator.checkLoggedOut, authentic
     var clean_client = new CleanClient();
     var userRequest = new UserRequest(clean_client.genClient());
     userRequest.updatePasswordRequest(req.user, req.body.old_password, req.body.new_password, function(channel, jsonObj) {
-        logger.debug('updated password', jsonObj);
         res.status(200).send(jsonObj);
         clean_client.cleanup();
     });
