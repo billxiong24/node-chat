@@ -20,7 +20,6 @@ if(!manager) {
 router.get('/:chatID', function(req, res, next) {
 
     var userJSON = Object.assign({}, req.query);
-    logger.debug(userJSON, 'IN API GET CHAT');
 
 
     //TODO make csrfToken null
