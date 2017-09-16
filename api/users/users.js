@@ -55,7 +55,7 @@ router.put('/:username/updatedInfo', function(req, res, next) {
     });
 });
 router.put('/:username/updatedPassword', function(req, res, next) {
-    var user_manager = new UserManager(new UserCache(req.params.username, req.body.id).setJSON(req.body));
+    var user_manager = new UserManager(new UserCache(req.params.username));
     user_manager.updatePassword(req.body.old_password, req.body.new_password, function(rows) {
         res.status(200).send(rows);
     });

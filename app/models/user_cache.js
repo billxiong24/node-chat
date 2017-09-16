@@ -110,6 +110,13 @@ UserCache.prototype.addToCache = function(jsonObj = null, inclPass = true) {
     return cache_functions.addJSON(this.getKey(), userObj, null, true);
 };
 
+UserCache.prototype.addFieldToCache = function(field, value) {
+    cache_functions.addJSONElement(this.getKey(), field, value, function(result) {
+        logger.info(result, 'adding specific field');
+
+    });
+};
+
 UserCache.prototype.retrieveFromCache = function() {
     return cache_functions.retrieveJSON(this.getKey(), null, true);
 };
@@ -176,7 +183,7 @@ UserCache.prototype.changePassword = function(callback) {
     var query = 'UPDATE User SET password = ? WHERE username = ?';
     connection.execute(query, [pass, username], function(rows) {
         //FIXME only update password in cache
-        that.addToCache();
+        that.addFieldToCache('password', pass);
         callback(rows);
 
     }, function(err) {
@@ -207,7 +214,11 @@ UserCache.prototype.updateSettings = function(newObj, callback=function(rows) {}
             return callback(rows, null);
         }
         //we're gonna have to update cache anyways
-        that.addToCache(null, false);
+        that.addToCache({
+            first: that.getFirst(),
+            last: that.getLast(),
+            email: that.getEmail()
+        }, false);
         //sessionObj = that.toJSON();
         callback(rows, that.toJSON());
 
