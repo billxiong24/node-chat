@@ -175,6 +175,7 @@ UserCache.prototype.changePassword = function(callback) {
 
     var query = 'UPDATE User SET password = ? WHERE username = ?';
     connection.execute(query, [pass, username], function(rows) {
+        //FIXME only update password in cache
         that.addToCache();
         callback(rows);
 

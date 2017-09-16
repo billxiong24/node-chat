@@ -15,27 +15,12 @@ if(!manager) {
     manager = new Manager(new Chat());
 }
 
-router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
-    /* set all cookies here */
-    //prevent user from manipulating cookie with browser javascript 
-    //res.cookie('userid', req.session.user.id, {
-        //httpOnly: true,
-        //secure: true
-    //});
+router.get('/', function(req, res, next) {
+    var userObj = Object.assign({}, req.query);
 
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
-
-    chatRequester.loadChatListRequest(null, req.user, function(channel, json) {
-        clean_client.cleanup();
-        res.json(json.userJSON);
+    manager.loadChatLists(null, userObj, function(userJSON) {
+        res.json(userJSON);
     });
 });
-
-/* POST request for fetching all data needed for home page */
-//router.post('/fetch_home', authenticator.checkLoggedOut, function(req, res, next) {
-    //[> send all relevant data here <]
-    //res.status(200).json({cookie: req.session.user.id});
-//});
 
 module.exports = router;

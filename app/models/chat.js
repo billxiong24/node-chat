@@ -236,6 +236,7 @@ Chat.prototype.insert = function(user, callback=function(result) {}) {
 Chat.prototype.join = function(user, callback, verify=false) {
     var that = this;
     var username = user.getUsername();
+    var connect;
 
     var startTrans = function(poolConnection) {
         connect = poolConnection;
@@ -265,7 +266,7 @@ Chat.prototype.join = function(user, callback, verify=false) {
         if(result === null) {
             return null;
         }
-        return connection.executePromise('SELECT MemberOf.creator FROM MemberOf WHERE username=? AND chat_id = ? ', [username, that._id]).then(function(rows) {
+        return connect.query('SELECT MemberOf.creator FROM MemberOf WHERE username=? AND chat_id = ? ', [username, that._id]).then(function(rows) {
             if(rows.length === 0) {
                 connect.query('INSERT INTO MemberOf SET ?', {chat_id: result.id, username});
                 return result;

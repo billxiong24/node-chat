@@ -1,7 +1,6 @@
 var logger = require('../../util/logger.js')(module);
 var express = require('express');
 var router = express.Router();
-var authenticator = require('../../app/authentication/user-pass.js');
 const Manager = require('../../app/chat_functions/chat_manager.js');
 const Chat =  require('../../app/models/chat.js');
 const Notification = require('../../app/models/notification.js');
@@ -19,22 +18,18 @@ if(!manager) {
     manager = new Manager(new Chat());
 }
 router.get('/:chatID', function(req, res, next) {
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
+
+    var userJSON = Object.assign({}, req.query);
+    logger.debug(userJSON, 'IN API GET CHAT');
+
 
     //TODO make csrfToken null
-    chatRequester.loadChatListRequest(null, req.user, function(channel, json) {
-        clean_client.cleanup();
-
-        logger.info("------------------------------------------------");
-        //req.session.members = json.members;
-        logger.debug("*************", json.userJSON, "*******************8");
-        if(!json.inChat) {
-            return res.send({
-                inChat: false
-            });
-        }
-       res.json(json.userJSON);
+    manager.loadChatLists(null, userJSON, function(userJSON, inSpecificChat, members) {
+        res.status(200).json({
+            userJSON: userJSON,
+            inSpecificChat: inSpecificChat,
+            members: members
+        });
     }, req.params.chatID);
 });
 
@@ -54,18 +49,11 @@ router.get('/:chatID', function(req, res, next) {
 
 router.get('/:chatID/renderInfo', function(req, res, next) {
     //hack
-    var cachedCB = function(members) {
-        res.status(200).send(members[req.params.chatID]);
-    };
     var missCB = function(deepCopy) {
         res.status(200).send(deepCopy);
     };
-    chatRender(req, res, cachedCB, missCB);
+    chatRender(req, res, missCB);
 });
-
-//router.post('/:chatID/renderNotifs', function(req, res, next) {
-
-//});
 
 //TODO make stateless
 //router.get('/:chatID/initLines', function(req, res, next) {
@@ -103,9 +91,8 @@ router.post('/:chatID/newDescription', function(req, res, next) {
     });
 });
 
-router.post('/verify_chat', authenticator.checkLoggedOut, function(req, res, next) {
+router.post('/verify_chat', function(req, res, next) {
     var chat_id = req.body.chat_id;
-    var code = req.body.code;
 
     var failure = function() { 
         logger.info("chat not found");
@@ -122,70 +109,33 @@ router.post('/verify_chat', authenticator.checkLoggedOut, function(req, res, nex
             joined: true
         });
     };
-
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
-
-    chatRequester.joinChatRequest(req.user.username, req.body.code, function(channel, json) {
-        clean_client.cleanup();
-        logger.info("checked specific chat");
-        logger.info(json);
-        if(json.join_error) {
-            failure();
-        }
-        else {
-            success(json);
-        }
-    }, chat_id);
+    manager.joinChat(req.body.username, req.body.code, failure, success, chat_id);
 });
 
-router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
+router.post('/join_chat', function(req, res, next) {
     //TODO find a way to test this, since we are resetting members every time in the test
     //chat was not found
     var failure = function() { 
         logger.info("chat not found");
-        if(process.env.NODE_ENV === 'test') {
-            return res.json({error: 'wrong password'});
-        }
+        return res.json({error: 'wrong password'});
         //TODO include error message to pass to view
-        return res.redirect('/home'); 
     };
     var success = function(chatJSON) {
         //enter this function if chat was not joined before
         logger.info("chat found", chatJSON);
-        if(process.env.NODE_ENV === 'test') {
-            return res.status(200).json({joined: true});
-        }
+        res.status(200).json({joined: true});
 
         new ChatSearchManager().incrementField(chatJSON.id, 'num_members', 1, function(err, result) {
             logger.info(result, '**** result from incrementing members in search ****');
         });
-        //when redirected, the chat info will be cached
-        res.redirect('/chats/' + chatJSON.id);
     };
 
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
-
-    chatRequester.joinChatRequest(req.user.username, req.body.joinChat, function(channel, json) {
-        clean_client.cleanup();
-
-        logger.info("joined chat micro callback");
-        if(json.join_error) {
-            failure();
-        }
-        else {
-            success(json);
-        }
-    });
+    manager.joinChat(req.body.username, req.body.joinChat, failure, success);
 });
 
-router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
+router.post('/create_chat', function(req, res, next) {
 
-    chatRequester.createChatRequest(req.user.username, req.body.createChat, function(channel, chatInfo) {
-        clean_client.cleanup();
+    manager.createChat(req.body.username, req.body.createChat, function(chatInfo) {
 
         //req.session.members[chatInfo.id] = chatInfo;
         logger.debug(chatInfo, "****chat infofooo****");
@@ -193,13 +143,12 @@ router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, nex
         new ChatSearchManager().createDocument(chatInfo, function(err, res) {
             logger.info("added document to index after creating chat", res);
         });
-        res.status(200);
-        res.redirect('/chats/' + chatInfo.id);
+        res.status(200).json(chatInfo);
     });
 });
 
-router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
-    var userManager = new UserManager(new UserCache(req.user.username));
+router.post('/remove_user', function(req, res, next) {
+    var userManager = new UserManager(new UserCache(req.body.username));
     userManager.leave(req.body.chatID, function(rows) {
         //this was a huge bug, and why we need unit tests
         //delete req.session.members[req.body.chatID];
@@ -211,20 +160,15 @@ router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, nex
     });
 });
 
-function chatRender(req, res, cachedCB, missCB) {
+function chatRender(req, res, missCB) {
     logger.info("post renderinfo not cached");
     //TODO use microservice
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
 
-    chatRequester.loadChatRequest(req.user.username, req.params.chatID, function(channel, deepCopy) {
-        clean_client.cleanup();
-        logger.info(deepCopy);
+    manager.loadChat(req.query.username, req.params.chatID, function(deepCopy) {
         if(!deepCopy) {
             return missCB(null);
         }
         var infoDeepCopy = JSON.parse(JSON.stringify(deepCopy));
-        infoDeepCopy.csrfToken = req.csrfToken();
         missCB(infoDeepCopy);
     });
 }
