@@ -2,14 +2,25 @@
 | Filename | line # | TODO
 |:------|:------:|:------
 | gulpfile.js | 25 | precompile handlebars,
+| api/index.js | 13 | test this extensively
 | routes/index.js | 70 | test this extensively
 | routes/index.js | 72 | set confirmed to true in both cache and database
 | routes/index.js | 76 | render some error page
 | test/models.js | 31 | create testing database environment
 | test/models.js | 45 | check cache to see exists
 | test/models.js | 65 | check cache to see exists
-| test/testfile.js | 120 | check for accuracy, too lazy rn
-| test/testfile.js | 145 | test 1 with memberof, and one without
+| test/testfile.js | 121 | check for accuracy, too lazy rn
+| test/testfile.js | 146 | test 1 with memberof, and one without
+| api/chats/chats.js | 25 | make csrfToken null
+| api/chats/chats.js | 35 | make stateless
+| api/chats/chats.js | 57 | make stateless
+| api/chats/chats.js | 98 | include error message to pass to view
+| api/chats/chats.js | 118 | find a way to test this, since we are resetting members every time in the test
+| api/chats/chats.js | 123 | include error message to pass to view
+| api/search/search.js | 11 | Figuire this shit out
+| app/authentication/user-pass.js | 41 | verify session token as well
+| app/authentication/user-pass.js | 186 | add stronger password checker
+| app/authentication/user-pass.js | 188 | less lazy error message lmao
 | app/cache/cache_store.js | 1 | Look into issue: Asynchronous AOF fsync is taking too long (disk is busy?). Writing the AOF buffer without
 | app/chat_functions/chat_manager.js | 13 | use async library to make things more asynchronous
 | app/chat_functions/chat_manager.js | 21 | error checking
@@ -25,7 +36,7 @@
 | app/models/user_cache.js | 12 | USE TRANSACTION for multiple redis commands for atomicity
 | app/models/user_cache.js | 30 | avoid having to open a connection(small optimization)
 | app/models/user_cache.js | 80 | need real error handling here
-| app/models/user_cache.js | 130 | function works, add user back to cache if not in
+| app/models/user_cache.js | 137 | function works, add user back to cache if not in
 | app/search/chat_search_manager.js | 17 | add suggestions to body
 | app/search/chat_search_manager.js | 79 | need to check if elastic search is running, other wise returns undefined
 | app/search/search_info_generate.js | 19 | generate index and types for user data
@@ -44,13 +55,7 @@
 | public/javascripts/settings.js | 1 | need a password util to validate password
 | public/javascripts/settings.js | 39 | update result in UI
 | public/javascripts/settings.js | 45 | update errors in UI, too lazy
-| routes/chats/chats.js | 131 | include error message to pass to view
-| routes/chats/chats.js | 162 | find a way to test this, since we are resetting members every time in the test
-| routes/chats/chats.js | 177 | include error message to pass to view
-| routes/chats/chats.js | 252 | use microservice
-| app/authentication/user-pass.js | 41 | verify session token as well
-| app/authentication/user-pass.js | 186 | add stronger password checker
-| app/authentication/user-pass.js | 188 | less lazy error message lmao
+| routes/chats/chats.js | 173 | find a way to test this, since we are resetting members every time in the test
 | public/javascripts/bundle/chat_bundle.js | 186 | dont hardcode this, okay for now
 | public/javascripts/bundle/chat_bundle.js | 948 | server
 | public/javascripts/bundle/chat_bundle.js | 1041 | refactor joinRoom in chatview to a super class or something
@@ -60,8 +65,8 @@
 | public/javascripts/bundle/chat_bundle.js | 1277 | organize this using some frontend framework
 | public/javascripts/bundle/chat_bundle.js | 1316 | user confirmation
 | public/javascripts/bundle/chat_bundle.js | 1485 | refactor joinRoom in voteview to a super class or something
-| public/javascripts/bundle/chat_bundle.js | 1556 | some ui change here
-| public/javascripts/bundle/chat_bundle.js | 1612 | PUT REQUEST
+| public/javascripts/bundle/chat_bundle.js | 1557 | some ui change here
+| public/javascripts/bundle/chat_bundle.js | 1613 | PUT REQUEST
 | public/javascripts/bundle/home_bundle.js | 69 | set up other important information, such as chat lists
 | public/javascripts/bundle/home_bundle.js | 87 | ajax call to server
 | public/javascripts/bundle/home_bundle.js | 101 | some success here
@@ -79,8 +84,8 @@
 | public/javascripts/bundle/sidebar_bundle.js | 627 | organize this using some frontend framework
 | public/javascripts/bundle/sidebar_bundle.js | 666 | user confirmation
 | public/javascripts/bundle/signup_success_bundle.js | 57 | update the view here
-| public/javascripts/helpers/chat-settings.js | 36 | some ui change here
-| public/javascripts/helpers/chat-settings.js | 92 | PUT REQUEST
+| public/javascripts/helpers/chat-settings.js | 37 | some ui change here
+| public/javascripts/helpers/chat-settings.js | 93 | PUT REQUEST
 | public/javascripts/helpers/commonAjax.js | 85 | update result in UI
 | public/javascripts/helpers/commonAjax.js | 91 | update errors in UI, too lazy
 | public/javascripts/viewmodel/chatview.js | 14 | refactor joinRoom in chatview to a super class or something
@@ -97,14 +102,15 @@
 | Filename | line # | FIXME
 |:------|:------:|:------
 | gulpfile.js | 138 | ({
-| gulpfile.js | 181 | local host password shouldnot be here, but o well
+| api/index.js | 14 | check email verified middleware
 | routes/index.js | 87 | check email verified middleware
 | run/app.js | 140 | load testing does not work anymore because of csrf token
 | test/models.js | 223 | for some reason this test does not work well with others
-| test/testfile.js | 246 | should redirect home, but don't know how to tell if home is reached
+| test/testfile.js | 247 | should redirect home, but don't know how to tell if home is reached
 | app/chat_functions/chat_manager.js | 51 | add to part of JSON
 | app/models/line.js | 74 | duplicated code here but im too lazy
-| app/models/user_cache.js | 219 | assuming user in cache, since user has just logged in- risky but low chance of anything otherwise
+| app/models/user_cache.js | 185 | only update password in cache
+| app/models/user_cache.js | 231 | assuming user in cache, since user has just logged in- risky but low chance of anything otherwise
 | app/models/user_manager.js | 26 | refactor this to use redis promises (bluebird)
 | app/sockets/chatSocket.js | 78 | violates open close principle
 | app/workers/process_queue.js | 16 | accessing this from cache_store throws error- as usual, no idea why

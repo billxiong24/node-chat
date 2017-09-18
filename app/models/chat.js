@@ -96,6 +96,7 @@ Chat.prototype.load = function(user, transport) {
         if(result.length > 0) {
             that._code = result[0].code;
             that._name = result[0].chat_name;
+            that._creator = result[0].creator;
             return conn;
         }
         that._code = that._name = null;

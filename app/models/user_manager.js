@@ -31,13 +31,16 @@ UserManager.prototype.signup = function(password, signupFailure, signupSuccess) 
         that._userObj.insert(function(userObj) {
             var jsonObj = userObj;
             delete jsonObj.password;
-            getImgData('../public/images/default.png').then(function(data) {
-                var picManager = new PicManager(new Pic());
-                return picManager.storeImage(jsonObj.username, 'profile_pic.png', data);
-            }).then(function(data) {
-                signupSuccess(jsonObj);
-                return null;
-            });
+            if(process.env.NODE_ENV !== 'test') {
+                return getImgData('../public/images/default.png').then(function(data) {
+                    var picManager = new PicManager(new Pic());
+                    return picManager.storeImage(jsonObj.username, 'profile_pic.png', data);
+                }).then(function(data) {
+                    signupSuccess(jsonObj);
+                    return null;
+                });
+            }
+            return signupSuccess(jsonObj);
         },
         function(err) {
             return signupFailure();
@@ -70,8 +73,9 @@ UserManager.prototype.authenticate = function(password, loginResult) {
     var loginValidate = function(result) {
         logger.debug("releasing connection");
         connection.release(conn);
-
-        if(!result) { return null; }
+        if(!result) {
+            return null; 
+        }
         delete sqlUser.password;
         return sqlUser;
     };
@@ -130,6 +134,7 @@ UserManager.prototype.updateUserProfile = function(infoObj, callback) {
 function getImgData(path) {
     //HACK super ugly and need to find a way to stub this for testing
     if(process.env.NODE_ENV === 'test') {
+        console.log("test e vironment picture");
         return new Promise(function(resolve, reject) {
             resolve({});
         });

@@ -162,6 +162,7 @@ function chatRender(req, res, missCB) {
         if(!deepCopy) {
             return missCB(null);
         }
+        console.log(deepCopy);
         var infoDeepCopy = JSON.parse(JSON.stringify(deepCopy));
         missCB(infoDeepCopy);
     });

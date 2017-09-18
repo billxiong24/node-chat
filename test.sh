@@ -7,6 +7,11 @@ cd redisconf || echo "failed build";
 #start redis cluster
 printf 'yes' | ./build_cluster.sh
 
+export NODE_ENV=test
+
+
+node ../run/api.js &
+API_PID="$!"
 #run unit and integration tests (gulp clean && mocha)
 if [ "$#" -gt 0 ] && [ "$1" == "cover" ]; then
     echo "================================"
@@ -23,6 +28,6 @@ else
 fi
 
 
-
 ./clean.sh
+kill -2 $API_PID
 cd ../ || echo "failed to change to upper dir";

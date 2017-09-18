@@ -220,7 +220,6 @@ function passportAuth(passport) {
         var loginResult = function(user) {
             if(!user) {return done(null, false, req.flash('error', 'Login error.')); }
             req.session.user = user;
-            //req.session.rooms = [];
             req.session.members = {};
             return done(null, user);
         };

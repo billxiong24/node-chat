@@ -65,6 +65,7 @@ router.get('/:chatID/renderInfo', authenticator.checkLoggedOut, function(req, re
         res.status(200).send(members[req.params.chatID]);
     };
     var missCB = function(deepCopy) {
+        deepCopy.csrfToken = req.csrfToken();
         res.status(200).send(deepCopy);
     };
     chatRender(req, res, cachedCB, missCB);
@@ -274,6 +275,7 @@ function chatRender(req, res, cachedCB, missCB) {
             }
         })
         .then(function(response) {
+            console.log("reached callback");
             missCB(response.data);
         });
     }
