@@ -23,6 +23,7 @@ module.exports = (function() {
         var csrfTokenObj = {
             _csrf: $('input[name=_csrf]').val()
         };
+        console.log(csrfTokenObj._csrf);
 
         $('.description-submit').submit(function(e) {
             e.preventDefault();

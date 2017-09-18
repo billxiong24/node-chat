@@ -13,35 +13,37 @@ const CleanClient = require('../../app/cache/clean_client.js');
 var ChatRequest = require('../../microservices/chat/chat_requester.js');
 var NotifRequest = require('../../microservices/notifs/notif_request.js');
 var ChatSearchManager = require('../../app/search/chat_search_manager.js');
+var axios = require('axios');
 
 var manager;
 if(!manager) {
     manager = new Manager(new Chat());
 }
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
-
-    chatRequester.loadChatListRequest(req.csrfToken(), req.user, function(channel, json) {
-        clean_client.cleanup();
-
-        logger.info("received in", req.user.username);
-        logger.info("------------------------------------------------");
-        req.session.members = json.members;
-        logger.debug("*************", json.userJSON, "*******************8");
+    axios({
+        method: 'get',
+        baseURL: 'http://localhost/',
+        url: '/api/chats/'+req.params.chatID,
+        params: req.user,
+        proxy: {
+            host: 'localhost',
+            port: 5000
+        }
+    }).then(function(response) {
+        req.session.members = response.data.members;
         if(process.env.NODE_ENV === 'test') {
-            if(!json.inChat) {
+            if(!response.data.inSpecificChat) {
                 return res.redirect('/home');
             }
-            res.status(200).send(json.userJSON);
+            return res.status(200).json(response.data.userJSON);
         }
-        else {
-            if(!json.inChat) {
-                return res.redirect('/home');
-            }
-            res.render('groupchat', json.userJSON);
+        if(!response.data.inSpecificChat) {
+            return res.redirect('/home');
         }
-    }, req.params.chatID);
+        //dont forget csrftoken
+        response.data.userJSON.csrfToken = req.csrfToken();
+        res.render('groupchat', response.data.userJSON);
+    });
 });
 
 router.get('/:chatID/loadLines', authenticator.checkLoggedOut, function(req, res, next) {
@@ -81,36 +83,61 @@ router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res
 });
 
 router.put('/:chatID/updatedName', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.changeName(req.params.chatID, req.body.newName, function(rows) {
-        new ChatSearchManager().update(req.params.chatID, 'chat_name', req.body.newName, function(err, response) {
-            logger.info('updated chat name');
-        });
-        res.status(200).send({
-            success: true
-        });
+    axios({
+        method: 'put',
+        baseURL: 'http://localhost/',
+        url: '/api/chats/' + req.params.chatID + '/updatedName',
+        data: {
+            newName: req.body.newName
+        },
+        proxy: {
+            host: 'localhost',
+            port: 5000
+        }
+    }).then(function(response) {
+        res.status(200).send(response.data);
     });
 });
 
 router.put('/:chatID/updatedCode', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.changeCode(req.params.chatID, req.body.newCode, function(rows) {
-        res.status(200).send({
-            success: true
-        });
+    axios({
+        method: 'put',
+        baseURL: 'http://localhost/',
+        url: '/api/chats/' + req.params.chatID + '/updatedCode',
+        data: {
+            newCode: req.body.newCode
+        },
+        proxy: {
+            host: 'localhost',
+            port: 5000
+        }
+    }).then(function(response) {
+        res.status(200).send(response.data);
     });
 });
 
 router.post('/:chatID/newDescription', authenticator.checkLoggedOut, function(req, res, next) {
-    manager.addDescription(req.params.chatID, req.body.description, function(rows) {
-        res.status(200).send({
-            success: true
-        });
-    });
+    //axios({
+        //method: 'post',
+        //baseURL: 'http://localhost/',
+        //url: '/api/chats/' + req.params.chatID + '/updatedName',
+        //data: {
+            //newName: req.body.newName
+        //},
+        //proxy: {
+            //host: 'localhost',
+            //port: 5000
+        //}
+    //}).then(function(response) {
+        //res.status(200).send({
+            //success: true
+        //});
+    //});
 });
 
 router.post('/verify_chat', authenticator.checkLoggedOut, function(req, res, next) {
     var chat_id = req.body.chat_id;
     var code = req.body.code;
-
     for(var key in req.session.members) {
         //chat code was found 
         if(req.session.members[key].code === code && req.session.members[key].id === chat_id) {
@@ -123,39 +150,22 @@ router.post('/verify_chat', authenticator.checkLoggedOut, function(req, res, nex
             return;
         }
     }
-    var failure = function() { 
-        logger.info("chat not found");
-        if(process.env.NODE_ENV === 'test') {
-            return res.json({error: 'wrong password'});
+    axios({
+        method: 'post',
+        baseURL: 'http://localhost/',
+        url: '/api/chats/verify_chat',
+        data: {
+            username: req.session.user.username,
+            code: code,
+            chat_id: chat_id
+        },
+        proxy: {
+            host: 'localhost',
+            port: 5000
         }
-        //TODO include error message to pass to view
-        return res.json({
-            error: true
-        });
-    };
-    var success = function(chatJSON) {
-        logger.info("chat found", chatJSON);
-        req.session.members[chatJSON.id] = chatJSON;
-        //when redirected, the chat info will be cached
-        return res.json({
-            joined: true
-        });
-    };
-
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
-
-    chatRequester.joinChatRequest(req.user.username, req.body.code, function(channel, json) {
-        clean_client.cleanup();
-        logger.info("checked specific chat");
-        logger.info(json);
-        if(json.join_error) {
-            failure();
-        }
-        else {
-            success(json);
-        }
-    }, chat_id);
+    }).then(function(response) {
+        return res.json(response.data);
+    });
 });
 
 router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next) {
@@ -169,73 +179,76 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         }
     }
     //chat was not found
-    var failure = function() { 
-        logger.info("chat not found");
-        if(process.env.NODE_ENV === 'test') {
-            return res.json({error: 'wrong password'});
+    axios({
+        method: 'post',
+        baseURL: 'http://localhost/',
+        url: '/api/chats/join_chat',
+        data: {
+            username: req.session.user.username,
+            joinChat: req.body.joinChat
+        },
+        proxy: {
+            host: 'localhost',
+            port: 5000
         }
-        //TODO include error message to pass to view
-        return res.redirect('/home'); 
-    };
-    var success = function(chatJSON) {
-        //enter this function if chat was not joined before
-        logger.info("chat found", chatJSON);
-        req.session.members[chatJSON.id] = chatJSON;
-        if(process.env.NODE_ENV === 'test') {
-            return res.status(200).json({joined: true});
-        }
-
-        new ChatSearchManager().incrementField(chatJSON.id, 'num_members', 1, function(err, result) {
-            logger.info(result, '**** result from incrementing members in search ****');
-        });
-        //when redirected, the chat info will be cached
-        res.redirect('/chats/' + chatJSON.id);
-    };
-
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
-
-    chatRequester.joinChatRequest(req.user.username, req.body.joinChat, function(channel, json) {
-        clean_client.cleanup();
-
-        logger.info("joined chat micro callback");
-        if(json.join_error) {
-            failure();
+    })
+    .then(function(response) {
+        if(response.data.error) {
+            if(process.env.NODE_ENV === 'test') {
+                return res.json({error: 'wrong password'});
+            }
+            res.redirect('/home');
         }
         else {
-            success(json);
+            if(process.env.NODE_ENV == 'test') {
+                return res.json({joined: true});
+            }
+            new ChatSearchManager().incrementField(response.data.id, 'num_members', 1, function(err, result) {
+                logger.info(result, '**** result from incrementing members in search ****');
+            });
+            logger.info(response.data, 'FROM JOIN CHAT POST');
+            res.redirect('/chats/'+response.data.id);
         }
     });
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
-
-    chatRequester.createChatRequest(req.user.username, req.body.createChat, function(channel, chatInfo) {
-        clean_client.cleanup();
-
-        req.session.members[chatInfo.id] = chatInfo;
-        logger.debug(chatInfo, "****chat infofooo****");
-
-        new ChatSearchManager().createDocument(chatInfo, function(err, res) {
+    axios({
+        method: 'post',
+        baseURL: 'http://localhost/',
+        url: '/api/chats/create_chat',
+        data: {
+            username: req.session.user.username,
+            createChat: req.body.createChat
+        },
+        proxy: {
+            host: 'localhost',
+            port: 5000
+        }
+    }).then(function(response) {
+        new ChatSearchManager().createDocument(response.data, function(err, res) {
             logger.info("added document to index after creating chat", res);
         });
-        res.status(200);
-        res.redirect('/chats/' + chatInfo.id);
+        return res.redirect('/chats/' + response.data.id);
     });
 });
 
 router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
-    var userManager = new UserManager(new UserCache(req.user.username));
-    userManager.leave(req.body.chatID, function(rows) {
-        //this was a huge bug, and why we need unit tests
+    axios({
+        method: 'post',
+        baseURL: 'http://localhost/',
+        url: '/api/chats/remove_user',
+        data: {
+            username: req.session.user.username,
+            chatID: req.body.chatID
+        },
+        proxy: {
+            host: 'localhost',
+            port: 5000
+        }
+    }).then(function(response) {
         delete req.session.members[req.body.chatID];
-
-        new ChatSearchManager().incrementField(req.body.chatID, 'num_members', -1, function(err, result) {
-            logger.info("*** removed a user from chat elasticsearch", result);
-        });
-        res.status(200).send({deleted: rows.affectedRows});
+        return res.send(response.data);
     });
 });
 
@@ -247,23 +260,21 @@ function chatRender(req, res, cachedCB, missCB) {
         cachedCB(req.session.members);
     }
     else {
-        //i dont think this will ever get reached since u join before this function is reached
-        logger.info("post renderinfo not cached");
-        //TODO use microservice
-        var clean_client = new CleanClient();
-        var chatRequester = new ChatRequest(clean_client.genClient());
-
-        chatRequester.loadChatRequest(req.user.username, req.params.chatID, function(channel, deepCopy) {
-            clean_client.cleanup();
-            logger.info(req.user.username, req.params.chatID);
-            logger.info(deepCopy);
-            if(!deepCopy) {
-                return missCB(null);
+        //this code will never get reached, but its good to have options
+        axios({
+            method: 'get',
+            baseURL: 'http://localhost/',
+            url: '/api/chats/'+req.params.chatID + '/renderInfo',
+            params: {
+                username: req.session.user.username
+            },
+            proxy: {
+                host: 'localhost',
+                port: 5000
             }
-            req.session.members[deepCopy.id] = deepCopy;
-            var infoDeepCopy = JSON.parse(JSON.stringify(deepCopy));
-            infoDeepCopy.csrfToken = req.csrfToken();
-            missCB(infoDeepCopy);
+        })
+        .then(function(response) {
+            missCB(response.data);
         });
     }
 }

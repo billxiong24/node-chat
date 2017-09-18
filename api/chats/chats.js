@@ -104,6 +104,9 @@ router.post('/verify_chat', function(req, res, next) {
         logger.info("chat found", chatJSON);
         //req.session.members[chatJSON.id] = chatJSON;
         //when redirected, the chat info will be cached
+        new ChatSearchManager().incrementField(chatJSON.id, 'num_members', 1, function(err, result) {
+            logger.info(result, '**** result from incrementing members in search ****');
+        });
         return res.json({
             joined: true
         });
@@ -122,11 +125,7 @@ router.post('/join_chat', function(req, res, next) {
     var success = function(chatJSON) {
         //enter this function if chat was not joined before
         logger.info("chat found", chatJSON);
-        res.status(200).json({joined: true});
-
-        new ChatSearchManager().incrementField(chatJSON.id, 'num_members', 1, function(err, result) {
-            logger.info(result, '**** result from incrementing members in search ****');
-        });
+        res.status(200).json(chatJSON);
     };
 
     manager.joinChat(req.body.username, req.body.joinChat, failure, success);
@@ -139,9 +138,6 @@ router.post('/create_chat', function(req, res, next) {
         //req.session.members[chatInfo.id] = chatInfo;
         logger.debug(chatInfo, "****chat infofooo****");
 
-        new ChatSearchManager().createDocument(chatInfo, function(err, res) {
-            logger.info("added document to index after creating chat", res);
-        });
         res.status(200).json(chatInfo);
     });
 });
@@ -161,7 +157,6 @@ router.post('/remove_user', function(req, res, next) {
 
 function chatRender(req, res, missCB) {
     logger.info("post renderinfo not cached");
-    //TODO use microservice
 
     manager.loadChat(req.query.username, req.params.chatID, function(deepCopy) {
         if(!deepCopy) {

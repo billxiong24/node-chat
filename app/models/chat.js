@@ -93,7 +93,6 @@ Chat.prototype.load = function(user, transport) {
     };
 
     var transferChat = function(result) {
-        logger.debug(result);
         if(result.length > 0) {
             that._code = result[0].code;
             that._name = result[0].chat_name;
