@@ -1,3 +1,44 @@
+{{!-- {{#if viewStamp}} --}}
+    {{!-- <div class="message-data"> --}}
+        {{!-- <span class="message-data-time" >{{viewStamp}}</span> --}}
+    {{!-- </div> --}}
+{{!-- {{else}} --}}
+    {{!-- <div class="message-data"> --}}
+    {{!-- </div> --}}
+{{!-- {{/if}} --}}
+{{!-- <li class="clearfix group-message" id="{{line_id}}" style="border: solid black 1px;"> --}}
+    {{!-- <div class="message-data"> --}}
+        {{!-- [><span class="message-data-time" style="height: 0px"></span><] --}}
+        {{!-- [><span class="message-data-name pull-left" style="margin-left: -10px">{{viewUsername}}</span><] --}}
+        {{!-- [><span class="message-data-name pull-left" style="margin-left: -11px;">{{viewUsername }}</span><] --}}
+        {{!-- {{#if viewUsername}} --}}
+            {{!-- <img src="https://scrible.s3.amazonaws.com/{{viewUsername}}/profile_pic.png" class="round pull-left" style="margin-top: -8px; margin-left: -10px" width="35" height="35" alt="/images/default.png" alternate="{{username}}"/> --}}
+            {{!-- [><img class='round pull-left' style="margin-left: -10px" width="40" height="40" avatar="{{viewUsername}}" ><] --}}
+        {{!-- {{/if}} --}}
+    {{!-- </div> --}}
+    {{!-- {{#if viewUsername}} --}}
+        {{!-- <div class="message my-message float-left" style="margin-left: 9px"> --}}
+    {{!-- {{else}} --}}
+        {{!-- <div class="message my-message float-left" style="margin-left: 30px"> --}}
+
+
+    {{!-- {{/if}} --}}
+        {{!-- {{message}} --}}
+    {{!-- </div> --}}
+    {{!-- <a class="voting" lineid="{{line_id}}" href="javascript:void(0);"> --}}
+        {{!-- <span class="float-left" style='margin-left: 5px;'><i class="entypo-heart-empty"></i></span> --}}
+
+        {{!-- {{#if_eq num_votes '0'}} --}}
+            {{!-- <div class="float-left numVotes"> --}}
+            {{!-- </div> --}}
+        {{!-- {{else}} --}}
+            {{!-- <div class="float-left numVotes"> --}}
+                {{!-- {{num_votes}} --}}
+            {{!-- </div> --}}
+        {{!-- {{/if_eq}} --}}
+    {{!-- </a> --}}
+
+{{!-- </li> --}}
 {{#if viewStamp}}
     <div class="message-data">
         <span class="message-data-time" >{{viewStamp}}</span>
@@ -7,35 +48,35 @@
     </div>
 {{/if}}
 <li class="clearfix group-message" id="{{line_id}}">
-    <div class="message-data">
-        {{!-- <span class="message-data-time" style="height: 0px"></span> --}}
-        {{!-- <span class="message-data-name pull-left" style="margin-left: -10px">{{viewUsername}}</span> --}}
-        {{!-- <span class="message-data-name pull-left" style="margin-left: -11px;">{{viewUsername }}</span> --}}
+    {{#if viewUsername}}
+        <div class="message-data " style="text-align: left;">
+            {{viewUsername}}
+        </div>
+    {{/if}}
+
+    <div class="message-data" style="margin-bottom: -0px !important;">
         {{#if viewUsername}}
-            <img src="https://scrible.s3.amazonaws.com/{{viewUsername}}/profile_pic.png" class="round pull-left" style="margin-left: -10px" width="35" height="35" alt="/images/default.png" alternate="{{username}}"/>
-            {{!-- <img class='round pull-left' style="margin-left: -10px" width="40" height="40" avatar="{{viewUsername}}" > --}}
+            <img src="https://scrible.s3.amazonaws.com/{{viewUsername}}/profile_pic.png" class="round pull-left" style="margin-top: -13px; margin-left: -10px" width="33" height="33" alt="/images/default.png" alternate="{{username}}"/>
         {{/if}}
     </div>
     {{#if viewUsername}}
         <div class="message my-message float-left" style="margin-left: 9px">
     {{else}}
-        <div class="message my-message float-left" style="margin-left: 30px">
-
-
+        <div class="message my-message float-left" style="margin-left: 32px">
     {{/if}}
         {{message}}
     </div>
     <a class="voting" lineid="{{line_id}}" href="javascript:void(0);">
-        <span class="float-left" style='margin-left: 5px;'><i class="entypo-heart-empty"></i></span>
-
+        <span class="float-left vote-image" style='margin-right: 5px;'><i class="entypo-heart-empty"></i></span>
         {{#if_eq num_votes '0'}}
-            <div class="float-left numVotes">
+            <div class="float-right numVotes">
             </div>
         {{else}}
-            <div class="float-left numVotes">
+            <div class="float-right numVotes">
                 {{num_votes}}
             </div>
         {{/if_eq}}
+        
     </a>
-
+    </div>
 </li>

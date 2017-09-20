@@ -32,88 +32,20 @@
 
 
     </head>
-    <body class="page-body sidebar-collapsed" data-url="http://neon.dev">
-        <div class="chat-visible page-container sidebar-collapsed"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
+    <body class="page-body sidebar-collapsed box" data-url="http://neon.dev">
+        {{!-- <table style="height: 100%; border: solid black 1px;"> --}}
+            {{!-- <tbody> --}}
+            {{!-- </tbody> --}}
+        {{!-- </table> --}}
+        <div class="chat-visible page-container sidebar-collapsed" style="height: 100%"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
             {{> sidebar}} 
 
-            <div class="main-content">
+            <div class="main-content row content" style="height: 100%">
 
-                {{> header}} 
-
-                <hr />
-                    
-		<section class="search-results-env" style="margin-top: -40px;">
-            
-            <ul class="nav nav-tabs right-aligned">
-                <!--<li class="tab-title pull-left">
-                    <div class="search-string">10 results found for: <strong>&ldquo;this&rdquo;</strong></div>
-                </li> -->
-
-                <li class="active">
-                    <a href="#pages">
-                        Chat
-                        <span class="disabled-text"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#members" id="stats">Stats</a>
-                </li>
-                <li>
-                    <a href="#messages">Messages</a>
-                </li>
-            </ul>
-            <div class="container clearfix search-results-panes" style="background: transparent;">
-                <div class="search-results-panes">
-
-                    <div class="search-results-pane active" id="pages">
-                        <div class="chat chat-style ">
-                            <div class="chat-header clearfix">
-
-                                <div class="chat-about">
-                                    <div class="chat-with"></div>
-                                    <div class="chat-num-messages"></div>
-                                </div>
-                                <i class="fa fa-star"></i>
-                            </div> <!-- end chat-header -->
-
-                            <div class="chat-history-group">
-                                <ul>
-                                </ul>
-
-                                <img id="typing" src="/images/typing-indicator2.gif" style="display:none; width: 40px; height: 40px;" alt="" class="pull-right"/>
-                            </div> <!-- end chat-history -->
-
-                            <form action="" class="submit-message">
-                                <div class="chat-message clearfix">
-                                    <textarea name="message-to-send" id="message-to-send" placeholder ="Type your message..." rows="1"></textarea>
-                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-
-                                    <div class="file-uploads">
-                                        <input id="fileupload" type="file" name="" id="" value="upload" />
-                                        <i class="fa fa-file-o"></i>
-                                        <i class="fa fa-file-image-o"></i>
-                                    </div>
-                                </div> <!-- end chat-message -->
-                            </form>
-
-                        </div>
-                    </div>
-                    <div class="search-results-pane" id="members">
-                    </div> 
-                    <div class="search-results-pane" id="messages">
-
-                        messagessas	
-
-                    </div>
-
-                </div>
-
-                <!-- end chat -->
-
-            </div>
+                {{> chat-header}} 
 
 
-        </section>
+		
 
                  <!-- end container -->
 
@@ -199,14 +131,15 @@
         <script src="/javascripts/bundle/chat_bundle.js"></script>
         <script type="text/javascript" charset="utf-8">
             $(document).ready(function() {
+                var height = $('.row.content').height();
+                    $('.chat .chat-history-group').css('height', height - 275);
                 
-                var height = $(window).height();
-                if(height > 700) {
-                    $('.chat .chat-history-group').css('height', $(document).height()/2);
-                }
-                if(height < 690 && height > 300) {
-                    $('.chat .chat-history-group').css('height', $(document).height()/2.5);
-                }
+                {{!-- if(height > 700) { --}}
+                    {{!-- $('.chat .chat-history-group').css('height', $(document).height()); --}}
+                {{!-- } --}}
+                {{!-- if(height < 690 && height > 300) { --}}
+                    {{!-- $('.chat .chat-history-group').css('height', $(document).height()/2.5); --}}
+                {{!-- } --}}
 
             });
         </script>

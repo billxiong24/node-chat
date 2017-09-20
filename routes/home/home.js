@@ -36,6 +36,8 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
         }
         else {
             json.userJSON.csrfToken = req.csrfToken();
+            logger.debug('URL', req.session.user.url);
+            json.userJSON.url = req.session.user.url;
             res.render('home', json.userJSON);
         }
     });

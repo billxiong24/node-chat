@@ -17,6 +17,9 @@ before_install:
     - sudo apt-get -y update
     - gem install redis
 
+cache:
+    directories:
+        - node_modules
 install:
     - npm install
     - npm update --save 

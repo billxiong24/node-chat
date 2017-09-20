@@ -1,3 +1,31 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    overflow-y: hidden;
+}
+
+.box {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.box .row {
+    /*border: 1px dotted grey;*/
+}
+
+.box .row.header {
+    flex: 0 1 auto;
+}
+
+.box .row.content {
+    flex: 1 1 auto;
+}
+
+.box .row.footer {
+    flex: 0 1 40px;
+}
 .page-container .sidebar-menu .sidebar-menu-inner {
     overflow-y: scroll;
     height: 100%;
@@ -244,6 +272,10 @@ pre {
     text-align: center;
 }
 
+.message-data.cancel {
+    text-align: left;
+}
+
 .chat .chat-history-group .message-data .message-data-name{
     color: #ACACAC;
     padding: 20px;
@@ -266,9 +298,9 @@ pre {
 .chat .chat-history-group .message {
     color: white;
     /* top, bottom and left,right*/
-    padding: 6px 15px;
-    line-height: 26px;
-    font-size: 14px;
+    padding: 6px 10px;
+    line-height: 16px;
+    font-size: 15px;
     border-radius: 20px;
     margin-bottom: 12px;
     max-width: 60%;
@@ -381,6 +413,9 @@ pre {
     float: right;
 }
 
+.clearfix {
+    margin-top: -5px !important;
+}
 .clearfix:after {
     visibility: hidden;
     display: block;
