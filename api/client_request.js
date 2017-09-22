@@ -5,8 +5,8 @@ var baseURL =  'http://' + process.env.HOST + '/';
 
 function get(options) {
     /*{*/
-        //method: 'get',
-        //baseURL: baseURL,
+        ////method: 'get',
+        ////baseURL: baseURL,
         //url: '/api/chats/'+req.params.chatID,
         //params: req.user,
         //proxy: {

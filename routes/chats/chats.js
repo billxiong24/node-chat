@@ -13,23 +13,16 @@ const CleanClient = require('../../app/cache/clean_client.js');
 var ChatRequest = require('../../microservices/chat/chat_requester.js');
 var NotifRequest = require('../../microservices/notifs/notif_request.js');
 var ChatSearchManager = require('../../app/search/chat_search_manager.js');
-var axios = require('axios');
-var client_request = require('../client_request.js');
+var client_request = require('../../api/client_request.js');
 
 var manager;
 if(!manager) {
     manager = new Manager(new Chat());
 }
 router.get('/:chatID', authenticator.checkLoggedOut, function(req, res, next) {
-    axios({
-        method: 'get',
-        baseURL: 'http://localhost/',
+    client_request.get({
         url: '/api/chats/'+req.params.chatID,
-        params: req.user,
-        proxy: {
-            host: 'localhost',
-            port: 5000
-        }
+        params: req.user
     }).then(function(response) {
         req.session.members = response.data.members;
         if(process.env.NODE_ENV === 'test') {
@@ -85,16 +78,10 @@ router.get('/:chatID/initLines', authenticator.checkLoggedOut, function(req, res
 });
 
 router.put('/:chatID/updatedName', authenticator.checkLoggedOut, function(req, res, next) {
-    axios({
-        method: 'put',
-        baseURL: 'http://localhost/',
+    client_request.put({
         url: '/api/chats/' + req.params.chatID + '/updatedName',
         data: {
             newName: req.body.newName
-        },
-        proxy: {
-            host: 'localhost',
-            port: 5000
         }
     }).then(function(response) {
         res.status(200).send(response.data);
@@ -102,16 +89,10 @@ router.put('/:chatID/updatedName', authenticator.checkLoggedOut, function(req, r
 });
 
 router.put('/:chatID/updatedCode', authenticator.checkLoggedOut, function(req, res, next) {
-    axios({
-        method: 'put',
-        baseURL: 'http://localhost/',
+    client_request.put({
         url: '/api/chats/' + req.params.chatID + '/updatedCode',
         data: {
             newCode: req.body.newCode
-        },
-        proxy: {
-            host: 'localhost',
-            port: 5000
         }
     }).then(function(response) {
         res.status(200).send(response.data);
@@ -152,18 +133,12 @@ router.post('/verify_chat', authenticator.checkLoggedOut, function(req, res, nex
             return;
         }
     }
-    axios({
-        method: 'post',
-        baseURL: 'http://localhost/',
+    client_request.post({
         url: '/api/chats/verify_chat',
         data: {
             username: req.session.user.username,
             code: code,
             chat_id: chat_id
-        },
-        proxy: {
-            host: 'localhost',
-            port: 5000
         }
     }).then(function(response) {
         return res.json(response.data);
@@ -181,20 +156,13 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
         }
     }
     //chat was not found
-    axios({
-        method: 'post',
-        baseURL: 'http://localhost/',
+    client_request.post({
         url: '/api/chats/join_chat',
         data: {
             username: req.session.user.username,
             joinChat: req.body.joinChat
-        },
-        proxy: {
-            host: 'localhost',
-            port: 5000
         }
-    })
-    .then(function(response) {
+    }).then(function(response) {
         if(response.data.error) {
             if(process.env.NODE_ENV === 'test') {
                 return res.json({error: 'wrong password'});
@@ -215,17 +183,11 @@ router.post('/join_chat', authenticator.checkLoggedOut, function(req, res, next)
 });
 
 router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, next) {
-    axios({
-        method: 'post',
-        baseURL: 'http://localhost/',
+    client_request.post({
         url: '/api/chats/create_chat',
         data: {
             username: req.session.user.username,
             createChat: req.body.createChat
-        },
-        proxy: {
-            host: 'localhost',
-            port: 5000
         }
     }).then(function(response) {
         new ChatSearchManager().createDocument(response.data, function(err, res) {
@@ -236,17 +198,11 @@ router.post('/create_chat', authenticator.checkLoggedOut, function(req, res, nex
 });
 
 router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, next) {
-    axios({
-        method: 'post',
-        baseURL: 'http://localhost/',
+    client_request.post({
         url: '/api/chats/remove_user',
         data: {
             username: req.session.user.username,
             chatID: req.body.chatID
-        },
-        proxy: {
-            host: 'localhost',
-            port: 5000
         }
     }).then(function(response) {
         delete req.session.members[req.body.chatID];
@@ -264,19 +220,12 @@ function chatRender(req, res, cachedCB, missCB) {
     }
     else {
         //this code will never get reached, but its good to have options
-        axios({
-            method: 'get',
-            baseURL: 'http://localhost/',
+        client_request.get({
             url: '/api/chats/'+req.params.chatID + '/renderInfo',
             params: {
                 username: req.session.user.username
-            },
-            proxy: {
-                host: 'localhost',
-                port: 5000
             }
-        })
-        .then(function(response) {
+        }).then(function(response) {
             console.log("reached callback");
             missCB(response.data);
         });
