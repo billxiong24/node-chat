@@ -19,7 +19,6 @@ if(!manager) {
 
 router.get('/stats', function(req, res, next) {
     var user_stat_manager = new UserStatManager(new UserStat(req.query.chat_id));
-    logger.debug(req.query.chat_id);
     user_stat_manager.getStats(function(counts, result) {
         res.status(200).json({
             counts: counts,

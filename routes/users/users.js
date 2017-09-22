@@ -10,6 +10,7 @@ var UserRequest = require('../../microservices/user/user_request.js');
 var CleanClient = require('../../app/cache/clean_client.js');
 var UserStatManager = require('../../app/chat_functions/user_stat_manager.js');
 var UserStat = require('../../app/models/user_stat.js');
+var client_request = require('../../api/client_request.js');
 
 var manager;
 if(!manager) {
@@ -17,14 +18,13 @@ if(!manager) {
 }
 
 router.get('/stats', authenticator.checkLoggedOut, function(req, res, next) {
-    var user_stat_manager = new UserStatManager(new UserStat(req.query.chat_id));
-    logger.debug(req.query.chat_id);
-    user_stat_manager.getStats(function(counts, result) {
-
-        res.status(200).json({
-            counts: counts,
-            result: result
-        });
+    client_request.get({
+        url: '/api/users/stats',
+        params: {
+            chat_id: req.query.chat_id
+        }
+    }).then(function(response) {
+        res.status(200).json(response);
     });
 });
 
@@ -43,29 +43,33 @@ router.get('/stats', authenticator.checkLoggedOut, function(req, res, next) {
 
 
 router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
-    var clean_client = new CleanClient();
-    var userRequest = new UserRequest(clean_client.genClient());
-    //var userManager = new UserManager(new UserCache(req.user.username).setJSON(req.user));
     //req.user will update automatically each request, no need to explicility set
-    userRequest.updateUserProfileRequest(req.body, req.user, function(channel, jsonObj) {
-        if(!jsonObj || !jsonObj.jsonObj || jsonObj.affectedRows === 0) {
+    client_request.put({
+        url: '/api/users/'+req.params.username + '/updatedInfo',
+        data: req.body
+    }).then(function(response) {
+        var jsonObj = response.data;
+        if(!jsonObj || jsonObj.affectedRows === 0) {
             return res.status(400).send('error');
         }
         var url = req.session.user.url;
-        req.session.user = jsonObj.jsonObj;
+        req.session.user = jsonObj;
         req.session.user.url = url;
         logger.info(req.session.user, "updated req session put request");
-        clean_client.cleanup();
         res.status(200).send('done');
     });
 });
+
 router.put('/:username/updatedPassword', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
-    var clean_client = new CleanClient();
-    var userRequest = new UserRequest(clean_client.genClient());
-    userRequest.updatePasswordRequest(req.user, req.body.old_password, req.body.new_password, function(channel, jsonObj) {
-        logger.debug('updated password', jsonObj);
-        res.status(200).send(jsonObj);
-        clean_client.cleanup();
+    client_request.put({
+        url: '/api/users/' + req.params.username + '/updatedPassword',
+        data: {
+            old_password: req.body.old_password,
+            new_password: req.body.new_password
+        }
+    }).then(function(response) {
+        logger.debug(response.data, 'CHANGED PASSWORD');
+        res.status(200).send(response.data);
     });
 });
 
