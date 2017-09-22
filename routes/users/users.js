@@ -51,7 +51,9 @@ router.put('/:username/updatedInfo', authenticator.checkLoggedOut, authenticator
         if(!jsonObj || !jsonObj.jsonObj || jsonObj.affectedRows === 0) {
             return res.status(400).send('error');
         }
+        var url = req.session.user.url;
         req.session.user = jsonObj.jsonObj;
+        req.session.user.url = url;
         logger.info(req.session.user, "updated req session put request");
         clean_client.cleanup();
         res.status(200).send('done');

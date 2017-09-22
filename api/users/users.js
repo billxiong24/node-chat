@@ -16,8 +16,6 @@ var user_manager;
 if(!manager) {
     manager = new Manager(new Chat());
 }
-if(!user_manager) {
-}
 
 router.get('/stats', function(req, res, next) {
     var user_stat_manager = new UserStatManager(new UserStat(req.query.chat_id));
@@ -60,6 +58,5 @@ router.put('/:username/updatedPassword', function(req, res, next) {
         res.status(200).send(rows);
     });
 });
-
 
 module.exports = router;

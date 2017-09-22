@@ -14,6 +14,7 @@ var ChatRequest = require('../../microservices/chat/chat_requester.js');
 var NotifRequest = require('../../microservices/notifs/notif_request.js');
 var ChatSearchManager = require('../../app/search/chat_search_manager.js');
 var axios = require('axios');
+var client_request = require('../client_request.js');
 
 var manager;
 if(!manager) {
@@ -249,6 +250,7 @@ router.post('/remove_user', authenticator.checkLoggedOut, function(req, res, nex
         }
     }).then(function(response) {
         delete req.session.members[req.body.chatID];
+        logger.debug(req.session.members);
         return res.send(response.data);
     });
 });
