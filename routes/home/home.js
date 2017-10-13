@@ -23,22 +23,15 @@ router.get('/', authenticator.checkLoggedOut, function(req, res, next) {
         secure: true
     });
 
-    var clean_client = new CleanClient();
-    var chatRequester = new ChatRequest(clean_client.genClient());
-
-    chatRequester.loadChatListRequest(req.csrfToken(), req.user, function(channel, json) {
-        logger.debug(json.userJSON);
-
-        clean_client.cleanup();
-        req.session.members = json.members;
+    manager.loadChatLists(null, req.user, function(userJSON) {
         if(process.env.NODE_ENV=== 'test') {
-            res.status(200).json(json.userJSON);
+            res.status(200).json(userJSON);
         }
         else {
-            json.userJSON.csrfToken = req.csrfToken();
+            userJSON.csrfToken = req.csrfToken();
             logger.debug('URL', req.session.user.url);
-            json.userJSON.url = req.session.user.url;
-            res.render('home', json.userJSON);
+            userJSON.url = req.session.user.url;
+            res.render('home', userJSON);
         }
     });
 });

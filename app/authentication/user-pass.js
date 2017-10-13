@@ -225,7 +225,6 @@ function passportAuth(passport) {
             return done(null, user);
         };
         //var user_manager = new UserManager(new UserCache(username));
-        var clean_client = new CleanClient();
 
         var user_manager = new UserManager(new UserCache(username));
         //user_manager.signup(password, signupFailure, signupSuccess);

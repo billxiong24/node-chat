@@ -20,10 +20,12 @@ if(!manager) {
 router.get('/stats', function(req, res, next) {
     var user_stat_manager = new UserStatManager(new UserStat(req.query.chat_id));
     user_stat_manager.getStats(function(counts, result) {
-        res.status(200).json({
+        
+        var obj = {
             counts: counts,
-            result: result
-        });
+            stats: result
+        };
+        res.status(200).json(obj);
     });
 });
 

@@ -172,6 +172,7 @@ function setup(roomID) {
         var counts = [];
         var votes = [];
         var sum = 0;
+        console.log("Hio");
         Object.keys(data.counts).forEach(function(element) {
             counts.push({
                 label: element, 
@@ -179,14 +180,14 @@ function setup(roomID) {
             });
         });
 
-        Object.keys(data.result).forEach(function(element) {
-            if(!data.result[element]) {
+        Object.keys(data.stats).forEach(function(element) {
+            if(!data.stats[element]) {
                 return;
             }
 
             votes.push({
                 label: element,
-                value: data.result[element]
+                value: data.stats[element]
             });
         });
         $('#members').html(html);

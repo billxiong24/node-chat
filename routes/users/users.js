@@ -24,7 +24,9 @@ router.get('/stats', authenticator.checkLoggedOut, function(req, res, next) {
             chat_id: req.query.chat_id
         }
     }).then(function(response) {
-        res.status(200).json(response);
+        logger.debug(response.data);
+        res.status(200).send(response.data);
+        //res.status(200).json(response);
     });
 });
 

@@ -37,7 +37,7 @@ ChatSearchManager.prototype.search = function(searchTerm, from, callback) {
     client.search({
         size: 10,
         //use for pagination, default 0
-        from: 0,
+        from: from,
         index: index,
         type: type,
         body: {

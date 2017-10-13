@@ -57,6 +57,8 @@
 	    var csrfTokenObj = {
 	        _csrf: $('input[name=_csrf').val()
 	    };
+	    var from = 0;
+
 	    $.ajax({
 	        type: 'POST',
 	        data: JSON.stringify(csrfTokenObj), 
@@ -124,11 +126,12 @@
 	            var searchTerm = $('input[name=searchChat]').val();
 
 	            chatAjaxService.chatAjax('/search', 'GET', {
-	                query: searchTerm
+	                query: searchTerm,
+	                from: from
 
 	            }, function(data) {
 	                //replaces url without reloading page
-	                history.replaceState(null, null, '?query='+searchTerm);
+	                history.replaceState(null, null, '?query='+searchTerm+'?from='+from);
 	                search_res = data.hits;
 	                var html = handlebars.templates.search_results({
 	                    num_results: data.total,
