@@ -19,8 +19,6 @@ const params = {
 };
 //middleware need to return next function
 function checkLoggedOut(req, res, next) {
-    logger.debug(req.user);
-    logger.debug(req.session.user);
     if(!req.isAuthenticated()) {
         res.redirect('/');
     }
@@ -122,6 +120,7 @@ function checkExistingUser(req, res) {
         return;
     }
 
+    //FIXME put this query somewhere else
     connection.execute('SELECT COUNT(User.username) AS count FROM User WHERE User.username = ? ', [req.body.username], function(rows) {
         if(rows[0].count > 0) {
             res.send("Username exists.");
@@ -203,16 +202,18 @@ function passportAuth(passport) {
             //user_manager.signup(password_signup, signupFailure, signupSuccess);
 
             var clean_client = new CleanClient();
-            var user_request = new UserRequest(clean_client.genClient());
-            user_request.signupRequest(info, function(channel, user) {
-                if(user.signup_error) {
-                    signupFailure();
-                }
-                else {
-                    signupSuccess(user);
-                }
-                clean_client.cleanup();
-            });
+            var user_manager = new UserManager(new UserCache(info.username).setJSON(info));
+            user_manager.signup(info.password, signupFailure, signupSuccess);
+            //var user_request = new UserRequest(clean_client.genClient());
+            //user_request.signupRequest(info, function(channel, user) {
+                //if(user.signup_error) {
+                    //signupFailure();
+                //}
+                //else {
+                    //signupSuccess(user);
+                //}
+                //clean_client.cleanup();
+            //});
         }
     ));
 
@@ -225,12 +226,15 @@ function passportAuth(passport) {
         };
         //var user_manager = new UserManager(new UserCache(username));
         var clean_client = new CleanClient();
-        var user_request = new UserRequest(clean_client.genClient());
-        user_request.authenticateRequest(username, password, function(channel, user) {
-            loginResult(user);
-            clean_client.cleanup();
-        });
-        //user_manager.authenticate(password, loginResult);
+
+        var user_manager = new UserManager(new UserCache(username));
+        //user_manager.signup(password, signupFailure, signupSuccess);
+        //var user_request = new UserRequest(clean_client.genClient());
+        //user_request.authenticateRequest(username, password, function(channel, user) {
+            //loginResult(user);
+            //clean_client.cleanup();
+        //});
+        user_manager.authenticate(password, loginResult);
     }));
 }
 

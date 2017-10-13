@@ -79,6 +79,7 @@ User.prototype.setJSON = function(userJSON) {
 User.prototype.read = function() {
     var username = this._username;
     return function(poolConnection) {
+        //this query is still parameterized, just split up on multiple lines
         var query = "SELECT User.id, User.email, User.password,"+
             "User.username, User.first, User.last, EmailConfirm.confirmed, "+ 
             "EmailConfirm.hash from User LEFT JOIN EmailConfirm ON User.username = EmailConfirm.username WHERE User.username = ?";

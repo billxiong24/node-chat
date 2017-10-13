@@ -1,4 +1,5 @@
 var logger = require('../util/logger.js')(module);
+var authenticator = require('../app/authentication/user-pass.js');
 var express = require('express');
 var router = express.Router();
 var home = require('./home/home.js');

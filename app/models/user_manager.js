@@ -32,7 +32,8 @@ UserManager.prototype.signup = function(password, signupFailure, signupSuccess) 
             var jsonObj = userObj;
             delete jsonObj.password;
             if(process.env.NODE_ENV !== 'test') {
-                return getImgData('../public/images/default.png').then(function(data) {
+                logger.debug(__dirname);
+                return getImgData(__dirname + '/../../public/images/default.png').then(function(data) {
                     var picManager = new PicManager(new Pic());
                     return picManager.storeImage(jsonObj.username, 'profile_pic.png', data);
                 }).then(function(data) {

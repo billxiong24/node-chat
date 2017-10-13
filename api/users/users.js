@@ -27,6 +27,15 @@ router.get('/stats', function(req, res, next) {
     });
 });
 
+router.get('/user_info', function(req, res, next) {
+    //TODO query information about user given username
+
+    var username = req.query.username;
+    res.status(200).send({
+
+    });
+});
+
 //needs extra middleware to check if user is trying to access another user's profile
 //router.get('/:username', authenticator.checkLoggedOut, authenticator.checkOwnUser, function(req, res, next) {
     //manager.loadChatLists(req.csrfToken(), req.user, function(userJSON, inChat, members) {

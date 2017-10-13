@@ -13,7 +13,8 @@ var Pic = function() {
 };
 
 Pic.prototype.getURL = function(key) {
-    return "https://scrible.s3.amazonaws.com/" + key;
+    //return "https://scrible.s3.amazonaws.com/" + key;
+    return "https://s3.us-east-2.amazonaws.com/scrible/" + key;
 };
 
 Pic.prototype.savePic = function(id, file_name, file_buffer) {
